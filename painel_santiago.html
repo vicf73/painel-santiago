@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EDEC • Centro de Comando e Telemetria Comercial — Santiago</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    :root {
+      --bg-void: #070A0F;
+      --bg-panel: #0D131D;
+      --bg-panel-elevated: #131C2B;
+      --bg-input: #090E16;
+      --border-dim: #1E293B;
+      --border-bright: #334155;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --accent-amber: #F59E0B;
+      --accent-amber-glow: rgba(245, 158, 11, 0.14);
+      --accent-cyan: #06B6D4;
+      --accent-cyan-glow: rgba(6, 182, 212, 0.14);
+      --accent-red: #EF4444;
+      --accent-red-glow: rgba(239, 68, 68, 0.15);
+      --accent-emerald: #10B981;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-sans: 'IBM Plex Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-void);
+      background-image:
+        radial-gradient(circle at 12% 0%, rgba(6, 182, 212, 0.08), transparent 35%),
+        radial-gradient(circle at 88% 0%, rgba(245, 158, 11, 0.07), transparent 35%),
+        linear-gradient(rgba(30, 41, 59, 0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30, 41, 59, 0.18) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.45;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* TOP SCADA BAR */
+    .scada-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 22px;
+      background: rgba(13, 19, 29, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-dim);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-emblem {
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--accent-amber), #D97706);
+      display: grid;
+      place-items: center;
+      color: #070A0F;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 16px;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .brand-titles h1 {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 2px 7px;
+      border-radius: 3px;
+      background: var(--accent-amber-glow);
+      color: var(--accent-amber);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .brand-titles p {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    .telemetry-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 10px var(--accent-emerald);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.88); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 4px;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid var(--border-bright);
+      background: var(--bg-panel-elevated);
+      color: var(--text-primary);
+    }
+
+    .btn:hover {
+      border-color: var(--accent-cyan);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-amber {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #070A0F;
+      border-color: #FBBF24;
+      font-weight: 700;
+    }
+
+    .btn-amber:hover {
+      background: linear-gradient(135deg, #FBBF24, #F59E0B);
+      color: #070A0F;
+      border-color: #FDE68A;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+    }
+
+    /* MAIN CONTAINER */
+    .workspace {
+      padding: 16px 22px 32px;
+      max-width: 1920px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* KPI TELEMETRY STRIP */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    .kpi-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-top: 2px solid var(--border-bright);
+      border-radius: 6px;
+      padding: 13px 15px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .kpi-card.amber { border-top-color: var(--accent-amber); }
+    .kpi-card.cyan { border-top-color: var(--accent-cyan); }
+    .kpi-card.red { border-top-color: var(--accent-red); }
+    .kpi-card.emerald { border-top-color: var(--accent-emerald); }
+
+    .kpi-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kpi-card.amber .kpi-value { color: #FBBF24; }
+    .kpi-card.red .kpi-value { color: #F87171; }
+    .kpi-card.cyan .kpi-value { color: #22D3EE; }
+    .kpi-card.emerald .kpi-value { color: #34D399; }
+
+    .kpi-sub {
+      margin-top: 5px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* COMMAND FILTER BAR */
+    .command-bar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .filter-row-top {
+      display: grid;
+      grid-template-columns: 2fr 0.9fr repeat(5, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .filter-row-bottom {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr) 1.6fr auto;
+      gap: 10px;
+      align-items: end;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(51, 65, 85, 0.5);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-group label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+    }
+
+    .input-ctrl, .select-ctrl {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      color: var(--text-primary);
+      padding: 7px 10px;
+      border-radius: 4px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .input-ctrl:focus, .select-ctrl:focus {
+      border-color: var(--accent-amber);
+      box-shadow: 0 0 0 2px var(--accent-amber-glow);
+    }
+
+    .input-ctrl.mono {
+      font-family: var(--font-mono);
+    }
+
+    /* SPLIT ANALYTICS + MAP + RANKINGS */
+    .middle-grid {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .panel-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 10px 14px;
+      background: rgba(19, 28, 43, 0.7);
+      border-bottom: 1px solid var(--border-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent-cyan);
+      background: var(--accent-cyan-glow);
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+
+    #santiago-map {
+      height: 315px;
+      width: 100%;
+      background: #06090E;
+    }
+
+    .ranking-list {
+      padding: 8px 12px;
+      overflow-y: auto;
+      max-height: 315px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .rank-item {
+      padding: 7px 10px;
+      border-radius: 4px;
+      background: var(--bg-input);
+      border: 1px solid rgba(30, 41, 59, 0.8);
+      cursor: pointer;
+      transition: all 0.14s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .rank-item:hover {
+      border-color: var(--accent-amber);
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .rank-item.active {
+      border-color: var(--accent-cyan);
+      background: var(--accent-cyan-glow);
+    }
+
+    .rank-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 12.5px;
+    }
+
+    .rank-metrics {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .rank-bar-track {
+      height: 3px;
+      background: #1E293B;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .rank-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-amber), #EF4444);
+    }
+
+    /* DATA TABLE SECTION */
+    .table-container {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      max-height: 540px;
+      overflow-y: auto;
+    }
+
+    table.scada-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12.5px;
+    }
+
+    table.scada-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #111827;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-bright);
+      white-space: nowrap;
+    }
+
+    table.scada-table tbody tr {
+      border-bottom: 1px solid rgba(30, 41, 59, 0.65);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    table.scada-table tbody tr:hover {
+      background: rgba(6, 182, 212, 0.08);
+    }
+
+    table.scada-table td {
+      padding: 8px 12px;
+      white-space: nowrap;
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mono-cell {
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .num-right {
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+    }
+
+    .badge-ok { background: rgba(16, 185, 129, 0.14); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-warn { background: var(--accent-amber-glow); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .badge-danger { background: var(--accent-red-glow); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .badge-info { background: var(--accent-cyan-glow); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.35); }
+
+    .pagination-bar {
+      padding: 10px 16px;
+      background: var(--bg-panel-elevated);
+      border-top: 1px solid var(--border-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    /* DOSSIER DRAWER */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 7, 12, 0.72);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      justify-content: flex-end;
+    }
+
+    .drawer-backdrop.open {
+      display: flex;
+    }
+
+    .dossier-drawer {
+      width: 560px;
+      max-width: 95vw;
+      height: 100vh;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border-bright);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -16px 0 40px rgba(0, 0, 0, 0.7);
+      animation: slideIn 0.2s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    .drawer-header {
+      padding: 16px 20px;
+      background: var(--bg-panel-elevated);
+      border-bottom: 1px solid var(--border-bright);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .drawer-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .dossier-section {
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 12px 14px;
+    }
+
+    .dossier-section h4 {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--accent-amber);
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-dim);
+      padding-bottom: 5px;
+    }
+
+    .dossier-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 14px;
+    }
+
+    .kv-item .k {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .kv-item .v {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-top: 2px;
+      word-break: break-word;
+    }
+
+    @media (max-width: 1360px) {
+      .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+      .middle-grid { grid-template-columns: 1fr; }
+      .filter-row-top, .filter-row-bottom { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .scada-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 14px;
+      }
+      .telemetry-status {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .telemetry-status .btn {
+        flex: 1;
+        justify-content: center;
+      }
+      .workspace {
+        padding: 12px 10px 28px;
+      }
+      .kpi-strip {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .kpi-value {
+        font-size: 17px;
+      }
+      .filter-row-top, .filter-row-bottom {
+        grid-template-columns: 1fr;
+      }
+      .dossier-drawer {
+        width: 100vw;
+        max-width: 100vw;
+      }
+      .dossier-grid {
+        grid-template-columns: 1fr;
+      }
+      .pagination-bar {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+        text-align: center;
+      }
+      .pagination-bar > div:last-child {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP SCADA TELEMETRY HEADER -->
+  <header class="scada-topbar">
+    <div class="brand-cluster">
+      <div class="brand-emblem">⚡</div>
+      <div class="brand-titles">
+        <h1>
+          EDEC • TELEMETRIA COMERCIAL E REDE BT
+          <span class="brand-tag">PROJETO SANTIAGO</span>
+        </h1>
+        <p>Base Consolidada Multiusuário • Contratos, Dívida, Medição, Anomalias, Faturação T3 &amp; PTs</p>
+      </div>
+    </div>
+
+    <div class="telemetry-status">
+      <div class="status-pill">
+        <span class="pulse-dot" id="conn-dot"></span>
+        <span id="conn-text">CONECTANDO SUPABASE...</span>
+      </div>
+      <div class="status-pill" id="latency-pill">LATÊNCIA: -- ms</div>
+      <button class="btn" onclick="resetarTodosFiltros()" title="Limpar todos os filtros ativos">
+        ↺ Limpar Filtros
+      </button>
+      <button class="btn btn-amber" onclick="exportarCSVFiltrado()" id="btn-export">
+        ⬇ Exportar CSV (Vista Atual)
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+
+    <!-- 1. KPI COMMAND STRIP -->
+    <section class="kpi-strip">
+      <div class="kpi-card cyan">
+        <div class="kpi-label"><span>CONTRATOS SANTIAGO</span><span>CIL UNICO</span></div>
+        <div class="kpi-value" id="kpi-contratos">--</div>
+        <div class="kpi-sub" id="kpi-contratos-sub">Carregando base...</div>
+      </div>
+
+      <div class="kpi-card red">
+        <div class="kpi-label"><span>RISCO CRÍTICO / ALTO</span><span>MOTOR IA/REGRAS</span></div>
+        <div class="kpi-value" id="kpi-risco">--</div>
+        <div class="kpi-sub" id="kpi-risco-sub">Score Médio: -- / 100</div>
+      </div>
+
+      <div class="kpi-card amber">
+        <div class="kpi-label"><span>DÍVIDA TOTAL ACUMULADA</span><span>ECV</span></div>
+        <div class="kpi-value" id="kpi-divida">--</div>
+        <div class="kpi-sub" id="kpi-divida-sub">-- clientes com dívida</div>
+      </div>
+
+      <div class="kpi-card red">
+        <div class="kpi-label"><span>ANOMALIAS DE LEITURA</span><span>SET 2026</span></div>
+        <div class="kpi-value" id="kpi-anomalias">--</div>
+        <div class="kpi-sub" id="kpi-anomalias-sub">--% do universo filtrado</div>
+      </div>
+
+      <div class="kpi-card amber">
+        <div class="kpi-label"><span>ALERTA DESVIO FATURAÇÃO</span><span>DESV_FAT</span></div>
+        <div class="kpi-value" id="kpi-desvio">--</div>
+        <div class="kpi-sub" id="kpi-medfat-sub">Média Med_Fat: -- kWh/mês</div>
+      </div>
+
+      <div class="kpi-card emerald">
+        <div class="kpi-label"><span>GEORREFERENCIAÇÃO PT</span><span>LAT/LONG</span></div>
+        <div class="kpi-value" id="kpi-geo">--</div>
+        <div class="kpi-sub" id="kpi-geo-sub">--% mapeado em PTs</div>
+      </div>
+    </section>
+
+    <!-- 2. MULTI-FILTER COMMAND BAR -->
+    <section class="command-bar">
+      <div class="filter-row-top">
+        <div class="field-group">
+          <label>Pesquisa Rápida (CIL, NIB, Nome do Cliente, Nº Contador, PT ou Localidade)</label>
+          <input type="text" id="f-busca" class="input-ctrl mono" placeholder="Ex: 60060696, EugenioLima2, FARMACIA, 13457294..." onkeydown="if(event.key==='Enter') aplicarFiltros(1)" />
+        </div>
+
+        <div class="field-group">
+          <label>Nível Risco Fraude/Perda</label>
+          <select id="f-risco" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todos os Níveis</option>
+            <option value="CRÍTICO">🔴 CRÍTICO (Score ≥ 60)</option>
+            <option value="CRITICO_ALTO">🔥 CRÍTICO + ALTO (≥ 40)</option>
+            <option value="ALTO">🟠 ALTO (Score 40–59)</option>
+            <option value="MÉDIO">🟡 MÉDIO (Score 20–39)</option>
+            <option value="BAIXO">🟢 BAIXO (Score &lt; 20)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Unidade Comercial (DESC_UNI)</label>
+          <select id="f-uni" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todas as Unidades</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Estado do Contrato (EST_CTR)</label>
+          <select id="f-estado" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todos os Estados</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Grupo de Cliente (GRUP_TP_CLI)</label>
+          <select id="f-grupo" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todos os Grupos</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Anomalia de Leitura</label>
+          <select id="f-anomalia" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todas (Com e Sem)</option>
+            <option value="__COM_ANOMALIA__">⚠️ Apenas COM Anomalia</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Idade Contador (Dinâmica)</label>
+          <select id="f-mat-cont" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todas as Idades</option>
+          </select>
+        </div>
+
+        <button class="btn btn-amber" onclick="aplicarFiltros(1)" style="height: 33px;">
+          🔍 Filtrar Base
+        </button>
+      </div>
+
+      <div class="filter-row-bottom">
+        <div class="field-group">
+          <label>Posto de Transformação (PT Específico)</label>
+          <input type="text" id="f-pt" list="lista-pts-opcoes" class="input-ctrl mono" placeholder="Escolher ou digitar PT (Ex: EugenioLima2...)" onchange="aplicarFiltros(1)" onkeydown="if(event.key==='Enter') aplicarFiltros(1)" autocomplete="off" />
+          <datalist id="lista-pts-opcoes"></datalist>
+        </div>
+
+        <div class="field-group">
+          <label>Maturidade Leitura (Real Hoje)</label>
+          <select id="f-mat-leit" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todas as Leituras</option>
+            <option value="< 5 meses">✅ Recente (&lt; 5 meses)</option>
+            <option value="> 5 meses">⚠️ Sem Leitura (&gt; 5 meses)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Filtro de Dívida (ECV)</label>
+          <select id="f-divida" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Qualquer Valor</option>
+            <option value="gt0">Com Dívida (&gt; 0 ECV)</option>
+            <option value="gt10000">Dívida &gt; 10.000 ECV</option>
+            <option value="gt50000">Dívida &gt; 50.000 ECV</option>
+            <option value="gt100000">Dívida Crítica &gt; 100.000 ECV</option>
+            <option value="sem">Sem Dívida Registada</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Alerta de Faturação (T3)</label>
+          <select id="f-desvio" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todos</option>
+            <option value="Desv_Fat">🚨 Com Alerta Desv_Fat</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Ordenar Resultados Por</label>
+          <select id="f-ordem" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="score_risco.desc.nullslast,valor.desc.nullslast">🔥 Maior Score de Risco (0-100 ↓)</option>
+            <option value="valor.desc.nullslast">💰 Maior Dívida (VALOR ↓)</option>
+            <option value="qtd.desc.nullslast">📄 Mais Faturas em Aberto (QTD ↓)</option>
+            <option value="med_fat.desc.nullslast">⚡ Maior Consumo Médio (Med_Fat ↓)</option>
+            <option value="faturacao_t3.desc.nullslast">📈 Maior Faturação T3 (kWh ↓)</option>
+            <option value="cil.asc">🔢 Número de CIL (Crescente ↑)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Atalhos Rápidos de Auditoria de Perdas</label>
+          <div style="display:flex; gap:6px;">
+            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('critico')">🔴 Risco Crítico</button>
+            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('fraude')">🚨 Fraude</button>
+            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('sem_leitura')">📅 Leitura &gt;5m</button>
+            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('antigos')">⏱️ Cont. &gt;20a</button>
+          </div>
+        </div>
+
+        <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); text-align:right;">
+          Mostrando <strong id="lbl-range" style="color:var(--accent-cyan);">--</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. MAP + UNIDADES COMERCIAIS + TOP PTs -->
+    <section class="middle-grid">
+      <!-- GEOREFERENCED MAP -->
+      <div class="panel-box">
+        <div class="panel-header">
+          <div class="panel-title">
+            🌍 Mapa Georreferenciado de Risco de Perdas (Santiago)
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="panel-badge" id="map-count-badge">0 pontos no mapa</span>
+            <button class="btn" style="padding:3px 8px; font-size:11px;" onclick="alternarCamadaMapa()">🛰️ Satélite / Escuro</button>
+          </div>
+        </div>
+        <div id="santiago-map"></div>
+      </div>
+
+      <!-- BREAKDOWN BY UNIDADE COMERCIAL -->
+      <div class="panel-box">
+        <div class="panel-header">
+          <div class="panel-title">🏢 Unidades Comerciais de Santiago</div>
+          <span class="panel-badge">Clique para filtrar</span>
+        </div>
+        <div class="ranking-list" id="lista-unidades"></div>
+      </div>
+
+      <!-- TOP 10 PTS BY RISK & DEBT -->
+      <div class="panel-box">
+        <div class="panel-header">
+          <div class="panel-title">⚡ Top 10 PTs por Risco Crítico &amp; Dívida</div>
+          <span class="panel-badge">Clique para focar PT</span>
+        </div>
+        <div class="ranking-list" id="lista-pts"></div>
+      </div>
+    </section>
+
+    <!-- 4. HIGH-DENSITY CONTRACTS TABLE -->
+    <section class="table-container">
+      <div class="panel-header">
+        <div class="panel-title">
+          📋 Grelha Consolidada de Contratos e Motor de Risco (Clique numa linha para abrir o Dossiê de Inspeção)
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span class="panel-badge" id="table-total-badge">-- registos</span>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table class="scada-table">
+          <thead>
+            <tr>
+              <th>Score / Risco</th>
+              <th>CIL</th>
+              <th>Unidade</th>
+              <th>Localidade</th>
+              <th>PT</th>
+              <th>Nome do Cliente</th>
+              <th>Estado Contrato</th>
+              <th>Grupo</th>
+              <th>Contador</th>
+              <th>Mat. Leitura</th>
+              <th>Anomalia Leitura</th>
+              <th>Diagnóstico do Motor de Risco</th>
+              <th style="text-align:right;">Fat. T3</th>
+              <th style="text-align:right;">Med_Fat</th>
+              <th>Alerta</th>
+              <th style="text-align:right;">Qtd</th>
+              <th style="text-align:right;">Dívida (ECV)</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-corpo">
+            <tr><td colspan="17" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando registos do Supabase...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-bar">
+        <div id="pag-info">Página 1</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" id="btn-prev" onclick="mudarPagina(-1)">◀ Anterior</button>
+          <button class="btn" id="btn-next" onclick="mudarPagina(1)">Seguinte ▶</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SLIDE-OVER TECHNICAL DOSSIER DRAWER -->
+  <div class="drawer-backdrop" id="drawer-backdrop" onclick="if(event.target===this) fecharDossie()">
+    <aside class="dossier-drawer">
+      <div class="drawer-header">
+        <div>
+          <span class="brand-tag" id="d-badge-uc">UNIDADE</span>
+          <h2 style="font-family:var(--font-display); font-size:19px; margin-top:6px;" id="d-nome">--</h2>
+          <p style="font-family:var(--font-mono); font-size:12px; color:var(--accent-cyan); margin-top:2px;" id="d-sub">--</p>
+        </div>
+        <button class="btn" onclick="fecharDossie()">✕ Fechar</button>
+      </div>
+      <div class="drawer-body" id="drawer-content"></div>
+    </aside>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURAÇÃO SUPABASE (PROJETO ATIVO: edec-app)
+    // =========================================================================
+    const SUPABASE_URL = "https://esbbohmkgbcrpegqvagk.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MDQ3OTUsImV4cCI6MjA5OTA4MDc5NX0.85Ypz7LghhQ37Ur5YE2eLM4PFkMw2o3S8QtbhRSzBuU";
+    const HEADERS = {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json"
+    };
+
+    const PAGE_SIZE = 100;
+    let paginaAtual = 1;
+    let totalRegistosFiltrados = 0;
+    let registosPaginaAtual = [];
+
+    // Mapa Leaflet
+    let map, markersLayer, tileDark, tileSat;
+    let usandoSatelite = false;
+
+    const fmtInt = (n) => (n === null || n === undefined || isNaN(n)) ? "0" : Number(n).toLocaleString("pt-PT");
+    const fmtECV = (n) => (n === null || n === undefined || isNaN(n)) ? "0 ECV" : Number(n).toLocaleString("pt-PT", { maximumFractionDigits: 0 }) + " ECV";
+
+    function iniciarMapa() {
+      map = L.map("santiago-map", { preferCanvas: true }).setView([15.05, -23.60], 10);
+      tileDark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
+      }).addTo(map);
+
+      tileSat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        attribution: "&copy; Esri World Imagery",
+        maxZoom: 19
+      });
+
+      markersLayer = L.layerGroup().addTo(map);
+    }
+
+    function alternarCamadaMapa() {
+      if (usandoSatelite) {
+        map.removeLayer(tileSat);
+        tileDark.addTo(map);
+      } else {
+        map.removeLayer(tileDark);
+        tileSat.addTo(map);
+      }
+      usandoSatelite = !usandoSatelite;
+    }
+
+    async function carregarListasFiltros() {
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_filtros_santiago`, {
+          method: "POST",
+          headers: HEADERS,
+          body: "{}"
+        });
+        const d = await r.json();
+        popularSelect("f-uni", d.unidades || []);
+        popularSelect("f-estado", d.estados || []);
+        popularSelect("f-grupo", d.grupos || []);
+        popularSelect("f-anomalia", d.anomalias || [], true);
+        popularSelect("f-mat-cont", d.mat_contador || []);
+        const dlPts = document.getElementById("lista-pts-opcoes");
+        if (dlPts && Array.isArray(d.pts)) {
+          dlPts.innerHTML = d.pts.map(pt => `<option value="${pt}"></option>`).join("");
+        }
+      } catch (e) {
+        console.error("Erro ao carregar filtros:", e);
+      }
+    }
+
+    function popularSelect(id, lista, manterExistentes = false) {
+      const sel = document.getElementById(id);
+      const baseCount = manterExistentes ? 2 : 1;
+      while (sel.options.length > baseCount) sel.remove(baseCount);
+      lista.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        opt.textContent = item;
+        sel.appendChild(opt);
+      });
+    }
+
+    function construirQueryParams() {
+      const params = new URLSearchParams();
+      const busca = document.getElementById("f-busca").value.trim();
+      const risco = document.getElementById("f-risco").value;
+      const uni = document.getElementById("f-uni").value;
+      const estado = document.getElementById("f-estado").value;
+      const grupo = document.getElementById("f-grupo").value;
+      const anom = document.getElementById("f-anomalia").value;
+      const matCont = document.getElementById("f-mat-cont").value;
+      const matLeit = document.getElementById("f-mat-leit").value;
+      const pt = document.getElementById("f-pt").value.trim();
+      const divida = document.getElementById("f-divida").value;
+      const desvio = document.getElementById("f-desvio").value;
+      const ordem = document.getElementById("f-ordem").value;
+
+      if (risco === "CRITICO_ALTO") {
+        params.append("nivel_risco", "in.(CRÍTICO,ALTO)");
+      } else if (risco) {
+        params.append("nivel_risco", `eq.${risco}`);
+      }
+      if (uni) params.append("desc_uni", `eq.${uni}`);
+      if (estado) params.append("est_ctr", `eq.${estado}`);
+      if (grupo) params.append("grup_tp_cli", `eq.${grupo}`);
+      if (matCont) params.append("mat_contador", `eq.${matCont}`);
+      if (matLeit) params.append("mat_leitura", `eq.${matLeit}`);
+      if (desvio) params.append("faturacao_alerta_desvio", `eq.${desvio}`);
+      if (pt) params.append("pt", `ilike.*${pt}*`);
+
+      if (anom === "__COM_ANOMALIA__") {
+        params.append("anomalia", "not.is.null");
+      } else if (anom) {
+        params.append("anomalia", `eq.${anom}`);
+      }
+
+      if (divida === "gt0") params.append("valor", "gt.0");
+      else if (divida === "gt10000") params.append("valor", "gt.10000");
+      else if (divida === "gt50000") params.append("valor", "gt.50000");
+      else if (divida === "gt100000") params.append("valor", "gt.100000");
+      else if (divida === "sem") params.append("valor", "is.null");
+
+      if (busca) {
+        if (/^\d+$/.test(busca)) {
+          params.append("or", `(cil.eq.${busca},nib.eq.${busca},contador.eq.${busca})`);
+        } else {
+          params.append("or", `(nome.ilike.*${busca}*,localidade.ilike.*${busca}*,pt.ilike.*${busca}*)`);
+        }
+      }
+
+      params.append("order", ordem);
+      return params;
+    }
+
+    async function atualizarKPIsERankings() {
+      const risco = document.getElementById("f-risco").value || null;
+      const uni = document.getElementById("f-uni").value || null;
+      const estado = document.getElementById("f-estado").value || null;
+      const grupo = document.getElementById("f-grupo").value || null;
+      const anom = document.getElementById("f-anomalia").value || null;
+      const desvio = document.getElementById("f-desvio").value || null;
+      const matCont = document.getElementById("f-mat-cont").value || null;
+      const matLeit = document.getElementById("f-mat-leit").value || null;
+      const pt = document.getElementById("f-pt").value.trim() || null;
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_resumo_santiago`, {
+          method: "POST",
+          headers: HEADERS,
+          body: JSON.stringify({
+            p_desc_uni: uni,
+            p_est_ctr: estado,
+            p_grup_tp_cli: grupo,
+            p_anomalia: anom,
+            p_alerta_desvio: desvio,
+            p_mat_contador: matCont,
+            p_mat_leitura: matLeit,
+            p_nivel_risco: risco,
+            p_pt: pt
+          })
+        });
+        const d = await r.json();
+        const total = d.total_contratos || 0;
+
+        document.getElementById("kpi-contratos").textContent = fmtInt(total);
+        document.getElementById("kpi-contratos-sub").textContent =
+          uni ? `Unidade: ${uni}` : "Ilha de Santiago (6 Unidades)";
+
+        const crit = d.risco_critico || 0;
+        const alto = d.risco_alto || 0;
+        document.getElementById("kpi-risco").textContent = `${fmtInt(crit)} Crít. / ${fmtInt(alto)} Alto`;
+        document.getElementById("kpi-risco-sub").textContent =
+          `Score médio: ${d.score_medio || 0}/100 • Médio: ${fmtInt(d.risco_medio || 0)}`;
+
+        document.getElementById("kpi-divida").textContent = fmtECV(d.total_divida);
+        document.getElementById("kpi-divida-sub").textContent =
+          `${fmtInt(d.com_divida)} devedores (${fmtInt(d.total_faturas_divida)} faturas)`;
+
+        document.getElementById("kpi-anomalias").textContent = fmtInt(d.com_anomalia);
+        const pctAnom = total > 0 ? ((d.com_anomalia / total) * 100).toFixed(1) : "0.0";
+        document.getElementById("kpi-anomalias-sub").textContent =
+          `${pctAnom}% c/ anom. • ${fmtInt(d.leitura_antiga || 0)} s/ leit. >5m`;
+
+        document.getElementById("kpi-desvio").textContent = fmtInt(d.com_desvio_fat);
+        document.getElementById("kpi-medfat-sub").textContent = `Consumo médio: ${d.media_med_fat || 0} kWh/mês`;
+
+        document.getElementById("kpi-geo").textContent = fmtInt(d.com_geo);
+        const pctGeo = total > 0 ? ((d.com_geo / total) * 100).toFixed(1) : "0.0";
+        document.getElementById("kpi-geo-sub").textContent = `${pctGeo}% georreferenciado em PTs`;
+
+        renderizarRankingUnidades(d.por_unidade || [], total);
+        renderizarRankingPTs(d.top_pts_divida || []);
+      } catch (e) {
+        console.error("Erro KPIs:", e);
+      }
+    }
+
+    function renderizarRankingUnidades(lista, totalGeral) {
+      const container = document.getElementById("lista-unidades");
+      const uniAtual = document.getElementById("f-uni").value;
+      if (!lista.length) {
+        container.innerHTML = `<div style="padding:16px; color:var(--text-muted);">Sem dados para este filtro.</div>`;
+        return;
+      }
+      const maxContratos = Math.max(...lista.map(x => x.qtd_contratos), 1);
+      container.innerHTML = lista.map(u => {
+        const pct = Math.round((u.qtd_contratos / maxContratos) * 100);
+        const ativo = uniAtual === u.desc_uni ? "active" : "";
+        return `
+          <div class="rank-item ${ativo}" onclick="selecionarUnidade('${u.desc_uni.replace(/'/g, "\\'")}')">
+            <div class="rank-top">
+              <span>${u.desc_uni}</span>
+              <span style="font-family:var(--font-mono); color:var(--accent-cyan);">${fmtInt(u.qtd_contratos)} CILs</span>
+            </div>
+            <div class="rank-metrics">
+              <span>Dívida: <strong style="color:#FBBF24;">${fmtECV(u.soma_divida)}</strong></span>
+              <span>Risco Crít/Alto: <strong style="color:#F87171;">${fmtInt(u.qtd_risco_elevado || 0)}</strong></span>
+            </div>
+            <div class="rank-bar-track">
+              <div class="rank-bar-fill" style="width:${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderizarRankingPTs(lista) {
+      const container = document.getElementById("lista-pts");
+      const ptAtual = document.getElementById("f-pt").value.trim();
+      if (!lista.length) {
+        container.innerHTML = `<div style="padding:16px; color:var(--text-muted);">Sem PTs para este filtro.</div>`;
+        return;
+      }
+      const maxRisco = Math.max(...lista.map(x => x.qtd_risco_elevado || 1), 1);
+      container.innerHTML = lista.map(p => {
+        const pct = Math.round(((p.qtd_risco_elevado || 0) / maxRisco) * 100);
+        const nomePT = (p.pt || "").trim();
+        const ativo = ptAtual && ptAtual.toLowerCase() === nomePT.toLowerCase() ? "active" : "";
+        return `
+          <div class="rank-item ${ativo}" onclick="selecionarPT('${nomePT.replace(/'/g, "\\'")}')">
+            <div class="rank-top">
+              <span style="font-family:var(--font-mono);">⚡ ${nomePT}</span>
+              <span style="font-family:var(--font-mono); color:#F87171;">🔥 ${fmtInt(p.qtd_risco_elevado || 0)} Alvos</span>
+            </div>
+            <div class="rank-metrics">
+              <span>Dívida: <strong style="color:#FBBF24;">${fmtECV(p.soma_divida)}</strong></span>
+              <span>Contratos: <strong>${fmtInt(p.qtd_contratos)}</strong> | Anom: <strong>${fmtInt(p.qtd_anomalias)}</strong></span>
+            </div>
+            <div class="rank-bar-track">
+              <div class="rank-bar-fill" style="width:${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selecionarUnidade(uni) {
+      const sel = document.getElementById("f-uni");
+      sel.value = (sel.value === uni) ? "" : uni;
+      aplicarFiltros(1);
+    }
+
+    function selecionarPT(pt) {
+      const inp = document.getElementById("f-pt");
+      inp.value = (inp.value.trim() === pt) ? "" : pt;
+      aplicarFiltros(1);
+    }
+
+    function atalhoAuditoria(tipo) {
+      if (tipo === "critico") {
+        const selR = document.getElementById("f-risco");
+        selR.value = (selR.value === "CRÍTICO") ? "" : "CRÍTICO";
+      } else if (tipo === "fraude") {
+        document.getElementById("f-anomalia").value = "Suspeita de Fraude";
+      } else if (tipo === "sem_leitura") {
+        document.getElementById("f-mat-leit").value = "> 5 meses";
+      } else if (tipo === "antigos") {
+        document.getElementById("f-mat-cont").value = "> 20 ano";
+      }
+      aplicarFiltros(1);
+    }
+
+    function resetarTodosFiltros() {
+      ["f-busca", "f-risco", "f-uni", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      document.getElementById("f-ordem").value = "score_risco.desc.nullslast,valor.desc.nullslast";
+      aplicarFiltros(1);
+    }
+
+    async function aplicarFiltros(pagina = 1) {
+      paginaAtual = pagina;
+      const offset = (paginaAtual - 1) * PAGE_SIZE;
+      const params = construirQueryParams();
+      params.append("limit", PAGE_SIZE);
+      params.append("offset", offset);
+
+      const t0 = performance.now();
+      const tbody = document.getElementById("tabela-corpo");
+      tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding:28px; color:var(--text-secondary);">Consultando Supabase...</td></tr>`;
+
+      atualizarKPIsERankings();
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, {
+          headers: { ...HEADERS, "Prefer": "count=exact" }
+        });
+        const ms = Math.round(performance.now() - t0);
+        document.getElementById("latency-pill").textContent = `LATÊNCIA: ${ms} ms`;
+        document.getElementById("conn-text").textContent = `ONLINE • SUPABASE (edec-app)`;
+
+        const range = r.headers.get("Content-Range") || "0-0/0";
+        const partes = range.split("/");
+        totalRegistosFiltrados = parseInt(partes[1] || "0", 10);
+        registosPaginaAtual = await r.json();
+
+        document.getElementById("lbl-range").textContent = `${fmtInt(totalRegistosFiltrados)} contratos encontrados`;
+        document.getElementById("table-total-badge").textContent = `${fmtInt(totalRegistosFiltrados)} registos`;
+
+        renderizarTabela(registosPaginaAtual);
+        atualizarMapa(registosPaginaAtual);
+        atualizarPaginacao();
+      } catch (e) {
+        console.error("Erro na consulta:", e);
+        document.getElementById("conn-text").textContent = "ERRO DE CONEXÃO";
+        tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding:28px; color:#F87171;">Erro ao comunicar com o Supabase: ${e.message}</td></tr>`;
+      }
+    }
+
+    function badgeRisco(score, nivel) {
+      const s = score || 0;
+      const n = nivel || "BAIXO";
+      if (n === "CRÍTICO") return `<span class="badge badge-danger">🔴 ${s} • CRÍTICO</span>`;
+      if (n === "ALTO") return `<span class="badge badge-warn">🟠 ${s} • ALTO</span>`;
+      if (n === "MÉDIO") return `<span class="badge badge-info">🟡 ${s} • MÉDIO</span>`;
+      return `<span class="badge badge-ok">🟢 ${s} • BAIXO</span>`;
+    }
+
+    function renderizarTabela(linhas) {
+      const tbody = document.getElementById("tabela-corpo");
+      if (!linhas.length) {
+        tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato encontrado com os filtros selecionados.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = linhas.map((row, idx) => {
+        const estBadge = row.est_ctr === "Contrato em Vigor"
+          ? `<span class="badge badge-ok">${row.est_ctr}</span>`
+          : `<span class="badge badge-warn">${row.est_ctr || "—"}</span>`;
+
+        const matLeitBadge = row.mat_leitura === "< 5 meses"
+          ? `<span class="badge badge-ok" title="Última leitura: ${row.data_leitura || '—'}">&lt; 5m</span>`
+          : (row.mat_leitura === "> 5 meses"
+              ? `<span class="badge badge-warn" title="Última leitura: ${row.data_leitura || '—'}">&gt; 5m</span>`
+              : `<span style="color:var(--text-muted);">—</span>`);
+
+        const anomBadge = row.anomalia
+          ? `<span class="badge badge-danger">${row.anomalia}</span>`
+          : `<span style="color:var(--text-muted);">—</span>`;
+
+        const desvBadge = row.faturacao_alerta_desvio === "Desv_Fat"
+          ? `<span class="badge badge-danger">Desv_Fat</span>`
+          : `<span style="color:var(--text-muted);">Normal</span>`;
+
+        const valorFmt = row.valor > 0
+          ? `<strong style="color:#FBBF24;">${Number(row.valor).toLocaleString("pt-PT", { maximumFractionDigits: 0 })}</strong>`
+          : `<span style="color:var(--text-muted);">0</span>`;
+
+        return `
+          <tr onclick="abrirDossie(${idx})">
+            <td>${badgeRisco(row.score_risco, row.nivel_risco)}</td>
+            <td class="mono-cell" style="color:var(--accent-cyan); font-weight:600;">${row.cil}</td>
+            <td>${row.desc_uni || "—"}</td>
+            <td>${row.localidade || "—"}</td>
+            <td class="mono-cell" style="color:#E2E8F0;">${(row.pt || "—").trim()}</td>
+            <td style="font-weight:500;">${row.nome || "—"}</td>
+            <td>${estBadge}</td>
+            <td>${row.grup_tp_cli || "—"}</td>
+            <td class="mono-cell">${row.contador || "—"}</td>
+            <td>${matLeitBadge}</td>
+            <td>${anomBadge}</td>
+            <td style="font-size:11.5px; color:var(--text-secondary);" title="${row.motivo_risco || ''}">${row.motivo_risco || "—"}</td>
+            <td class="num-right">${row.faturacao_t3 !== null ? fmtInt(row.faturacao_t3) : "0"}</td>
+            <td class="num-right" style="color:var(--accent-cyan); font-weight:600;">${fmtInt(row.med_fat)}</td>
+            <td>${desvBadge}</td>
+            <td class="num-right">${row.qtd || 0}</td>
+            <td class="num-right">${valorFmt}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function atualizarMapa(linhas) {
+      markersLayer.clearLayers();
+      const coords = [];
+
+      linhas.forEach((row, idx) => {
+        if (!row.lat || !row.long) return;
+        const lat = parseFloat(String(row.lat).replace(",", ".").trim());
+        const lng = parseFloat(String(row.long).replace(",", ".").trim());
+        if (isNaN(lat) || isNaN(lng) || lat < 14 || lat > 18 || lng < -26 || lng > -22) return;
+
+        coords.push([lat, lng]);
+        const n = row.nivel_risco || "BAIXO";
+        const cor = n === "CRÍTICO" ? "#EF4444" : (n === "ALTO" ? "#F59E0B" : (n === "MÉDIO" ? "#06B6D4" : "#10B981"));
+
+        const marker = L.circleMarker([lat, lng], {
+          radius: n === "CRÍTICO" ? 7.5 : (n === "ALTO" ? 6.5 : 5),
+          fillColor: cor,
+          color: "#070A0F",
+          weight: 1.5,
+          opacity: 1,
+          fillOpacity: 0.92
+        });
+
+        marker.bindPopup(`
+          <div style="font-family:'IBM Plex Sans',sans-serif; min-width:225px; color:#0F172A;">
+            <div style="font-weight:700; font-size:13px; margin-bottom:4px;">CIL ${row.cil} • ${row.nome || ""}</div>
+            <div style="font-size:12px; margin-bottom:4px;"><strong>Score Risco:</strong> <span style="color:#DC2626; font-weight:700;">${row.score_risco || 0}/100 (${row.nivel_risco || "BAIXO"})</span></div>
+            <div style="font-size:11.5px; color:#475569; margin-bottom:4px;">${row.motivo_risco || ""}</div>
+            <div style="font-size:12px;"><strong>Localidade:</strong> ${row.localidade || "—"} (${row.desc_uni || ""})</div>
+            <div style="font-size:12px;"><strong>PT:</strong> ${(row.pt || "—").trim()}</div>
+            <div style="font-size:12px;"><strong>Contador:</strong> ${row.contador || "—"} (${row.mat_contador || "—"})</div>
+            <div style="font-size:12px;"><strong>Dívida:</strong> ${fmtECV(row.valor)} (${row.qtd || 0} fat.)</div>
+            <button onclick="abrirDossie(${idx})" style="margin-top:8px; width:100%; padding:5px; background:#0F172A; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:600;">
+              Ver Dossiê de Inspeção
+            </button>
+          </div>
+        `);
+
+        markersLayer.addLayer(marker);
+      });
+
+      document.getElementById("map-count-badge").textContent = `${coords.length} pontos georref. nesta página`;
+      if (coords.length > 0) {
+        map.fitBounds(L.latLngBounds(coords), { padding: [28, 28], maxZoom: 16 });
+      }
+    }
+
+    function atualizarPaginacao() {
+      const totalPaginas = Math.max(1, Math.ceil(totalRegistosFiltrados / PAGE_SIZE));
+      document.getElementById("pag-info").textContent =
+        `Página ${paginaAtual} de ${fmtInt(totalPaginas)} • (${fmtInt(totalRegistosFiltrados)} contratos filtrados)`;
+      document.getElementById("btn-prev").disabled = paginaAtual <= 1;
+      document.getElementById("btn-next").disabled = paginaAtual >= totalPaginas;
+    }
+
+    function mudarPagina(delta) {
+      const nova = paginaAtual + delta;
+      if (nova < 1) return;
+      aplicarFiltros(nova);
+    }
+
+    function abrirDossie(idx) {
+      const r = registosPaginaAtual[idx];
+      if (!r) return;
+
+      document.getElementById("d-badge-uc").textContent = `${r.desc_uni || "SANTIAGO"} • ${r.grup_tp_cli || "—"}`;
+      document.getElementById("d-nome").textContent = r.nome || "CLIENTE SEM NOME";
+      document.getElementById("d-sub").textContent = `CIL: ${r.cil} | NIB: ${r.nib || "—"} | CIL_ID: ${r.cil_id || "—"}`;
+
+      const lat = r.lat ? String(r.lat).trim() : null;
+      const lng = r.long ? String(r.long).trim() : null;
+      const gmapsUrl = (lat && lng) ? `https://www.google.com/maps?q=${lat},${lng}` : null;
+
+      document.getElementById("drawer-content").innerHTML = `
+        <div class="dossier-section" style="border-color:rgba(239,68,68,0.45); background:rgba(239,68,68,0.06);">
+          <h4>🔥 Diagnóstico do Motor de Score de Risco de Fraude / Perdas</h4>
+          <div class="dossier-grid">
+            <div class="kv-item"><div class="k">Score de Risco (0 a 100)</div><div class="v" style="font-size:18px; color:#F87171;">${r.score_risco || 0} / 100</div></div>
+            <div class="kv-item"><div class="k">Prioridade de Inspeção</div><div class="v">${badgeRisco(r.score_risco, r.nivel_risco)}</div></div>
+          </div>
+          <div class="kv-item" style="margin-top:10px;">
+            <div class="k">Fatores de Risco Detetados</div>
+            <div class="v" style="color:#FBBF24; font-size:12.5px;">${r.motivo_risco || "Normal / Sem Indícios"}</div>
+          </div>
+        </div>
+
+        <div class="dossier-section">
+          <h4>1. Identificação Contratual e Comercial</h4>
+          <div class="dossier-grid">
+            <div class="kv-item"><div class="k">CIL (Ponto Entrega)</div><div class="v" style="color:var(--accent-cyan);">${r.cil}</div></div>
+            <div class="kv-item"><div class="k">NIB</div><div class="v">${r.nib || "—"}</div></div>
+            <div class="kv-item"><div class="k">ID Cliente (Conta)</div><div class="v">${r.id_cliente || "—"}</div></div>
+            <div class="kv-item"><div class="k">Chave CIL_ID</div><div class="v">${r.cil_id || "—"}</div></div>
+            <div class="kv-item"><div class="k">Estado do Contrato</div><div class="v">${r.est_ctr || "—"}</div></div>
+            <div class="kv-item"><div class="k">Grupo Tipo Cliente</div><div class="v">${r.grup_tp_cli || "—"}</div></div>
+            <div class="kv-item"><div class="k">Produto / Tarifa</div><div class="v">${r.produto || "—"} / ${r.tarifa || "—"}</div></div>
+            <div class="kv-item"><div class="k">Inspeção IMTT (TIP)</div><div class="v">${r.tip || "Não registado"}</div></div>
+          </div>
+        </div>
+
+        <div class="dossier-section">
+          <h4>2. Medição, Aparelho e Maturidade Dinâmica</h4>
+          <div class="dossier-grid">
+            <div class="kv-item"><div class="k">Nº Contador</div><div class="v" style="color:#FBBF24;">${r.contador || "Sem Contador"}</div></div>
+            <div class="kv-item"><div class="k">Modelo / Marca</div><div class="v">${r.modelo || "—"}</div></div>
+            <div class="kv-item"><div class="k">Data Instalação</div><div class="v">${r.da_inst || "—"} (${r.mat_contador || "—"})</div></div>
+            <div class="kv-item"><div class="k">Data Última Leitura</div><div class="v" style="color:${r.mat_leitura === '> 5 meses' ? '#FBBF24' : '#34D399'};">${r.data_leitura || "—"} (${r.mat_leitura || "—"})</div></div>
+            <div class="kv-item"><div class="k">Valor Última Leitura</div><div class="v">${r.leitura !== null ? fmtInt(r.leitura) + " kWh" : "—"} (tp_fat: ${r.tp_fat || "—"})</div></div>
+            <div class="kv-item"><div class="k">Anomalia de Leitura</div><div class="v" style="color:${r.anomalia ? '#F87171' : '#34D399'};">${r.anomalia || "Nenhuma Anomalia"}</div></div>
+          </div>
+        </div>
+
+        <div class="dossier-section">
+          <h4>3. Faturação Trimestral (T3) e Situação de Dívida</h4>
+          <div class="dossier-grid">
+            <div class="kv-item"><div class="k">Dívida Acumulada (VALOR)</div><div class="v" style="color:#FBBF24; font-size:16px;">${fmtECV(r.valor)}</div></div>
+            <div class="kv-item"><div class="k">Qtd. Faturas em Dívida</div><div class="v" style="font-size:16px;">${r.qtd || 0} faturas</div></div>
+            <div class="kv-item"><div class="k">Consumo 3º Trimestre (T3)</div><div class="v">${r.faturacao_t3 !== null ? fmtInt(r.faturacao_t3) + " kWh" : "0 kWh"}</div></div>
+            <div class="kv-item"><div class="k">Média Mensal (Med_Fat)</div><div class="v" style="color:var(--accent-cyan);">${fmtInt(r.med_fat)} kWh/mês</div></div>
+            <div class="kv-item"><div class="k">Alerta Desvio Faturação</div><div class="v" style="color:${r.faturacao_alerta_desvio === 'Desv_Fat' ? '#F87171' : '#94A3B8'};">${r.faturacao_alerta_desvio || "Sem Alerta"}</div></div>
+            <div class="kv-item"><div class="k">Variação Trimestral (%)</div><div class="v">${r.faturacao_variacao_pct !== null ? (Number(r.faturacao_variacao_pct) * 100).toFixed(1) + "%" : "—"}</div></div>
+          </div>
+        </div>
+
+        <div class="dossier-section">
+          <h4>4. Localização Geográfica e Rede de Distribuição (PT)</h4>
+          <div class="dossier-grid">
+            <div class="kv-item"><div class="k">Unidade / Localidade</div><div class="v">${r.desc_uni || "—"} / ${r.localidade || "—"}</div></div>
+            <div class="kv-item"><div class="k">Posto Transformação (PT)</div><div class="v" style="color:var(--accent-cyan);">${(r.pt || "Não associado").trim()}</div></div>
+            <div class="kv-item"><div class="k">Latitude</div><div class="v">${lat || "—"}</div></div>
+            <div class="kv-item"><div class="k">Longitude</div><div class="v">${lng || "—"}</div></div>
+          </div>
+          ${gmapsUrl ? `
+            <div style="margin-top:12px;">
+              <a href="${gmapsUrl}" target="_blank" class="btn btn-amber" style="width:100%; justify-content:center; text-decoration:none;">
+                📍 Abrir Coordenadas Exatas no Google Maps (${lat}, ${lng})
+              </a>
+            </div>
+          ` : ""}
+        </div>
+      `;
+
+      document.getElementById("drawer-backdrop").classList.add("open");
+    }
+
+    function fecharDossie() {
+      document.getElementById("drawer-backdrop").classList.remove("open");
+    }
+
+    async function exportarCSVFiltrado() {
+      const btn = document.getElementById("btn-export");
+      const txtOrig = btn.textContent;
+      btn.textContent = "⏳ A exportar até 5.000 registos...";
+      btn.disabled = true;
+
+      try {
+        const params = construirQueryParams();
+        params.append("limit", "5000");
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, { headers: HEADERS });
+        const dados = await r.json();
+        if (!dados.length) {
+          alert("Nenhum registo para exportar.");
+          return;
+        }
+        const cols = Object.keys(dados[0]);
+        const csvLinhas = [
+          cols.join(";"),
+          ...dados.map(row => cols.map(c => `"${String(row[c] ?? "").replace(/"/g, '""')}"`).join(";"))
+        ];
+        const blob = new Blob(["\uFEFF" + csvLinhas.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `EDEC_Santiago_Export_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        alert("Erro ao exportar CSV: " + e.message);
+      } finally {
+        btn.textContent = txtOrig;
+        btn.disabled = false;
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      iniciarMapa();
+      carregarListasFiltros();
+      aplicarFiltros(1);
+    });
+  </script>
+</body>
+</html>
