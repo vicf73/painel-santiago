@@ -27,6 +27,8 @@
       --accent-red: #EF4444;
       --accent-red-glow: rgba(239, 68, 68, 0.15);
       --accent-emerald: #10B981;
+      --accent-purple: #A855F7;
+      --accent-purple-glow: rgba(168, 85, 247, 0.15);
       --font-display: 'Space Grotesk', sans-serif;
       --font-sans: 'IBM Plex Sans', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
@@ -197,10 +199,10 @@
       gap: 16px;
     }
 
-    /* KPI TELEMETRY STRIP */
+    /* KPI TELEMETRY STRIP (8 CARDS IN 4x2 OR AUTO GRID) */
     .kpi-strip {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
 
@@ -209,7 +211,7 @@
       border: 1px solid var(--border-dim);
       border-top: 2px solid var(--border-bright);
       border-radius: 6px;
-      padding: 13px 15px;
+      padding: 12px 15px;
       position: relative;
       overflow: hidden;
       transition: border-color 0.2s;
@@ -219,6 +221,7 @@
     .kpi-card.cyan { border-top-color: var(--accent-cyan); }
     .kpi-card.red { border-top-color: var(--accent-red); }
     .kpi-card.emerald { border-top-color: var(--accent-emerald); }
+    .kpi-card.purple { border-top-color: var(--accent-purple); }
 
     .kpi-label {
       font-family: var(--font-mono);
@@ -226,7 +229,7 @@
       text-transform: uppercase;
       letter-spacing: 0.07em;
       color: var(--text-secondary);
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -234,7 +237,7 @@
 
     .kpi-value {
       font-family: var(--font-mono);
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       color: var(--text-primary);
       letter-spacing: -0.03em;
@@ -247,12 +250,16 @@
     .kpi-card.red .kpi-value { color: #F87171; }
     .kpi-card.cyan .kpi-value { color: #22D3EE; }
     .kpi-card.emerald .kpi-value { color: #34D399; }
+    .kpi-card.purple .kpi-value { color: #C084FC; }
 
     .kpi-sub {
-      margin-top: 5px;
-      font-size: 11.5px;
+      margin-top: 4px;
+      font-size: 11px;
       color: var(--text-muted);
       font-family: var(--font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     /* COMMAND FILTER BAR */
@@ -268,14 +275,14 @@
 
     .filter-row-top {
       display: grid;
-      grid-template-columns: 2fr 0.9fr repeat(5, 1fr) auto;
+      grid-template-columns: 1.8fr repeat(6, 1fr) auto;
       gap: 10px;
       align-items: end;
     }
 
     .filter-row-bottom {
       display: grid;
-      grid-template-columns: repeat(5, 1fr) 1.6fr auto;
+      grid-template-columns: repeat(6, 1fr) 1.8fr auto;
       gap: 10px;
       align-items: end;
       padding-top: 8px;
@@ -298,30 +305,30 @@
 
     .input-ctrl, .select-ctrl {
       width: 100%;
+      padding: 7px 10px;
       background: var(--bg-input);
       border: 1px solid var(--border-dim);
-      color: var(--text-primary);
-      padding: 7px 10px;
       border-radius: 4px;
+      color: var(--text-primary);
       font-family: var(--font-sans);
       font-size: 12.5px;
       outline: none;
       transition: border-color 0.15s;
     }
 
-    .input-ctrl:focus, .select-ctrl:focus {
-      border-color: var(--accent-amber);
-      box-shadow: 0 0 0 2px var(--accent-amber-glow);
-    }
-
     .input-ctrl.mono {
       font-family: var(--font-mono);
     }
 
-    /* SPLIT ANALYTICS + MAP + RANKINGS */
+    .input-ctrl:focus, .select-ctrl:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px var(--accent-cyan-glow);
+    }
+
+    /* MIDDLE ANALYTICS & MAP GRID */
     .middle-grid {
       display: grid;
-      grid-template-columns: 1.45fr 1fr 1fr;
+      grid-template-columns: 1.6fr 1fr 1fr;
       gap: 14px;
     }
 
@@ -336,7 +343,7 @@
 
     .panel-header {
       padding: 10px 14px;
-      background: rgba(19, 28, 43, 0.7);
+      background: var(--bg-panel-elevated);
       border-bottom: 1px solid var(--border-dim);
       display: flex;
       justify-content: space-between;
@@ -345,10 +352,9 @@
 
     .panel-title {
       font-family: var(--font-display);
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 700;
-      letter-spacing: 0.01em;
-      text-transform: uppercase;
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 8px;
@@ -357,47 +363,40 @@
     .panel-badge {
       font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--accent-cyan);
-      background: var(--accent-cyan-glow);
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 3px;
+      background: var(--bg-input);
+      color: var(--accent-cyan);
+      border: 1px solid var(--border-dim);
     }
 
     #santiago-map {
-      height: 315px;
       width: 100%;
-      background: #06090E;
+      height: 315px;
+      background: #05080d;
     }
 
     .ranking-list {
-      padding: 8px 12px;
-      overflow-y: auto;
-      max-height: 315px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 7px;
+      max-height: 315px;
+      overflow-y: auto;
     }
 
     .rank-item {
-      padding: 7px 10px;
-      border-radius: 4px;
+      padding: 8px 10px;
       background: var(--bg-input);
-      border: 1px solid rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
       cursor: pointer;
-      transition: all 0.14s;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      transition: all 0.15s;
     }
 
-    .rank-item:hover {
+    .rank-item:hover, .rank-item.active {
       border-color: var(--accent-amber);
       background: rgba(245, 158, 11, 0.06);
-    }
-
-    .rank-item.active {
-      border-color: var(--accent-cyan);
-      background: var(--accent-cyan-glow);
     }
 
     .rank-top {
@@ -406,6 +405,7 @@
       align-items: center;
       font-weight: 600;
       font-size: 12.5px;
+      margin-bottom: 4px;
     }
 
     .rank-metrics {
@@ -414,10 +414,13 @@
       font-family: var(--font-mono);
       font-size: 11px;
       color: var(--text-secondary);
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+      gap: 4px;
     }
 
     .rank-bar-track {
-      height: 3px;
+      height: 4px;
       background: #1E293B;
       border-radius: 2px;
       overflow: hidden;
@@ -425,10 +428,10 @@
 
     .rank-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--accent-amber), #EF4444);
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-amber));
     }
 
-    /* DATA TABLE SECTION */
+    /* DATA TABLE */
     .table-container {
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
@@ -438,7 +441,7 @@
 
     .table-scroll {
       overflow-x: auto;
-      max-height: 540px;
+      max-height: 600px;
       overflow-y: auto;
     }
 
@@ -453,13 +456,13 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #111827;
+      background: #111927;
       color: var(--text-secondary);
       font-family: var(--font-mono);
       font-size: 10.5px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      padding: 10px 12px;
+      padding: 10px 10px;
       border-bottom: 1px solid var(--border-bright);
       white-space: nowrap;
     }
@@ -475,9 +478,9 @@
     }
 
     table.scada-table td {
-      padding: 8px 12px;
+      padding: 8px 10px;
       white-space: nowrap;
-      max-width: 240px;
+      max-width: 230px;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -505,6 +508,7 @@
     .badge-warn { background: var(--accent-amber-glow); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.35); }
     .badge-danger { background: var(--accent-red-glow); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.35); }
     .badge-info { background: var(--accent-cyan-glow); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.35); }
+    .badge-purple { background: var(--accent-purple-glow); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.35); }
 
     .pagination-bar {
       padding: 10px 16px;
@@ -533,7 +537,7 @@
     }
 
     .dossier-drawer {
-      width: 560px;
+      width: 600px;
       max-width: 95vw;
       height: 100vh;
       background: var(--bg-panel);
@@ -606,10 +610,10 @@
       word-break: break-word;
     }
 
-    @media (max-width: 1360px) {
-      .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 1440px) {
+      .kpi-strip { grid-template-columns: repeat(4, 1fr); }
       .middle-grid { grid-template-columns: 1fr; }
-      .filter-row-top, .filter-row-bottom { grid-template-columns: repeat(2, 1fr); }
+      .filter-row-top, .filter-row-bottom { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 768px) {
@@ -668,10 +672,10 @@
       <div class="brand-emblem">⚡</div>
       <div class="brand-titles">
         <h1>
-          EDEC • TELEMETRIA COMERCIAL E REDE BT
+          EDEC • TELEMETRIA COMERCIAL, FRAUDE CF1 &amp; COBRANÇA
           <span class="brand-tag">PROJETO SANTIAGO</span>
         </h1>
-        <p>Base Consolidada Multiusuário • Contratos, Dívida, Medição, Anomalias, Faturação T3 &amp; PTs</p>
+        <p>Base Consolidada Multiusuário • Contratos, Dívida, Autos CF1/Jurídico, Cobrança 2026 (COB_J), Faturação T3 &amp; PTs</p>
       </div>
     </div>
 
@@ -692,10 +696,10 @@
 
   <main class="workspace">
 
-    <!-- 1. KPI COMMAND STRIP -->
+    <!-- 1. KPI COMMAND STRIP (8 CARDS) -->
     <section class="kpi-strip">
       <div class="kpi-card cyan">
-        <div class="kpi-label"><span>CONTRATOS SANTIAGO</span><span>CIL UNICO</span></div>
+        <div class="kpi-label"><span>CONTRATOS SANTIAGO</span><span>CIL ÚNICO</span></div>
         <div class="kpi-value" id="kpi-contratos">--</div>
         <div class="kpi-sub" id="kpi-contratos-sub">Carregando base...</div>
       </div>
@@ -712,6 +716,18 @@
         <div class="kpi-sub" id="kpi-divida-sub">-- clientes com dívida</div>
       </div>
 
+      <div class="kpi-card purple">
+        <div class="kpi-label"><span>AUTOS DE FRAUDE (CF1)</span><span>JURÍDICO / MP</span></div>
+        <div class="kpi-value" id="kpi-cf1">--</div>
+        <div class="kpi-sub" id="kpi-cf1-sub">Dívida CF1: -- ECV</div>
+      </div>
+
+      <div class="kpi-card emerald">
+        <div class="kpi-label"><span>COBRANÇA 2026 (COB_J)</span><span>RECEBIDO</span></div>
+        <div class="kpi-value" id="kpi-cobranca">--</div>
+        <div class="kpi-sub" id="kpi-cobranca-sub">-- pagadores • -- s/ pag.</div>
+      </div>
+
       <div class="kpi-card red">
         <div class="kpi-label"><span>ANOMALIAS DE LEITURA</span><span>SET 2026</span></div>
         <div class="kpi-value" id="kpi-anomalias">--</div>
@@ -724,7 +740,7 @@
         <div class="kpi-sub" id="kpi-medfat-sub">Média Med_Fat: -- kWh/mês</div>
       </div>
 
-      <div class="kpi-card emerald">
+      <div class="kpi-card cyan">
         <div class="kpi-label"><span>GEORREFERENCIAÇÃO PT</span><span>LAT/LONG</span></div>
         <div class="kpi-value" id="kpi-geo">--</div>
         <div class="kpi-sub" id="kpi-geo-sub">--% mapeado em PTs</div>
@@ -736,7 +752,7 @@
       <div class="filter-row-top">
         <div class="field-group">
           <label>Pesquisa Rápida (CIL, NIB, Nome do Cliente, Nº Contador, PT ou Localidade)</label>
-          <input type="text" id="f-busca" class="input-ctrl mono" placeholder="Ex: 60060696, EugenioLima2, FARMACIA, 13457294..." onkeydown="if(event.key==='Enter') aplicarFiltros(1)" />
+          <input type="text" id="f-busca" class="input-ctrl mono" placeholder="Ex: 60033682, EugenioLima2, FARMACIA, 13457294..." onkeydown="if(event.key==='Enter') aplicarFiltros(1)" />
         </div>
 
         <div class="field-group">
@@ -759,6 +775,32 @@
         </div>
 
         <div class="field-group">
+          <label>Autos Fraude CF1 &amp; Jurídico</label>
+          <select id="f-cf1" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todos (Com e Sem CF1)</option>
+            <option value="__COM_CF1__">⚖️ Apenas COM Auto CF1</option>
+            <option value="__REINCIDENTE__">🔁 Reincidentes CF1 (≥ 2 Autos)</option>
+            <option value="__DIVIDA_CF1__">💰 Com Dívida CF1 em Aberto</option>
+            <option value="Enviado ao MP">🏛️ Processo Enviado ao MP</option>
+            <option value="A enviar ao MP">📋 Processo A Enviar ao MP</option>
+            <option value="__COM_FOTOS__">📸 Auto CF1 Com Fotos</option>
+            <option value="__SEM_CF1__">✅ Sem Histórico CF1</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Situação Cobrança 2026 (COB_J)</label>
+          <select id="f-cobranca" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todos os Perfis</option>
+            <option value="Devedor Sem Pagamento 2026">🚨 Devedor SEM Pagamento 2026</option>
+            <option value="Devedor em Amortização">🔄 Devedor em Amortização (Pagou)</option>
+            <option value="Regular Adimplente">✅ Regular Adimplente</option>
+            <option value="__MAT_LONGA__">⏳ Pagamento Dívida Antiga (≥6m)</option>
+            <option value="Sem Movimento">⚪ Sem Movimento</option>
+          </select>
+        </div>
+
+        <div class="field-group">
           <label>Estado do Contrato (EST_CTR)</label>
           <select id="f-estado" class="select-ctrl" onchange="aplicarFiltros(1)">
             <option value="">Todos os Estados</option>
@@ -769,21 +811,6 @@
           <label>Grupo de Cliente (GRUP_TP_CLI)</label>
           <select id="f-grupo" class="select-ctrl" onchange="aplicarFiltros(1)">
             <option value="">Todos os Grupos</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>Anomalia de Leitura</label>
-          <select id="f-anomalia" class="select-ctrl" onchange="aplicarFiltros(1)">
-            <option value="">Todas (Com e Sem)</option>
-            <option value="__COM_ANOMALIA__">⚠️ Apenas COM Anomalia</option>
-          </select>
-        </div>
-
-        <div class="field-group">
-          <label>Idade Contador (Dinâmica)</label>
-          <select id="f-mat-cont" class="select-ctrl" onchange="aplicarFiltros(1)">
-            <option value="">Todas as Idades</option>
           </select>
         </div>
 
@@ -800,7 +827,15 @@
         </div>
 
         <div class="field-group">
-          <label>Maturidade Leitura (Real Hoje)</label>
+          <label>Anomalia de Leitura</label>
+          <select id="f-anomalia" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todas (Com e Sem)</option>
+            <option value="__COM_ANOMALIA__">⚠️ Apenas COM Anomalia</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Maturidade Leitura / Contador</label>
           <select id="f-mat-leit" class="select-ctrl" onchange="aplicarFiltros(1)">
             <option value="">Todas as Leituras</option>
             <option value="< 5 meses">✅ Recente (&lt; 5 meses)</option>
@@ -809,15 +844,20 @@
         </div>
 
         <div class="field-group">
-          <label>Filtro de Dívida (ECV)</label>
-          <select id="f-divida" class="select-ctrl" onchange="aplicarFiltros(1)">
-            <option value="">Qualquer Valor</option>
-            <option value="gt0">Com Dívida (&gt; 0 ECV)</option>
-            <option value="gt10000">Dívida &gt; 10.000 ECV</option>
-            <option value="gt50000">Dívida &gt; 50.000 ECV</option>
-            <option value="gt100000">Dívida Crítica &gt; 100.000 ECV</option>
-            <option value="sem">Sem Dívida Registada</option>
-          </select>
+          <label>Filtro de Dívida (ECV) / Idade</label>
+          <div style="display:flex; gap:6px;">
+            <select id="f-divida" class="select-ctrl" onchange="aplicarFiltros(1)">
+              <option value="">Dívida: Todas</option>
+              <option value="gt0">Dívida &gt; 0</option>
+              <option value="gt10000">&gt; 10.000 ECV</option>
+              <option value="gt50000">&gt; 50.000 ECV</option>
+              <option value="gt100000">&gt; 100.000 ECV</option>
+              <option value="sem">Sem Dívida</option>
+            </select>
+            <select id="f-mat-cont" class="select-ctrl" onchange="aplicarFiltros(1)" style="max-width:110px;" title="Idade do Contador">
+              <option value="">Contador</option>
+            </select>
+          </div>
         </div>
 
         <div class="field-group">
@@ -832,21 +872,23 @@
           <label>Ordenar Resultados Por</label>
           <select id="f-ordem" class="select-ctrl" onchange="aplicarFiltros(1)">
             <option value="score_risco.desc.nullslast,valor.desc.nullslast">🔥 Maior Score de Risco (0-100 ↓)</option>
-            <option value="valor.desc.nullslast">💰 Maior Dívida (VALOR ↓)</option>
+            <option value="valor.desc.nullslast">💰 Maior Dívida Geral (VALOR ↓)</option>
+            <option value="cf1_val_divida.desc.nullslast">⚖️ Maior Dívida Fraude CF1 (↓)</option>
+            <option value="cf1_qtd_autos.desc.nullslast">🔁 Mais Autos de Fraude CF1 (↓)</option>
+            <option value="cob_valor_total.desc.nullslast">💳 Maior Cobrança 2026 (COB_J ↓)</option>
             <option value="qtd.desc.nullslast">📄 Mais Faturas em Aberto (QTD ↓)</option>
             <option value="med_fat.desc.nullslast">⚡ Maior Consumo Médio (Med_Fat ↓)</option>
-            <option value="faturacao_t3.desc.nullslast">📈 Maior Faturação T3 (kWh ↓)</option>
             <option value="cil.asc">🔢 Número de CIL (Crescente ↑)</option>
           </select>
         </div>
 
         <div class="field-group">
-          <label>Atalhos Rápidos de Auditoria de Perdas</label>
-          <div style="display:flex; gap:6px;">
-            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('critico')">🔴 Risco Crítico</button>
-            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('fraude')">🚨 Fraude</button>
-            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('sem_leitura')">📅 Leitura &gt;5m</button>
-            <button class="btn" style="flex:1; padding:6px 8px; font-size:11px;" onclick="atalhoAuditoria('antigos')">⏱️ Cont. &gt;20a</button>
+          <label>Atalhos Táticos de Auditoria (Perdas, CF1 &amp; Cobrança)</label>
+          <div style="display:flex; gap:5px; flex-wrap:wrap;">
+            <button class="btn" style="flex:1; padding:6px 7px; font-size:11px;" onclick="atalhoAuditoria('critico')">🔴 Crítico</button>
+            <button class="btn" style="flex:1; padding:6px 7px; font-size:11px;" onclick="atalhoAuditoria('cf1')">⚖️ Autos CF1</button>
+            <button class="btn" style="flex:1; padding:6px 7px; font-size:11px;" onclick="atalhoAuditoria('sem_pagamento')">💸 Devedor s/ Pag.</button>
+            <button class="btn" style="flex:1; padding:6px 7px; font-size:11px;" onclick="atalhoAuditoria('fraude')">🚨 Fraude</button>
           </div>
         </div>
 
@@ -895,7 +937,7 @@
     <section class="table-container">
       <div class="panel-header">
         <div class="panel-title">
-          📋 Grelha Consolidada de Contratos e Motor de Risco (Clique numa linha para abrir o Dossiê de Inspeção)
+          📋 Grelha Consolidada de Contratos, Autos CF1 e Cobrança 2026 (Clique numa linha para abrir o Dossiê Completo)
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
           <span class="panel-badge" id="table-total-badge">-- registos</span>
@@ -913,7 +955,8 @@
               <th>PT</th>
               <th>Nome do Cliente</th>
               <th>Estado Contrato</th>
-              <th>Grupo</th>
+              <th>Autos CF1 / Jurídico</th>
+              <th>Cobrança 2026 (COB_J)</th>
               <th>Contador</th>
               <th>Mat. Leitura</th>
               <th>Anomalia Leitura</th>
@@ -926,7 +969,7 @@
             </tr>
           </thead>
           <tbody id="tabela-corpo">
-            <tr><td colspan="17" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando registos do Supabase...</td></tr>
+            <tr><td colspan="18" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando registos do Supabase...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1046,6 +1089,8 @@
       const busca = document.getElementById("f-busca").value.trim();
       const risco = document.getElementById("f-risco").value;
       const uni = document.getElementById("f-uni").value;
+      const cf1 = document.getElementById("f-cf1").value;
+      const cobranca = document.getElementById("f-cobranca").value;
       const estado = document.getElementById("f-estado").value;
       const grupo = document.getElementById("f-grupo").value;
       const anom = document.getElementById("f-anomalia").value;
@@ -1068,6 +1113,28 @@
       if (matLeit) params.append("mat_leitura", `eq.${matLeit}`);
       if (desvio) params.append("faturacao_alerta_desvio", `eq.${desvio}`);
       if (pt) params.append("pt", `ilike.*${pt}*`);
+
+      // Filtros de Autos de Fraude CF1
+      if (cf1 === "__COM_CF1__") {
+        params.append("cf1_qtd_autos", "gt.0");
+      } else if (cf1 === "__REINCIDENTE__") {
+        params.append("cf1_qtd_autos", "gte.2");
+      } else if (cf1 === "__DIVIDA_CF1__") {
+        params.append("cf1_val_divida", "gt.0");
+      } else if (cf1 === "__COM_FOTOS__") {
+        params.append("cf1_evidencia_fotos", "eq.Com Fotos");
+      } else if (cf1 === "__SEM_CF1__") {
+        params.append("cf1_qtd_autos", "eq.0");
+      } else if (cf1) {
+        params.append("cf1_estado_juridico", `eq.${cf1}`);
+      }
+
+      // Filtros de Cobrança 2026 (COB_J)
+      if (cobranca === "__MAT_LONGA__") {
+        params.append("cob_maturidade_predom", "in.(6 mes,1 ano,> 1 ano)");
+      } else if (cobranca) {
+        params.append("status_cobranca", `eq.${cobranca}`);
+      }
 
       if (anom === "__COM_ANOMALIA__") {
         params.append("anomalia", "not.is.null");
@@ -1096,6 +1163,8 @@
     async function atualizarKPIsERankings() {
       const risco = document.getElementById("f-risco").value || null;
       const uni = document.getElementById("f-uni").value || null;
+      const cf1 = document.getElementById("f-cf1").value || null;
+      const cobranca = document.getElementById("f-cobranca").value || null;
       const estado = document.getElementById("f-estado").value || null;
       const grupo = document.getElementById("f-grupo").value || null;
       const anom = document.getElementById("f-anomalia").value || null;
@@ -1117,7 +1186,9 @@
             p_mat_contador: matCont,
             p_mat_leitura: matLeit,
             p_nivel_risco: risco,
-            p_pt: pt
+            p_pt: pt,
+            p_cf1_filtro: cf1,
+            p_status_cobranca: cobranca
           })
         });
         const d = await r.json();
@@ -1135,7 +1206,18 @@
 
         document.getElementById("kpi-divida").textContent = fmtECV(d.total_divida);
         document.getElementById("kpi-divida-sub").textContent =
-          `${fmtInt(d.com_divida)} devedores (${fmtInt(d.total_faturas_divida)} faturas)`;
+          `${fmtInt(d.com_divida)} devedores (${fmtInt(d.total_faturas_divida)} fat.)`;
+
+        // KPI Autos de Fraude CF1
+        document.getElementById("kpi-cf1").textContent =
+          `${fmtInt(d.com_cf1 || 0)} CILs (${fmtInt(d.total_autos_cf1 || 0)} autos)`;
+        document.getElementById("kpi-cf1-sub").textContent =
+          `Dív. CF1: ${fmtECV(d.cf1_divida_total || 0)} • MP: ${fmtInt(d.cf1_enviado_mp || 0)}`;
+
+        // KPI Cobrança 2026 (COB_J)
+        document.getElementById("kpi-cobranca").textContent = fmtECV(d.cob_total_2026 || 0);
+        document.getElementById("kpi-cobranca-sub").textContent =
+          `${fmtInt(d.com_cobranca_2026 || 0)} pagam • 🚨 ${fmtInt(d.devedor_sem_pagamento || 0)} s/ pag.`;
 
         document.getElementById("kpi-anomalias").textContent = fmtInt(d.com_anomalia);
         const pctAnom = total > 0 ? ((d.com_anomalia / total) * 100).toFixed(1) : "0.0";
@@ -1175,7 +1257,7 @@
             </div>
             <div class="rank-metrics">
               <span>Dívida: <strong style="color:#FBBF24;">${fmtECV(u.soma_divida)}</strong></span>
-              <span>Risco Crít/Alto: <strong style="color:#F87171;">${fmtInt(u.qtd_risco_elevado || 0)}</strong></span>
+              <span>CF1: <strong style="color:#C084FC;">${fmtInt(u.qtd_cf1 || 0)}</strong> | S/ Pag: <strong style="color:#F87171;">${fmtInt(u.qtd_sem_pag || 0)}</strong></span>
             </div>
             <div class="rank-bar-track">
               <div class="rank-bar-fill" style="width:${pct}%"></div>
@@ -1205,7 +1287,7 @@
             </div>
             <div class="rank-metrics">
               <span>Dívida: <strong style="color:#FBBF24;">${fmtECV(p.soma_divida)}</strong></span>
-              <span>Contratos: <strong>${fmtInt(p.qtd_contratos)}</strong> | Anom: <strong>${fmtInt(p.qtd_anomalias)}</strong></span>
+              <span>CF1: <strong style="color:#C084FC;">${fmtInt(p.qtd_cf1 || 0)}</strong> | Anom: <strong>${fmtInt(p.qtd_anomalias)}</strong></span>
             </div>
             <div class="rank-bar-track">
               <div class="rank-bar-fill" style="width:${pct}%"></div>
@@ -1231,18 +1313,20 @@
       if (tipo === "critico") {
         const selR = document.getElementById("f-risco");
         selR.value = (selR.value === "CRÍTICO") ? "" : "CRÍTICO";
+      } else if (tipo === "cf1") {
+        const selCf1 = document.getElementById("f-cf1");
+        selCf1.value = (selCf1.value === "__COM_CF1__") ? "" : "__COM_CF1__";
+      } else if (tipo === "sem_pagamento") {
+        const selCob = document.getElementById("f-cobranca");
+        selCob.value = (selCob.value === "Devedor Sem Pagamento 2026") ? "" : "Devedor Sem Pagamento 2026";
       } else if (tipo === "fraude") {
         document.getElementById("f-anomalia").value = "Suspeita de Fraude";
-      } else if (tipo === "sem_leitura") {
-        document.getElementById("f-mat-leit").value = "> 5 meses";
-      } else if (tipo === "antigos") {
-        document.getElementById("f-mat-cont").value = "> 20 ano";
       }
       aplicarFiltros(1);
     }
 
     function resetarTodosFiltros() {
-      ["f-busca", "f-risco", "f-uni", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
+      ["f-busca", "f-risco", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
         document.getElementById(id).value = "";
       });
       document.getElementById("f-ordem").value = "score_risco.desc.nullslast,valor.desc.nullslast";
@@ -1258,7 +1342,7 @@
 
       const t0 = performance.now();
       const tbody = document.getElementById("tabela-corpo");
-      tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding:28px; color:var(--text-secondary);">Consultando Supabase...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:28px; color:var(--text-secondary);">Consultando Supabase...</td></tr>`;
 
       atualizarKPIsERankings();
 
@@ -1284,7 +1368,7 @@
       } catch (e) {
         console.error("Erro na consulta:", e);
         document.getElementById("conn-text").textContent = "ERRO DE CONEXÃO";
-        tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding:28px; color:#F87171;">Erro ao comunicar com o Supabase: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:28px; color:#F87171;">Erro ao comunicar com o Supabase: ${e.message}</td></tr>`;
       }
     }
 
@@ -1297,10 +1381,34 @@
       return `<span class="badge badge-ok">🟢 ${s} • BAIXO</span>`;
     }
 
+    function renderizarBadgeCF1(row) {
+      const qtd = row.cf1_qtd_autos || 0;
+      if (qtd <= 0) return `<span style="color:var(--text-muted);">—</span>`;
+      const jur = row.cf1_estado_juridico || "";
+      const divCf1 = row.cf1_val_divida || 0;
+      const corClasse = qtd >= 2 || divCf1 > 0 ? "badge-danger" : "badge-purple";
+      const txtJur = jur === "Enviado ao MP" ? " • MP" : (jur === "A enviar ao MP" ? " • A Env.MP" : "");
+      return `<span class="badge ${corClasse}" title="Estado Jurídico: ${jur} | Dívida CF1: ${fmtECV(divCf1)} | Evidência: ${row.cf1_evidencia_fotos || '—'}">⚖️ ${qtd}x CF1${txtJur}</span>`;
+    }
+
+    function renderizarBadgeCobranca(row) {
+      const st = row.status_cobranca || "";
+      const valCob = row.cob_valor_total || 0;
+      const mat = row.cob_maturidade_predom ? ` (${row.cob_maturidade_predom})` : "";
+      if (st === "Devedor Sem Pagamento 2026") {
+        return `<span class="badge badge-danger" title="Cliente com dívida ativa e 0 ECV pago em 2026">🚨 S/ Pag. 2026</span>`;
+      }
+      if (valCob > 0) {
+        const cls = st === "Devedor em Amortização" ? "badge-warn" : "badge-ok";
+        return `<span class="badge ${cls}" title="${st} • ${row.cob_qtd_meses || 0} meses pagos (Últ: ${row.cob_ultimo_mes || '—'})${mat}">${fmtInt(valCob)} ECV${mat}</span>`;
+      }
+      return `<span style="color:var(--text-muted);">0 ECV</span>`;
+    }
+
     function renderizarTabela(linhas) {
       const tbody = document.getElementById("tabela-corpo");
       if (!linhas.length) {
-        tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato encontrado com os filtros selecionados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato encontrado com os filtros selecionados.</td></tr>`;
         return;
       }
 
@@ -1336,7 +1444,8 @@
             <td class="mono-cell" style="color:#E2E8F0;">${(row.pt || "—").trim()}</td>
             <td style="font-weight:500;">${row.nome || "—"}</td>
             <td>${estBadge}</td>
-            <td>${row.grup_tp_cli || "—"}</td>
+            <td>${renderizarBadgeCF1(row)}</td>
+            <td>${renderizarBadgeCobranca(row)}</td>
             <td class="mono-cell">${row.contador || "—"}</td>
             <td>${matLeitBadge}</td>
             <td>${anomBadge}</td>
@@ -1375,16 +1484,17 @@
         });
 
         marker.bindPopup(`
-          <div style="font-family:'IBM Plex Sans',sans-serif; min-width:225px; color:#0F172A;">
+          <div style="font-family:'IBM Plex Sans',sans-serif; min-width:240px; color:#0F172A;">
             <div style="font-weight:700; font-size:13px; margin-bottom:4px;">CIL ${row.cil} • ${row.nome || ""}</div>
             <div style="font-size:12px; margin-bottom:4px;"><strong>Score Risco:</strong> <span style="color:#DC2626; font-weight:700;">${row.score_risco || 0}/100 (${row.nivel_risco || "BAIXO"})</span></div>
             <div style="font-size:11.5px; color:#475569; margin-bottom:4px;">${row.motivo_risco || ""}</div>
             <div style="font-size:12px;"><strong>Localidade:</strong> ${row.localidade || "—"} (${row.desc_uni || ""})</div>
             <div style="font-size:12px;"><strong>PT:</strong> ${(row.pt || "—").trim()}</div>
-            <div style="font-size:12px;"><strong>Contador:</strong> ${row.contador || "—"} (${row.mat_contador || "—"})</div>
-            <div style="font-size:12px;"><strong>Dívida:</strong> ${fmtECV(row.valor)} (${row.qtd || 0} fat.)</div>
+            <div style="font-size:12px;"><strong>Dívida Geral:</strong> ${fmtECV(row.valor)} (${row.qtd || 0} fat.)</div>
+            <div style="font-size:12px;"><strong>Autos CF1:</strong> ${row.cf1_qtd_autos || 0} (${row.cf1_estado_juridico || "Sem Auto"})</div>
+            <div style="font-size:12px;"><strong>Cobrança 2026:</strong> ${fmtECV(row.cob_valor_total)} (${row.status_cobranca || "—"})</div>
             <button onclick="abrirDossie(${idx})" style="margin-top:8px; width:100%; padding:5px; background:#0F172A; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:600;">
-              Ver Dossiê de Inspeção
+              Ver Dossiê Completo
             </button>
           </div>
         `);
@@ -1424,6 +1534,8 @@
       const lng = r.long ? String(r.long).trim() : null;
       const gmapsUrl = (lat && lng) ? `https://www.google.com/maps?q=${lat},${lng}` : null;
 
+      const temCf1 = (r.cf1_qtd_autos || 0) > 0;
+
       document.getElementById("drawer-content").innerHTML = `
         <div class="dossier-section" style="border-color:rgba(239,68,68,0.45); background:rgba(239,68,68,0.06);">
           <h4>🔥 Diagnóstico do Motor de Score de Risco de Fraude / Perdas</h4>
@@ -1437,8 +1549,34 @@
           </div>
         </div>
 
+        <div class="dossier-section" style="border-color:${temCf1 ? 'rgba(168,85,247,0.5)' : 'var(--border-dim)'}; background:${temCf1 ? 'rgba(168,85,247,0.06)' : 'var(--bg-input)'};">
+          <h4 style="color:#C084FC;">⚖️ 1. Histórico de Autos de Fraude (CF1) &amp; Processo Jurídico</h4>
+          <div class="dossier-grid">
+            <div class="kv-item"><div class="k">Qtd. Autos CF1 Registados</div><div class="v" style="color:${temCf1 ? '#C084FC' : 'var(--text-muted)'}; font-size:15px;">${r.cf1_qtd_autos || 0} auto(s) ${r.cf1_qtd_autos >= 2 ? '🔥 (REINCIDENTE)' : ''}</div></div>
+            <div class="kv-item"><div class="k">Último Ano de Auto CF1</div><div class="v">${r.cf1_ultimo_ano || "—"}</div></div>
+            <div class="kv-item"><div class="k">Energia Faturada CF1 (QTD)</div><div class="v">${r.cf1_kwh_total ? fmtInt(r.cf1_kwh_total) + " kWh" : "0 kWh"}</div></div>
+            <div class="kv-item"><div class="k">Valor Total Faturado CF1</div><div class="v">${fmtECV(r.cf1_val_total || 0)}</div></div>
+            <div class="kv-item"><div class="k">Dívida CF1 em Aberto (VAL_DIV)</div><div class="v" style="color:${(r.cf1_val_divida || 0) > 0 ? '#F87171' : '#34D399'};">${fmtECV(r.cf1_val_divida || 0)}</div></div>
+            <div class="kv-item"><div class="k">Estado Comercial da Dívida CF1</div><div class="v">${r.cf1_estado_divida || "Sem Registo"}</div></div>
+            <div class="kv-item"><div class="k">Estado Processo Jurídico (MP)</div><div class="v" style="color:#FBBF24;">${r.cf1_estado_juridico || "Sem Processo"}</div></div>
+            <div class="kv-item"><div class="k">Evidência Fotográfica (Base)</div><div class="v">${r.cf1_evidencia_fotos || "—"}</div></div>
+          </div>
+        </div>
+
+        <div class="dossier-section" style="border-color:rgba(16,185,129,0.35);">
+          <h4 style="color:#34D399;">💳 2. Telemetria de Cobrança 2026 &amp; Maturidade (COB_J)</h4>
+          <div class="dossier-grid">
+            <div class="kv-item"><div class="k">Status de Cobrança 2026</div><div class="v" style="color:${r.status_cobranca === 'Devedor Sem Pagamento 2026' ? '#F87171' : '#34D399'};">${r.status_cobranca || "—"}</div></div>
+            <div class="kv-item"><div class="k">Total Pago em 2026</div><div class="v" style="font-size:15px; color:#34D399;">${fmtECV(r.cob_valor_total || 0)}</div></div>
+            <div class="kv-item"><div class="k">Regularidade (Meses Pagos)</div><div class="v">${r.cob_qtd_meses || 0} mês(es) em 2026</div></div>
+            <div class="kv-item"><div class="k">Último Mês com Cobrança</div><div class="v">${r.cob_ultimo_mes || "Nenhum pagamento em 2026"}</div></div>
+            <div class="kv-item"><div class="k">Maturidade Predominante</div><div class="v" style="color:var(--accent-cyan);">${r.cob_maturidade_predom || "—"}</div></div>
+            <div class="kv-item"><div class="k">Pago de Dívida Antiga (≥ 3m)</div><div class="v">${fmtECV(r.cob_valor_atraso || 0)}</div></div>
+          </div>
+        </div>
+
         <div class="dossier-section">
-          <h4>1. Identificação Contratual e Comercial</h4>
+          <h4>3. Identificação Contratual e Comercial</h4>
           <div class="dossier-grid">
             <div class="kv-item"><div class="k">CIL (Ponto Entrega)</div><div class="v" style="color:var(--accent-cyan);">${r.cil}</div></div>
             <div class="kv-item"><div class="k">NIB</div><div class="v">${r.nib || "—"}</div></div>
@@ -1452,31 +1590,19 @@
         </div>
 
         <div class="dossier-section">
-          <h4>2. Medição, Aparelho e Maturidade Dinâmica</h4>
+          <h4>4. Medição, Aparelho e Faturação Trimestral (T3)</h4>
           <div class="dossier-grid">
-            <div class="kv-item"><div class="k">Nº Contador</div><div class="v" style="color:#FBBF24;">${r.contador || "Sem Contador"}</div></div>
-            <div class="kv-item"><div class="k">Modelo / Marca</div><div class="v">${r.modelo || "—"}</div></div>
+            <div class="kv-item"><div class="k">Nº Contador / Modelo</div><div class="v" style="color:#FBBF24;">${r.contador || "Sem Contador"} (${r.modelo || "—"})</div></div>
             <div class="kv-item"><div class="k">Data Instalação</div><div class="v">${r.da_inst || "—"} (${r.mat_contador || "—"})</div></div>
             <div class="kv-item"><div class="k">Data Última Leitura</div><div class="v" style="color:${r.mat_leitura === '> 5 meses' ? '#FBBF24' : '#34D399'};">${r.data_leitura || "—"} (${r.mat_leitura || "—"})</div></div>
-            <div class="kv-item"><div class="k">Valor Última Leitura</div><div class="v">${r.leitura !== null ? fmtInt(r.leitura) + " kWh" : "—"} (tp_fat: ${r.tp_fat || "—"})</div></div>
             <div class="kv-item"><div class="k">Anomalia de Leitura</div><div class="v" style="color:${r.anomalia ? '#F87171' : '#34D399'};">${r.anomalia || "Nenhuma Anomalia"}</div></div>
+            <div class="kv-item"><div class="k">Dívida Acumulada Geral (VALOR)</div><div class="v" style="color:#FBBF24; font-size:15px;">${fmtECV(r.valor)} (${r.qtd || 0} fat.)</div></div>
+            <div class="kv-item"><div class="k">Consumo T3 / Média Mensal</div><div class="v">${r.faturacao_t3 !== null ? fmtInt(r.faturacao_t3) : "0"} kWh (${fmtInt(r.med_fat)} kWh/mês)</div></div>
           </div>
         </div>
 
         <div class="dossier-section">
-          <h4>3. Faturação Trimestral (T3) e Situação de Dívida</h4>
-          <div class="dossier-grid">
-            <div class="kv-item"><div class="k">Dívida Acumulada (VALOR)</div><div class="v" style="color:#FBBF24; font-size:16px;">${fmtECV(r.valor)}</div></div>
-            <div class="kv-item"><div class="k">Qtd. Faturas em Dívida</div><div class="v" style="font-size:16px;">${r.qtd || 0} faturas</div></div>
-            <div class="kv-item"><div class="k">Consumo 3º Trimestre (T3)</div><div class="v">${r.faturacao_t3 !== null ? fmtInt(r.faturacao_t3) + " kWh" : "0 kWh"}</div></div>
-            <div class="kv-item"><div class="k">Média Mensal (Med_Fat)</div><div class="v" style="color:var(--accent-cyan);">${fmtInt(r.med_fat)} kWh/mês</div></div>
-            <div class="kv-item"><div class="k">Alerta Desvio Faturação</div><div class="v" style="color:${r.faturacao_alerta_desvio === 'Desv_Fat' ? '#F87171' : '#94A3B8'};">${r.faturacao_alerta_desvio || "Sem Alerta"}</div></div>
-            <div class="kv-item"><div class="k">Variação Trimestral (%)</div><div class="v">${r.faturacao_variacao_pct !== null ? (Number(r.faturacao_variacao_pct) * 100).toFixed(1) + "%" : "—"}</div></div>
-          </div>
-        </div>
-
-        <div class="dossier-section">
-          <h4>4. Localização Geográfica e Rede de Distribuição (PT)</h4>
+          <h4>5. Localização Geográfica e Rede de Distribuição (PT)</h4>
           <div class="dossier-grid">
             <div class="kv-item"><div class="k">Unidade / Localidade</div><div class="v">${r.desc_uni || "—"} / ${r.localidade || "—"}</div></div>
             <div class="kv-item"><div class="k">Posto Transformação (PT)</div><div class="v" style="color:var(--accent-cyan);">${(r.pt || "Não associado").trim()}</div></div>
