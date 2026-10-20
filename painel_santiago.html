@@ -751,8 +751,19 @@
     <section class="command-bar">
       <div class="filter-row-top">
         <div class="field-group">
-          <label>Pesquisa Rápida (CIL, NIB, Nome do Cliente, Nº Contador, PT ou Localidade)</label>
-          <input type="text" id="f-busca" class="input-ctrl mono" placeholder="Ex: 60033682, EugenioLima2, FARMACIA, 13457294..." onkeydown="if(event.key==='Enter') aplicarFiltros(1)" />
+          <label>Pesquisa Inteligente (CIL Exato, Nome, PT, Localidade, Contador ou NIB)</label>
+          <div style="display:flex; gap:6px;">
+            <select id="f-tipo-busca" class="select-ctrl" style="max-width:148px; font-weight:600; color:var(--accent-cyan);" onchange="aplicarFiltros(1)" title="Escolha o campo onde pesquisar">
+              <option value="auto">🎯 Auto (Nº = CIL)</option>
+              <option value="cil">🔢 Apenas CIL</option>
+              <option value="contador">📟 Nº Contador</option>
+              <option value="nib">🏠 Apenas NIB</option>
+              <option value="id_cliente">🆔 ID Cliente</option>
+              <option value="nome">👤 Nome / Local.</option>
+              <option value="tudo">🌐 Tudo (CIL/NIB/Cont)</option>
+            </select>
+            <input type="text" id="f-busca" class="input-ctrl mono" placeholder="Ex: 60042095 (ou 42095), EugenioLima2, FARMACIA..." onkeydown="if(event.key==='Enter') aplicarFiltros(1)" />
+          </div>
         </div>
 
         <div class="field-group">
@@ -1084,9 +1095,37 @@
       });
     }
 
+    function interpretarBusca(rawBusca, tipoSelecionado) {
+      let texto = (rawBusca || "").trim();
+      let modo = tipoSelecionado || "auto";
+
+      // Detetar se o utilizador escreveu explícito "CIL:60042095", "NIB:...", "CONT:..."
+      const matchPrefixo = texto.match(/^(cil|nib|cont|contador|id)\s*[:=-]?\s*(.+)$/i);
+      if (matchPrefixo) {
+        const pref = matchPrefixo[1].toLowerCase();
+        texto = matchPrefixo[2].trim();
+        if (pref === "cil") modo = "cil";
+        else if (pref === "nib") modo = "nib";
+        else if (pref === "cont" || pref === "contador") modo = "contador";
+        else if (pref === "id") modo = "id_cliente";
+      }
+
+      const ehNumero = /^\d+$/.test(texto);
+      let numExato = ehNumero ? parseInt(texto, 10) : null;
+      let cilNorm = numExato;
+      if (ehNumero && texto.length <= 6 && numExato < 1000000) {
+        cilNorm = 60000000 + numExato;
+      }
+
+      return { texto, modo, ehNumero, numExato, cilNorm };
+    }
+
     function construirQueryParams() {
       const params = new URLSearchParams();
-      const busca = document.getElementById("f-busca").value.trim();
+      const rawBusca = document.getElementById("f-busca").value;
+      const tipoBuscaSel = document.getElementById("f-tipo-busca").value;
+      const infoBusca = interpretarBusca(rawBusca, tipoBuscaSel);
+
       const risco = document.getElementById("f-risco").value;
       const uni = document.getElementById("f-uni").value;
       const cf1 = document.getElementById("f-cf1").value;
@@ -1146,13 +1185,50 @@
       else if (divida === "gt10000") params.append("valor", "gt.10000");
       else if (divida === "gt50000") params.append("valor", "gt.50000");
       else if (divida === "gt100000") params.append("valor", "gt.100000");
-      else if (divida === "sem") params.append("valor", "is.null");
+      else if (divida === "sem") params.append("or", "(valor.is.null,valor.lte.0)");
 
-      if (busca) {
-        if (/^\d+$/.test(busca)) {
-          params.append("or", `(cil.eq.${busca},nib.eq.${busca},contador.eq.${busca})`);
+      // Pesquisa Estruturada e Sem Falsos Positivos entre CIL e NIB
+      if (infoBusca.texto) {
+        const { texto, modo, ehNumero, numExato, cilNorm } = infoBusca;
+        if (modo === "cil") {
+          if (ehNumero) {
+            params.append("cil", numExato !== cilNorm ? `in.(${numExato},${cilNorm})` : `eq.${numExato}`);
+          } else {
+            params.append("cil", "eq.-1");
+          }
+        } else if (modo === "nib") {
+          if (ehNumero) {
+            params.append("nib", numExato !== cilNorm ? `in.(${numExato},${cilNorm})` : `eq.${numExato}`);
+          } else {
+            params.append("nib", "eq.-1");
+          }
+        } else if (modo === "contador") {
+          if (ehNumero) {
+            params.append("contador", `eq.${numExato}`);
+          } else {
+            params.append("contador", "eq.-1");
+          }
+        } else if (modo === "id_cliente") {
+          if (ehNumero) {
+            params.append("id_cliente", numExato !== cilNorm ? `in.(${numExato},${cilNorm})` : `eq.${numExato}`);
+          } else {
+            params.append("id_cliente", "eq.-1");
+          }
+        } else if (modo === "nome") {
+          params.append("or", `(nome.ilike.*${texto}*,localidade.ilike.*${texto}*,pt.ilike.*${texto}*)`);
+        } else if (modo === "tudo") {
+          if (ehNumero) {
+            params.append("or", `(cil.eq.${numExato},cil.eq.${cilNorm},nib.eq.${numExato},contador.eq.${numExato},id_cliente.eq.${numExato})`);
+          } else {
+            params.append("or", `(nome.ilike.*${texto}*,localidade.ilike.*${texto}*,pt.ilike.*${texto}*)`);
+          }
         } else {
-          params.append("or", `(nome.ilike.*${busca}*,localidade.ilike.*${busca}*,pt.ilike.*${busca}*)`);
+          // Modo 'auto': se for número, pesquisa ESTRITAMENTE na coluna CIL (sem misturar com NIB!)
+          if (ehNumero) {
+            params.append("cil", numExato !== cilNorm ? `in.(${numExato},${cilNorm})` : `eq.${numExato}`);
+          } else {
+            params.append("or", `(nome.ilike.*${texto}*,localidade.ilike.*${texto}*,pt.ilike.*${texto}*)`);
+          }
         }
       }
 
@@ -1160,7 +1236,11 @@
       return params;
     }
 
-    async function atualizarKPIsERankings() {
+    async function atualizarKPIsERankings(tokenAtual) {
+      const rawBusca = document.getElementById("f-busca").value;
+      const tipoBuscaSel = document.getElementById("f-tipo-busca").value;
+      const infoBusca = interpretarBusca(rawBusca, tipoBuscaSel);
+
       const risco = document.getElementById("f-risco").value || null;
       const uni = document.getElementById("f-uni").value || null;
       const cf1 = document.getElementById("f-cf1").value || null;
@@ -1172,6 +1252,7 @@
       const matCont = document.getElementById("f-mat-cont").value || null;
       const matLeit = document.getElementById("f-mat-leit").value || null;
       const pt = document.getElementById("f-pt").value.trim() || null;
+      const divida = document.getElementById("f-divida").value || null;
 
       try {
         const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_resumo_santiago`, {
@@ -1188,9 +1269,13 @@
             p_nivel_risco: risco,
             p_pt: pt,
             p_cf1_filtro: cf1,
-            p_status_cobranca: cobranca
+            p_status_cobranca: cobranca,
+            p_divida: divida,
+            p_busca: infoBusca.texto || null,
+            p_tipo_busca: infoBusca.modo || "auto"
           })
         });
+        if (tokenAtual && tokenAtual !== ultimoTokenFiltro) return;
         const d = await r.json();
         const total = d.total_contratos || 0;
 
@@ -1325,15 +1410,19 @@
       aplicarFiltros(1);
     }
 
+    let ultimoTokenFiltro = 0;
+
     function resetarTodosFiltros() {
       ["f-busca", "f-risco", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
         document.getElementById(id).value = "";
       });
+      document.getElementById("f-tipo-busca").value = "auto";
       document.getElementById("f-ordem").value = "score_risco.desc.nullslast,valor.desc.nullslast";
       aplicarFiltros(1);
     }
 
     async function aplicarFiltros(pagina = 1) {
+      const tokenAtual = ++ultimoTokenFiltro;
       paginaAtual = pagina;
       const offset = (paginaAtual - 1) * PAGE_SIZE;
       const params = construirQueryParams();
@@ -1344,12 +1433,13 @@
       const tbody = document.getElementById("tabela-corpo");
       tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:28px; color:var(--text-secondary);">Consultando Supabase...</td></tr>`;
 
-      atualizarKPIsERankings();
+      atualizarKPIsERankings(tokenAtual);
 
       try {
         const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, {
           headers: { ...HEADERS, "Prefer": "count=exact" }
         });
+        if (tokenAtual !== ultimoTokenFiltro) return;
         const ms = Math.round(performance.now() - t0);
         document.getElementById("latency-pill").textContent = `LATÊNCIA: ${ms} ms`;
         document.getElementById("conn-text").textContent = `ONLINE • SUPABASE (edec-app)`;
@@ -1366,6 +1456,7 @@
         atualizarMapa(registosPaginaAtual);
         atualizarPaginacao();
       } catch (e) {
+        if (tokenAtual !== ultimoTokenFiltro) return;
         console.error("Erro na consulta:", e);
         document.getElementById("conn-text").textContent = "ERRO DE CONEXÃO";
         tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:28px; color:#F87171;">Erro ao comunicar com o Supabase: ${e.message}</td></tr>`;
