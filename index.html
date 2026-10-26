@@ -813,21 +813,13 @@
           🗺️ 2. Mapa GIS &amp; Balanço PT
           <span class="mod-pill-soon">Em Atualização</span>
         </button>
-        <button class="mod-tab-btn" id="tab-btn-mod3" onclick="selecionarModulo('mod3')">
-          📉 3. Gestão de Perdas (Folhas &amp; Campo)
-          <span class="mod-pill-soon" id="badge-tab-mod3" style="color:var(--accent-cyan); border-color:rgba(6,182,212,0.35);">INTEGRADO</span>
-        </button>
-        <button class="mod-tab-btn" id="tab-btn-mod4" onclick="selecionarModulo('mod4')">
-          📄 4. Gestão de Pedidos EDEC
-          <span class="mod-pill-soon" id="badge-tab-mod4" style="color:var(--accent-emerald); border-color:rgba(16,185,129,0.35);">INTEGRADO</span>
-        </button>
         <button class="mod-tab-btn" id="tab-btn-mod5" onclick="selecionarModulo('mod5')">
           ⚖️ 5. Jurídico CF1 &amp; Cobrança
           <span class="mod-pill-soon">Em Atualização</span>
         </button>
       </div>
       <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted); padding-right:6px;">
-        ECOSSISTEMA UNIFICADO • SANTIAGO + FAZER-AQUI
+        ARQUITETURA MODULAR EDEC • MÓDULO 1 ATIVO
       </div>
     </nav>
 
@@ -2220,16 +2212,6 @@
         titulo: "2. Mapa GIS & Balanço Energético de PTs — Em Atualização",
         desc: "Em atualização: Integração dos Polígonos Geográficos das zonas de cada PT, cadastro técnico dos Transformadores e cálculo de Perda Energética por PT (kWh medido no PT vs soma da faturação T3 dos clientes)."
       },
-      mod3: {
-        icone: "👷",
-        titulo: "3. Despacho & Gestão de Equipas Técnicas — Em Atualização",
-        desc: "Em atualização: Gestão de técnicos de terreno, atribuição de Ordens de Serviço por PT/Localidade e acompanhamento de produtividade das equipas em tempo real."
-      },
-      mod4: {
-        icone: "📋",
-        titulo: "4. Formulário de Inspeção no Terreno — Em Atualização",
-        desc: "Em atualização: Interface móvel para registo de inspeções no local (Fraude Confirmada, Corte por Dívida, Substituição de Contador, Leitura, Nº de Selo e Observações)."
-      },
       mod5: {
         icone: "⚖️",
         titulo: "5. Auditoria Jurídica CF1 & Recuperação COB_J — Em Atualização",
@@ -2243,24 +2225,16 @@
       if (btnAtivo) btnAtivo.classList.add("active");
 
       const paneMod1 = document.getElementById("modulo-mod1");
-      const paneMod3 = document.getElementById("modulo-mod3");
-      const paneMod4 = document.getElementById("modulo-mod4");
       const paneUpd = document.getElementById("modulo-em-atualizacao");
-
-      [paneMod1, paneMod3, paneMod4, paneUpd].forEach(p => { if (p) p.classList.add("hidden"); });
 
       if (modId === "mod1") {
         paneMod1.classList.remove("hidden");
+        paneUpd.classList.add("hidden");
         if (map) {
           setTimeout(() => map.invalidateSize(), 60);
         }
-      } else if (modId === "mod3") {
-        paneMod3.classList.remove("hidden");
-        carregarEcossistemaPerdas();
-      } else if (modId === "mod4") {
-        paneMod4.classList.remove("hidden");
-        carregarEcossistemaPedidosEDEC();
       } else {
+        paneMod1.classList.add("hidden");
         const info = INFO_MODULOS[modId] || {
           icone: "🚧",
           titulo: "Módulo em Atualização",
@@ -2954,21 +2928,6 @@
       const temCf1 = (r.cf1_qtd_autos || 0) > 0;
 
       document.getElementById("drawer-content").innerHTML = `
-        <div class="dossier-section" style="border-color:rgba(6,182,212,0.5); background:rgba(6,182,212,0.06);">
-          <h4 style="color:var(--accent-cyan);">🚀 Ação Tática de Terreno (Folhas NIB/CIL &amp; Inspeção de Cargas)</h4>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="btn btn-amber" style="flex:1; justify-content:center;" onclick="enviarClienteParaDespachoM3()">
-              📝 Gerar Folhas p/ este PT / CIL (Mód. 3.1)
-            </button>
-            <button class="btn" style="flex:1; justify-content:center; border-color:var(--accent-emerald); color:#34D399;" onclick="enviarClienteParaInspecaoM4()">
-              🔍 Inspecionar Cargas Agora (Mód. 3.2)
-            </button>
-          </div>
-          <div id="d-historico-inspecoes" style="margin-top:8px; font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);">
-            Consultando histórico de ordens/inspeções deste CIL...
-          </div>
-        </div>
-
         <div class="dossier-section" style="border-color:rgba(239,68,68,0.45); background:rgba(239,68,68,0.06);">
           <h4>🔥 Diagnóstico do Motor de Score de Risco de Fraude / Perdas</h4>
           <div class="dossier-grid">
@@ -3052,18 +3011,13 @@
       `;
 
       document.getElementById("drawer-backdrop").classList.add("open");
-      carregarHistoricoInspecoesDossie(r.cil);
     }
 
     function fecharDossie() {
       document.getElementById("drawer-backdrop").classList.remove("open");
     }
 
-    // =========================================================================
-    // ECOSSISTEMA INTEGRADO (ZERO ILHAS):
-    // MÓDULO 3: GESTÃO DE PERDAS (perdas_folhas, perdas_folhas_cils, perdas_inspecoes)
-    // MÓDULO 4: GESTÃO DE PEDIDOS EDEC (pedidos_ligacao, vistorias_campo, orcamentos)
-    // =========================================================================
+    async function exportarCSVFiltrado() {
     let cacheUtilizadores = [];
     let cacheTecnicos = [];
     let cacheFolhas = [];
@@ -4910,8 +4864,6 @@
       iniciarMapa();
       carregarListasFiltros();
       aplicarFiltros(1);
-      carregarEcossistemaPerdas();
-      carregarEcossistemaPedidosEDEC();
     });
   </script>
 </body>
