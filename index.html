@@ -688,8 +688,8 @@
       <button class="btn" onclick="resetarTodosFiltros()" title="Limpar todos os filtros ativos">
         ↺ Limpar Filtros
       </button>
-      <button class="btn btn-amber" onclick="exportarCSVFiltrado()" id="btn-export">
-        ⬇ Exportar CSV (Vista Atual)
+      <button class="btn btn-amber" onclick="exportarCSVFiltrado()" id="btn-export" title="Exporta 100% dos registos do filtro ativo em lotes automáticos">
+        ⬇ Exportar CSV Completo (Filtro Atual)
       </button>
     </div>
   </header>
@@ -917,8 +917,14 @@
           <div class="panel-title">
             🌍 Mapa Georreferenciado de Risco de Perdas (Santiago)
           </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <span class="panel-badge" id="map-count-badge">0 pontos no mapa</span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <span class="panel-badge" id="map-count-badge">Carregando mapa...</span>
+            <select id="map-limit" class="select-ctrl" style="width:auto; padding:2px 6px; font-size:11px; height:24px; font-family:var(--font-mono);" onchange="carregarMapaFiltrado(ultimoTokenFiltro)" title="Limite de alvos georreferenciados no mapa">
+              <option value="2000" selected>Top 2.000 Georref.</option>
+              <option value="5000">Top 5.000 Georref.</option>
+              <option value="15000">Top 15.000 Georref.</option>
+              <option value="100000">Todos os Georref.</option>
+            </select>
             <button class="btn" style="padding:3px 8px; font-size:11px;" onclick="alternarCamadaMapa()">🛰️ Satélite / Escuro</button>
           </div>
         </div>
@@ -1421,7 +1427,7 @@
       aplicarFiltros(1);
     }
 
-    async function aplicarFiltros(pagina = 1) {
+    async function aplicarFiltros(pagina = 1, apenasPagina = false) {
       const tokenAtual = ++ultimoTokenFiltro;
       paginaAtual = pagina;
       const offset = (paginaAtual - 1) * PAGE_SIZE;
@@ -1433,7 +1439,10 @@
       const tbody = document.getElementById("tabela-corpo");
       tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:28px; color:var(--text-secondary);">Consultando Supabase...</td></tr>`;
 
-      atualizarKPIsERankings(tokenAtual);
+      if (!apenasPagina) {
+        atualizarKPIsERankings(tokenAtual);
+        carregarMapaFiltrado(tokenAtual);
+      }
 
       try {
         const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, {
@@ -1453,7 +1462,6 @@
         document.getElementById("table-total-badge").textContent = `${fmtInt(totalRegistosFiltrados)} registos`;
 
         renderizarTabela(registosPaginaAtual);
-        atualizarMapa(registosPaginaAtual);
         atualizarPaginacao();
       } catch (e) {
         if (tokenAtual !== ultimoTokenFiltro) return;
@@ -1551,11 +1559,69 @@
       }).join("");
     }
 
-    function atualizarMapa(linhas) {
+    async function carregarMapaFiltrado(tokenAtual) {
+      const badge = document.getElementById("map-count-badge");
+      const maxMapPoints = parseInt(document.getElementById("map-limit")?.value || "2000", 10);
+      badge.textContent = "⏳ Carregando georref...";
+
+      try {
+        const baseParams = construirQueryParams();
+        baseParams.append("lat", "not.is.null");
+        baseParams.append("long", "not.is.null");
+        baseParams.append("select", "cil,nome,localidade,desc_uni,pt,lat,long,score_risco,nivel_risco,motivo_risco,valor,qtd,cf1_qtd_autos,cf1_estado_juridico,cob_valor_total,status_cobranca");
+
+        // 1º lote de 1.000 + contagem exata de todos os pontos georreferenciados do filtro
+        const p1 = new URLSearchParams(baseParams);
+        p1.append("limit", "1000");
+        p1.append("offset", "0");
+
+        const r1 = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${p1.toString()}`, {
+          headers: { ...HEADERS, "Prefer": "count=exact" }
+        });
+        if (tokenAtual && tokenAtual !== ultimoTokenFiltro) return;
+
+        const range = r1.headers.get("Content-Range") || "0-0/0";
+        const totalGeo = parseInt((range.split("/")[1]) || "0", 10);
+        let todosPontos = await r1.json();
+        if (!Array.isArray(todosPontos)) todosPontos = [];
+
+        const alvoTotal = Math.min(totalGeo, maxMapPoints);
+        if (alvoTotal > 1000 && todosPontos.length === 1000) {
+          const offsets = [];
+          for (let off = 1000; off < alvoTotal; off += 1000) {
+            offsets.push(off);
+          }
+          // Carregar lotes em paralelo (4 por vez)
+          for (let i = 0; i < offsets.length; i += 4) {
+            if (tokenAtual && tokenAtual !== ultimoTokenFiltro) return;
+            const grupo = offsets.slice(i, i + 4);
+            badge.textContent = `⏳ Mapa: ${fmtInt(todosPontos.length)} / ${fmtInt(alvoTotal)}...`;
+            const lotes = await Promise.all(grupo.map(async (off) => {
+              const p = new URLSearchParams(baseParams);
+              p.append("limit", "1000");
+              p.append("offset", String(off));
+              const res = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${p.toString()}`, { headers: HEADERS });
+              return res.json();
+            }));
+            lotes.forEach(arr => {
+              if (Array.isArray(arr)) todosPontos.push(...arr);
+            });
+          }
+        }
+
+        if (tokenAtual && tokenAtual !== ultimoTokenFiltro) return;
+        atualizarMapa(todosPontos, totalGeo);
+      } catch (e) {
+        console.error("Erro ao carregar mapa filtrado:", e);
+        badge.textContent = "Erro ao carregar mapa";
+      }
+    }
+
+    function atualizarMapa(linhas, totalGeoFiltro = null) {
       markersLayer.clearLayers();
       const coords = [];
 
-      linhas.forEach((row, idx) => {
+      linhas.forEach((row) => {
         if (!row.lat || !row.long) return;
         const lat = parseFloat(String(row.lat).replace(",", ".").trim());
         const lng = parseFloat(String(row.long).replace(",", ".").trim());
@@ -1566,12 +1632,12 @@
         const cor = n === "CRÍTICO" ? "#EF4444" : (n === "ALTO" ? "#F59E0B" : (n === "MÉDIO" ? "#06B6D4" : "#10B981"));
 
         const marker = L.circleMarker([lat, lng], {
-          radius: n === "CRÍTICO" ? 7.5 : (n === "ALTO" ? 6.5 : 5),
+          radius: n === "CRÍTICO" ? 7 : (n === "ALTO" ? 6 : 4.5),
           fillColor: cor,
           color: "#070A0F",
-          weight: 1.5,
+          weight: 1.2,
           opacity: 1,
-          fillOpacity: 0.92
+          fillOpacity: 0.9
         });
 
         marker.bindPopup(`
@@ -1584,8 +1650,8 @@
             <div style="font-size:12px;"><strong>Dívida Geral:</strong> ${fmtECV(row.valor)} (${row.qtd || 0} fat.)</div>
             <div style="font-size:12px;"><strong>Autos CF1:</strong> ${row.cf1_qtd_autos || 0} (${row.cf1_estado_juridico || "Sem Auto"})</div>
             <div style="font-size:12px;"><strong>Cobrança 2026:</strong> ${fmtECV(row.cob_valor_total)} (${row.status_cobranca || "—"})</div>
-            <button onclick="abrirDossie(${idx})" style="margin-top:8px; width:100%; padding:5px; background:#0F172A; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:600;">
-              Ver Dossiê Completo
+            <button onclick="abrirDossiePorCIL(${row.cil})" style="margin-top:8px; width:100%; padding:6px; background:#0F172A; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:600;">
+              📋 Ver Dossiê Completo (CIL ${row.cil})
             </button>
           </div>
         `);
@@ -1593,7 +1659,10 @@
         markersLayer.addLayer(marker);
       });
 
-      document.getElementById("map-count-badge").textContent = `${coords.length} pontos georref. nesta página`;
+      const sufixoTotal = (totalGeoFiltro !== null && totalGeoFiltro > coords.length)
+        ? ` de ${fmtInt(totalGeoFiltro)} georref.`
+        : ` georref. no filtro`;
+      document.getElementById("map-count-badge").textContent = `${fmtInt(coords.length)}${sufixoTotal}`;
       if (coords.length > 0) {
         map.fitBounds(L.latLngBounds(coords), { padding: [28, 28], maxZoom: 16 });
       }
@@ -1610,11 +1679,33 @@
     function mudarPagina(delta) {
       const nova = paginaAtual + delta;
       if (nova < 1) return;
-      aplicarFiltros(nova);
+      aplicarFiltros(nova, true);
+    }
+
+    async function abrirDossiePorCIL(cil) {
+      const local = registosPaginaAtual.find(x => Number(x.cil) === Number(cil));
+      if (local) {
+        renderizarDossieObjeto(local);
+        return;
+      }
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?cil=eq.${cil}&limit=1`, { headers: HEADERS });
+        const d = await r.json();
+        if (Array.isArray(d) && d.length > 0) {
+          renderizarDossieObjeto(d[0]);
+        }
+      } catch (e) {
+        console.error("Erro ao abrir dossiê por CIL:", e);
+      }
     }
 
     function abrirDossie(idx) {
       const r = registosPaginaAtual[idx];
+      if (!r) return;
+      renderizarDossieObjeto(r);
+    }
+
+    function renderizarDossieObjeto(r) {
       if (!r) return;
 
       document.getElementById("d-badge-uc").textContent = `${r.desc_uni || "SANTIAGO"} • ${r.grup_tp_cli || "—"}`;
@@ -1720,18 +1811,52 @@
     async function exportarCSVFiltrado() {
       const btn = document.getElementById("btn-export");
       const txtOrig = btn.textContent;
-      btn.textContent = "⏳ A exportar até 5.000 registos...";
       btn.disabled = true;
 
       try {
-        const params = construirQueryParams();
-        params.append("limit", "5000");
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, { headers: HEADERS });
-        const dados = await r.json();
-        if (!dados.length) {
-          alert("Nenhum registo para exportar.");
+        const baseParams = construirQueryParams();
+        btn.textContent = "⏳ A iniciar exportação...";
+
+        // 1º lote de 1.000 + contagem total exata
+        const p1 = new URLSearchParams(baseParams);
+        p1.append("limit", "1000");
+        p1.append("offset", "0");
+
+        const r1 = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${p1.toString()}`, {
+          headers: { ...HEADERS, "Prefer": "count=exact" }
+        });
+        const range = r1.headers.get("Content-Range") || "0-0/0";
+        const totalExportar = parseInt((range.split("/")[1]) || "0", 10);
+        let dados = await r1.json();
+        if (!Array.isArray(dados) || !dados.length) {
+          alert("Nenhum registo para exportar com o filtro atual.");
           return;
         }
+
+        // Paginar em lotes paralelos de 1.000 até obter 100% dos registos filtrados
+        if (totalExportar > 1000 && dados.length === 1000) {
+          const offsets = [];
+          for (let off = 1000; off < totalExportar; off += 1000) {
+            offsets.push(off);
+          }
+          for (let i = 0; i < offsets.length; i += 4) {
+            const grupo = offsets.slice(i, i + 4);
+            const pct = Math.min(99, Math.round((dados.length / totalExportar) * 100));
+            btn.textContent = `⏳ Exportando ${fmtInt(dados.length)} / ${fmtInt(totalExportar)} (${pct}%)...`;
+            const lotes = await Promise.all(grupo.map(async (off) => {
+              const p = new URLSearchParams(baseParams);
+              p.append("limit", "1000");
+              p.append("offset", String(off));
+              const res = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${p.toString()}`, { headers: HEADERS });
+              return res.json();
+            }));
+            lotes.forEach(arr => {
+              if (Array.isArray(arr)) dados.push(...arr);
+            });
+          }
+        }
+
+        btn.textContent = `⏳ A gerar CSV (${fmtInt(dados.length)} linhas)...`;
         const cols = Object.keys(dados[0]);
         const csvLinhas = [
           cols.join(";"),
@@ -1741,7 +1866,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `EDEC_Santiago_Export_${new Date().toISOString().slice(0,10)}.csv`;
+        a.download = `EDEC_Santiago_Export_${dados.length}_reg_${new Date().toISOString().slice(0,10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
       } catch (e) {
