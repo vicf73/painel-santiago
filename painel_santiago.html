@@ -815,11 +815,11 @@
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod3" onclick="selecionarModulo('mod3')">
           👷 3. Despacho &amp; Técnicos
-          <span class="mod-pill-soon">Em Atualização</span>
+          <span class="mod-pill-soon" id="badge-tab-mod3" style="color:var(--accent-cyan); border-color:rgba(6,182,212,0.35);">ATIVO</span>
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod4" onclick="selecionarModulo('mod4')">
           📋 4. Formulário de Inspeção
-          <span class="mod-pill-soon">Em Atualização</span>
+          <span class="mod-pill-soon" id="badge-tab-mod4" style="color:var(--accent-emerald); border-color:rgba(16,185,129,0.35);">CAMPO</span>
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod5" onclick="selecionarModulo('mod5')">
           ⚖️ 5. Jurídico CF1 &amp; Cobrança
@@ -1140,7 +1140,314 @@
 
     </div><!-- FIM MÓDULO 1 -->
 
-    <!-- MÓDULOS 2 A 5: EM ATUALIZAÇÃO -->
+    <!-- ================================================================== -->
+    <!-- MÓDULO 3: DESPACHO DE ORDENS DE SERVIÇO & GESTÃO DE TÉCNICOS       -->
+    <!-- ================================================================== -->
+    <div id="modulo-mod3" class="module-pane hidden">
+
+      <!-- KPIS DE OPERAÇÃO DE CAMPO -->
+      <section class="kpi-strip">
+        <div class="kpi-card amber">
+          <div class="kpi-label"><span>ORDENS PENDENTES / EM CAMPO</span><span>FILA ATIVA</span></div>
+          <div class="kpi-value" id="m3-kpi-pendentes">0</div>
+          <div class="kpi-sub" id="m3-kpi-pendentes-sub">Aguardando inspeção no terreno</div>
+        </div>
+        <div class="kpi-card emerald">
+          <div class="kpi-label"><span>INSPEÇÕES CONCLUÍDAS</span><span>PRODUTIVIDADE</span></div>
+          <div class="kpi-value" id="m3-kpi-concluidas">0</div>
+          <div class="kpi-sub" id="m3-kpi-concluidas-sub">Taxa de execução: 0%</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-label"><span>FRAUDES / LIG. DIRETAS DETETADAS</span><span>CAMPO</span></div>
+          <div class="kpi-value" id="m3-kpi-fraudes">0</div>
+          <div class="kpi-sub" id="m3-kpi-fraudes-sub">Confirmadas pelas equipas</div>
+        </div>
+        <div class="kpi-card cyan">
+          <div class="kpi-label"><span>EQUIPAS / TÉCNICOS ATIVOS</span><span>SANTIAGO</span></div>
+          <div class="kpi-value" id="m3-kpi-tecnicos">0</div>
+          <div class="kpi-sub" id="m3-kpi-tecnicos-sub">Clique num técnico para filtrar</div>
+        </div>
+      </section>
+
+      <div style="display:grid; grid-template-columns: 1fr 2.1fr; gap:16px;" class="middle-grid">
+
+        <!-- COLUNA ESQUERDA: LISTA E CADASTRO DE TÉCNICOS / EQUIPAS -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <div class="panel-title">👷 Equipas &amp; Técnicos de Terreno</div>
+            <button class="btn" style="padding:3px 8px; font-size:11px;" onclick="filtrarPorTecnicoM3('')">Ver Todos</button>
+          </div>
+
+          <div style="padding:12px; border-bottom:1px solid var(--border-dim); background:var(--bg-input);">
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--accent-amber); text-transform:uppercase; margin-bottom:8px;">
+              + Registar Novo Técnico / Equipa
+            </div>
+            <div style="display:grid; grid-template-columns: 1.3fr 1fr; gap:6px; margin-bottom:6px;">
+              <input type="text" id="m3-novo-tec-nome" class="input-ctrl" placeholder="Nome (Ex: Carlos Silva)" />
+              <input type="text" id="m3-novo-tec-equipa" class="input-ctrl" placeholder="Equipa (Ex: Equipa 1)" />
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr auto; gap:6px;">
+              <select id="m3-novo-tec-zona" class="select-ctrl">
+                <option value="Praia">Praia</option>
+                <option value="Santa Catarina">Santa Catarina</option>
+                <option value="Santa Cruz">Santa Cruz</option>
+                <option value="Tarrafal">Tarrafal</option>
+                <option value="Calheta">Calheta</option>
+                <option value="São Domingos / Orgãos">São Domingos / Orgãos</option>
+                <option value="Santiago Geral">Santiago Geral</option>
+              </select>
+              <input type="text" id="m3-novo-tec-tel" class="input-ctrl mono" placeholder="Telemóvel (Opcional)" />
+              <button class="btn btn-amber" onclick="adicionarTecnico()">+ Adicionar</button>
+            </div>
+          </div>
+
+          <div class="ranking-list" id="m3-lista-tecnicos" style="max-height:480px;">
+            <div style="padding:16px; color:var(--text-muted);">Carregando técnicos...</div>
+          </div>
+        </div>
+
+        <!-- COLUNA DIREITA: DESPACHO DE TAREFAS + TABELA DE ORDENS DE SERVIÇO -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+
+          <!-- FORMULÁRIO DE ATRIBUIÇÃO DE TAREFA (INDIVIDUAL OU EM LOTE) -->
+          <div class="panel-box">
+            <div class="panel-header">
+              <div class="panel-title">🚀 Atribuir Nova Ordem de Inspeção ao Técnico</div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn" style="padding:4px 10px; font-size:11.5px; border-color:var(--accent-amber); color:var(--accent-amber);" onclick="despacharLoteFiltroAtual()" title="Envia automaticamente os Top 5 clientes mais críticos do filtro atual do Módulo 1 para o técnico selecionado">
+                  ⚡ Despachar Top 5 Alvos do Filtro (Módulo 1)
+                </button>
+              </div>
+            </div>
+
+            <div style="padding:14px; display:flex; flex-direction:column; gap:10px;">
+              <div style="display:grid; grid-template-columns: 1.2fr 1.3fr 1fr 1.1fr; gap:10px; align-items:end;">
+                <div class="field-group">
+                  <label>CIL do Cliente a Inspecionar *</label>
+                  <div style="display:flex; gap:5px;">
+                    <input type="text" id="m3-cil" class="input-ctrl mono" placeholder="Ex: 60060696" onkeydown="if(event.key==='Enter') precarregarCILDespacho()" />
+                    <button class="btn" style="padding:6px 10px;" onclick="precarregarCILDespacho()" title="Procurar dados do CIL">🔍</button>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label>Técnico / Equipa Responsável *</label>
+                  <select id="m3-select-tecnico" class="select-ctrl"></select>
+                </div>
+
+                <div class="field-group">
+                  <label>Prioridade</label>
+                  <select id="m3-prioridade" class="select-ctrl">
+                    <option value="URGENTE">🔴 URGENTE (Imediata)</option>
+                    <option value="ALTA">🟠 ALTA (Prioritária)</option>
+                    <option value="NORMAL">🔵 NORMAL (Rotina)</option>
+                  </select>
+                </div>
+
+                <div class="field-group">
+                  <label>Tipo de Missão</label>
+                  <select id="m3-tipo-missao" class="select-ctrl">
+                    <option value="Auditoria Fraude / Perdas">🚨 Auditoria Fraude / Perdas</option>
+                    <option value="Corte por Dívida">✂️ Corte por Dívida (S/ Pag. 2026)</option>
+                    <option value="Substituição de Contador">📟 Substituição de Contador</option>
+                    <option value="Verificação de Leitura / Acesso">🔎 Verificação de Leitura / Acesso</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- PREVIEW DO CLIENTE ENCONTRADO -->
+              <div id="m3-preview-cliente" style="display:none; padding:8px 12px; border-radius:4px; background:var(--bg-input); border:1px solid var(--accent-cyan); font-family:var(--font-mono); font-size:11.5px; color:var(--text-primary);">
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr auto; gap:10px; align-items:end;">
+                <div class="field-group">
+                  <label>Instruções / Notas para o Técnico em Campo</label>
+                  <input type="text" id="m3-notas" class="input-ctrl" placeholder="Ex: Verificar ramal de entrada e selos da tampa de bornes; reincidente CF1..." />
+                </div>
+                <button class="btn btn-amber" style="height:34px; padding:0 18px;" onclick="criarOrdemDespacho()" id="btn-criar-despacho">
+                  ➕ Atribuir Tarefa ao Técnico
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABELA DE ORDENS DE SERVIÇO DESPACHADAS -->
+          <div class="table-container">
+            <div class="panel-header" style="flex-wrap:wrap; gap:8px;">
+              <div class="panel-title">
+                📋 Fila de Tarefas e Ordens de Serviço Despachadas
+              </div>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <select id="m3-filtro-status" class="select-ctrl" style="width:auto; padding:4px 8px; font-size:11.5px;" onchange="renderizarTabelaOrdensM3()">
+                  <option value="">Todos os Estados</option>
+                  <option value="PENDENTE">⏳ Apenas Pendentes / Em Campo</option>
+                  <option value="CONCLUIDA">✅ Apenas Concluídas</option>
+                </select>
+                <button class="btn" style="padding:4px 10px; font-size:11.5px;" onclick="carregarDadosCampo()">🔄 Atualizar</button>
+                <button class="btn btn-amber" style="padding:4px 10px; font-size:11.5px;" onclick="exportarOrdensCSV()">⬇ Exportar Folha de Rota (CSV)</button>
+              </div>
+            </div>
+
+            <div class="table-scroll" style="max-height:420px;">
+              <table class="scada-table">
+                <thead>
+                  <tr>
+                    <th>Estado</th>
+                    <th>Prioridade</th>
+                    <th>Técnico / Equipa</th>
+                    <th>CIL</th>
+                    <th>Cliente / Localidade</th>
+                    <th>PT</th>
+                    <th>Contador</th>
+                    <th>Missão / Suspeita</th>
+                    <th>Resultado de Campo</th>
+                    <th>Data</th>
+                    <th style="text-align:right;">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="m3-tabela-ordens">
+                  <tr><td colspan="11" style="text-align:center; padding:24px; color:var(--text-secondary);">Carregando ordens de serviço...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- FIM MÓDULO 3 -->
+
+    <!-- ================================================================== -->
+    <!-- MÓDULO 4: FORMULÁRIO DE INSPEÇÃO NO TERRENO (LISTA DO TÉCNICO)     -->
+    <!-- ================================================================== -->
+    <div id="modulo-mod4" class="module-pane hidden">
+
+      <!-- BARRA DO TÉCNICO NO TERRENO -->
+      <div class="command-bar" style="flex-direction:row; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div style="font-family:var(--font-display); font-weight:700; font-size:15px; color:var(--accent-amber);">
+            👷 Selecionar Técnico / Equipa em Campo:
+          </div>
+          <select id="m4-select-meu-tecnico" class="select-ctrl" style="min-width:260px; font-weight:700; color:var(--accent-cyan);" onchange="renderizarListaTarefasTecnicoM4()">
+            <option value="">Todos os Técnicos / Equipas</option>
+          </select>
+          <select id="m4-filtro-minhas" class="select-ctrl" style="width:auto;" onchange="renderizarListaTarefasTecnicoM4()">
+            <option value="PENDENTE" selected>⏳ Tarefas Pendentes a Inspecionar</option>
+            <option value="CONCLUIDA">✅ Tarefas Já Inspecionadas</option>
+            <option value="">📋 Todas as Tarefas</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span class="panel-badge" id="m4-badge-contador-tarefas">0 tarefas na lista</span>
+          <button class="btn" onclick="limparFormularioInspecaoM4()">➕ Nova Inspeção Avulsa (Sem Ordem Prévia)</button>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1.15fr 1.45fr; gap:16px;" class="middle-grid">
+
+        <!-- COLUNA ESQUERDA: LISTA DE TAREFAS ATRIBUÍDAS AO TÉCNICO -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <div class="panel-title">📋 1. A Minha Lista de Tarefas para Inspecionar</div>
+            <span class="panel-badge">Toque num cliente para inspecionar</span>
+          </div>
+          <div class="ranking-list" id="m4-lista-minhas-tarefas" style="max-height:580px; padding:12px; gap:10px;">
+            <div style="padding:18px; color:var(--text-muted);">Carregando tarefas atribuídas...</div>
+          </div>
+        </div>
+
+        <!-- COLUNA DIREITA: FORMULÁRIO DE REGISTO DE INSPEÇÃO -->
+        <div class="panel-box" style="border-color:var(--border-bright);">
+          <div class="panel-header" style="background:linear-gradient(90deg, rgba(16,185,129,0.12), var(--bg-panel-elevated));">
+            <div class="panel-title" style="color:#34D399;">📝 2. Formulário de Registo de Inspeção no Terreno</div>
+            <span class="panel-badge" id="m4-badge-modo-form">Modo: Tarefa / Direto</span>
+          </div>
+
+          <div style="padding:16px; display:flex; flex-direction:column; gap:14px;">
+            <input type="hidden" id="m4-ordem-id" value="" />
+
+            <!-- IDENTIFICAÇÃO DO CIL E CLIENTE -->
+            <div style="background:var(--bg-input); border:1px solid var(--border-dim); border-radius:6px; padding:12px;">
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:end;">
+                <div class="field-group">
+                  <label>CIL do Local Inspecionado *</label>
+                  <div style="display:flex; gap:6px;">
+                    <input type="text" id="m4-cil" class="input-ctrl mono" style="font-weight:700; color:var(--accent-cyan); font-size:14px;" placeholder="Toque numa tarefa ou digite o CIL..." onkeydown="if(event.key==='Enter') carregarCILNoFormularioM4()" />
+                    <button class="btn" onclick="carregarCILNoFormularioM4()" title="Carregar dados deste CIL da base de contratos">🔍 Buscar CIL</button>
+                  </div>
+                </div>
+                <div class="field-group">
+                  <label>Técnico / Equipa Executora *</label>
+                  <select id="m4-form-tecnico" class="select-ctrl"></select>
+                </div>
+              </div>
+
+              <!-- FICHA RESUMO DO CLIENTE SELECIONADO -->
+              <div id="m4-ficha-cliente" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border-dim); display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; font-family:var(--font-mono); font-size:11.5px;">
+                <div><span style="color:var(--text-muted);">CLIENTE:</span> <strong id="m4-lbl-nome">—</strong></div>
+                <div><span style="color:var(--text-muted);">LOCAL / PT:</span> <strong id="m4-lbl-pt" style="color:var(--accent-cyan);">—</strong></div>
+                <div><span style="color:var(--text-muted);">CONTADOR BD:</span> <strong id="m4-lbl-cont" style="color:#FBBF24;">—</strong></div>
+                <div><span style="color:var(--text-muted);">DÍVIDA / RISCO:</span> <strong id="m4-lbl-risco">—</strong></div>
+                <div style="grid-column: 1 / -1;"><span style="color:var(--text-muted);">DIAGNÓSTICO / INSTRUÇÃO:</span> <span id="m4-lbl-motivo" style="color:#F87171;">Selecione uma tarefa ao lado ou pesquise um CIL acima.</span></div>
+              </div>
+
+              <div id="m4-box-gps" style="margin-top:8px; display:none;">
+                <a id="m4-link-gps" href="#" target="_blank" class="btn" style="width:100%; justify-content:center; text-decoration:none; border-color:var(--accent-cyan); color:var(--accent-cyan); font-size:12px;">
+                  📍 Abrir Localização Exata no Google Maps (Navegação GPS)
+                </a>
+              </div>
+            </div>
+
+            <!-- CAMPOS TÉCNICOS DA INSPEÇÃO -->
+            <div style="display:grid; grid-template-columns: 1.3fr 1fr; gap:12px;">
+              <div class="field-group">
+                <label>Resultado da Inspeção em Campo *</label>
+                <select id="m4-resultado" class="select-ctrl" style="font-weight:700; height:36px;">
+                  <option value="">-- Selecione a Constatação no Local --</option>
+                  <option value="Fraude Confirmada (Auto CF1)">🚨 Fraude Confirmada (Auto CF1 Lavrado)</option>
+                  <option value="Ligação Direta / Clandestina">⚡ Ligação Direta / Clandestina</option>
+                  <option value="Cortado por Dívida">✂️ Cortado por Dívida / Inadimplência</option>
+                  <option value="Contador Avariado / Substituído">📟 Contador Avariado / Substituído</option>
+                  <option value="Cliente Ausente / Sem Acesso">🔒 Cliente Ausente / Sem Acesso ao Contador</option>
+                  <option value="Instalação Normal / Regular">✅ Instalação Normal / Sem Anomalia (Falso Positivo)</option>
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label>Leitura Encontrada no Contador (kWh)</label>
+                <input type="number" step="any" id="m4-leitura" class="input-ctrl mono" placeholder="Ex: 14820" />
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div class="field-group">
+                <label>Nº do Selo Aplicado / Verificado</label>
+                <input type="text" id="m4-selo" class="input-ctrl mono" placeholder="Ex: SELO-88412" />
+              </div>
+
+              <div class="field-group">
+                <label>Nº do Auto de Fraude CF1 (Se aplicável)</label>
+                <input type="text" id="m4-auto-cf1" class="input-ctrl mono" placeholder="Ex: CF1-2026/0419" />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label>Relatório Técnico / Observações de Campo *</label>
+              <textarea id="m4-observacoes" rows="3" class="input-ctrl" style="resize:vertical;" placeholder="Descreva o que foi constatado no local (estado do ramal, selos, display do contador, corte efetuado, contacto do cliente, etc.)..."></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding-top:4px;">
+              <div id="m4-feedback-msg" style="font-family:var(--font-mono); font-size:12px; font-weight:600;"></div>
+              <button class="btn btn-amber" style="padding:10px 22px; font-size:13.5px;" id="btn-salvar-inspecao" onclick="submeterFormularioInspecaoM4()">
+                💾 Gravar Inspeção &amp; Concluir Tarefa
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- FIM MÓDULO 4 -->
+
+    <!-- MÓDULOS 2 E 5: EM ATUALIZAÇÃO -->
     <div id="modulo-em-atualizacao" class="module-pane hidden">
       <div class="under-update-box">
         <div class="under-update-icon" id="mod-upd-icon">🚧</div>
@@ -1227,14 +1534,23 @@
       if (btnAtivo) btnAtivo.classList.add("active");
 
       const paneMod1 = document.getElementById("modulo-mod1");
+      const paneMod3 = document.getElementById("modulo-mod3");
+      const paneMod4 = document.getElementById("modulo-mod4");
       const paneUpd = document.getElementById("modulo-em-atualizacao");
 
+      [paneMod1, paneMod3, paneMod4, paneUpd].forEach(p => { if (p) p.classList.add("hidden"); });
+
       if (modId === "mod1") {
-        paneUpd.classList.add("hidden");
         paneMod1.classList.remove("hidden");
         if (map) {
           setTimeout(() => map.invalidateSize(), 60);
         }
+      } else if (modId === "mod3") {
+        paneMod3.classList.remove("hidden");
+        carregarDadosCampo();
+      } else if (modId === "mod4") {
+        paneMod4.classList.remove("hidden");
+        carregarDadosCampo();
       } else {
         const info = INFO_MODULOS[modId] || {
           icone: "🚧",
@@ -1244,7 +1560,6 @@
         document.getElementById("mod-upd-icon").textContent = info.icone;
         document.getElementById("mod-upd-titulo").textContent = info.titulo;
         document.getElementById("mod-upd-desc").textContent = info.desc;
-        paneMod1.classList.add("hidden");
         paneUpd.classList.remove("hidden");
       }
     }
@@ -1913,8 +2228,11 @@
       renderizarDossieObjeto(r);
     }
 
+    let ultimoDossieCliente = null;
+
     function renderizarDossieObjeto(r) {
       if (!r) return;
+      ultimoDossieCliente = r;
 
       document.getElementById("d-badge-uc").textContent = `${r.desc_uni || "SANTIAGO"} • ${r.grup_tp_cli || "—"}`;
       document.getElementById("d-nome").textContent = r.nome || "CLIENTE SEM NOME";
@@ -1927,6 +2245,21 @@
       const temCf1 = (r.cf1_qtd_autos || 0) > 0;
 
       document.getElementById("drawer-content").innerHTML = `
+        <div class="dossier-section" style="border-color:rgba(6,182,212,0.5); background:rgba(6,182,212,0.06);">
+          <h4 style="color:var(--accent-cyan);">🚀 Ação Tática de Terreno (Despacho &amp; Inspeção)</h4>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-amber" style="flex:1; justify-content:center;" onclick="enviarClienteParaDespachoM3()">
+              👷 Atribuir a Técnico (Módulo 3)
+            </button>
+            <button class="btn" style="flex:1; justify-content:center; border-color:var(--accent-emerald); color:#34D399;" onclick="enviarClienteParaInspecaoM4()">
+              📋 Preencher Inspeção Agora (Módulo 4)
+            </button>
+          </div>
+          <div id="d-historico-inspecoes" style="margin-top:8px; font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary);">
+            Consultando histórico de ordens/inspeções deste CIL...
+          </div>
+        </div>
+
         <div class="dossier-section" style="border-color:rgba(239,68,68,0.45); background:rgba(239,68,68,0.06);">
           <h4>🔥 Diagnóstico do Motor de Score de Risco de Fraude / Perdas</h4>
           <div class="dossier-grid">
@@ -2010,10 +2343,696 @@
       `;
 
       document.getElementById("drawer-backdrop").classList.add("open");
+      carregarHistoricoInspecoesDossie(r.cil);
     }
 
     function fecharDossie() {
       document.getElementById("drawer-backdrop").classList.remove("open");
+    }
+
+    // =========================================================================
+    // MÓDULO 3 (DESPACHO & TÉCNICOS) E MÓDULO 4 (FORMULÁRIO DE INSPEÇÃO)
+    // =========================================================================
+    let listaTecnicosCache = [];
+    let listaOrdensCache = [];
+    let filtroTecnicoM3 = "";
+    let clientePrecarregadoM3 = null;
+    let clientePrecarregadoM4 = null;
+
+    async function carregarDadosCampo() {
+      try {
+        const [rTec, rOrd] = await Promise.all([
+          fetch(`${SUPABASE_URL}/rest/v1/tecnicos_santiago?ativo=eq.true&order=id.asc`, { headers: HEADERS }),
+          fetch(`${SUPABASE_URL}/rest/v1/inspecoes_santiago?order=data_atribuicao.desc&limit=500`, { headers: HEADERS })
+        ]);
+        listaTecnicosCache = await rTec.json();
+        listaOrdensCache = await rOrd.json();
+        if (!Array.isArray(listaTecnicosCache)) listaTecnicosCache = [];
+        if (!Array.isArray(listaOrdensCache)) listaOrdensCache = [];
+
+        atualizarSelectsTecnicos();
+        renderizarPainelM3();
+        renderizarListaTarefasTecnicoM4();
+      } catch (e) {
+        console.error("Erro ao carregar dados de campo:", e);
+      }
+    }
+
+    function atualizarSelectsTecnicos() {
+      const selM3 = document.getElementById("m3-select-tecnico");
+      const selM4Filtro = document.getElementById("m4-select-meu-tecnico");
+      const selM4Form = document.getElementById("m4-form-tecnico");
+
+      const valM3 = selM3?.value || "";
+      const valM4Filtro = selM4Filtro?.value || "";
+      const valM4Form = selM4Form?.value || "";
+
+      if (selM3) {
+        selM3.innerHTML = listaTecnicosCache.map(t =>
+          `<option value="${t.id}" data-nome="${t.nome}" data-equipa="${t.equipa}">${t.nome} (${t.unidade_zona || "Santiago"})</option>`
+        ).join("");
+        if (valM3) selM3.value = valM3;
+      }
+
+      if (selM4Filtro) {
+        selM4Filtro.innerHTML = `<option value="">👷 Todos os Técnicos / Equipas (${listaOrdensCache.filter(o => o.status === 'PENDENTE').length} pendentes)</option>` +
+          listaTecnicosCache.map(t => {
+            const pend = listaOrdensCache.filter(o => o.status === "PENDENTE" && (Number(o.tecnico_id) === Number(t.id) || o.tecnico_nome === t.nome)).length;
+            return `<option value="${t.nome}">${t.nome} (${pend} pendentes)</option>`;
+          }).join("");
+        if (valM4Filtro) selM4Filtro.value = valM4Filtro;
+      }
+
+      if (selM4Form) {
+        selM4Form.innerHTML = listaTecnicosCache.map(t =>
+          `<option value="${t.nome}" data-id="${t.id}" data-equipa="${t.equipa}">${t.nome}</option>`
+        ).join("");
+        if (valM4Form) selM4Form.value = valM4Form;
+      }
+    }
+
+    function renderizarPainelM3() {
+      const pendentes = listaOrdensCache.filter(o => o.status === "PENDENTE" || o.status === "EM_CAMPO");
+      const concluidas = listaOrdensCache.filter(o => o.status === "CONCLUIDA");
+      const fraudes = concluidas.filter(o => (o.resultado || "").includes("Fraude") || (o.resultado || "").includes("Ligação Direta"));
+      const total = listaOrdensCache.length;
+      const pct = total > 0 ? Math.round((concluidas.length / total) * 100) : 0;
+
+      document.getElementById("m3-kpi-pendentes").textContent = fmtInt(pendentes.length);
+      document.getElementById("m3-kpi-pendentes-sub").textContent = `${fmtInt(pendentes.filter(x => x.prioridade === 'URGENTE').length)} urgentes em fila`;
+      document.getElementById("m3-kpi-concluidas").textContent = fmtInt(concluidas.length);
+      document.getElementById("m3-kpi-concluidas-sub").textContent = `Taxa de execução: ${pct}% (${fmtInt(total)} ordens)`;
+      document.getElementById("m3-kpi-fraudes").textContent = fmtInt(fraudes.length);
+      document.getElementById("m3-kpi-fraudes-sub").textContent = `${fmtInt(concluidas.filter(x => (x.resultado || '').includes('Cortado')).length)} cortes por dívida efetuados`;
+      document.getElementById("m3-kpi-tecnicos").textContent = fmtInt(listaTecnicosCache.length);
+      document.getElementById("m3-kpi-tecnicos-sub").textContent = filtroTecnicoM3 ? `Filtrando: ${filtroTecnicoM3}` : "Clique num técnico para filtrar";
+
+      const badgeMod3 = document.getElementById("badge-tab-mod3");
+      if (badgeMod3) badgeMod3.textContent = pendentes.length > 0 ? `${pendentes.length} PEND.` : "ATIVO";
+
+      // Lista de técnicos na coluna esquerda do Módulo 3
+      const contTec = document.getElementById("m3-lista-tecnicos");
+      if (!listaTecnicosCache.length) {
+        contTec.innerHTML = `<div style="padding:16px; color:var(--text-muted);">Nenhum técnico cadastrado. Adicione acima.</div>`;
+      } else {
+        contTec.innerHTML = listaTecnicosCache.map(t => {
+          const ordTec = listaOrdensCache.filter(o => Number(o.tecnico_id) === Number(t.id) || o.tecnico_nome === t.nome);
+          const pend = ordTec.filter(o => o.status === "PENDENTE").length;
+          const conc = ordTec.filter(o => o.status === "CONCLUIDA").length;
+          const ativo = filtroTecnicoM3 === t.nome ? "active" : "";
+          const nomeEsc = t.nome.replace(/'/g, "\\'");
+          return `
+            <div class="rank-item ${ativo}" onclick="filtrarPorTecnicoM3('${nomeEsc}')">
+              <div class="rank-top">
+                <span>👷 ${t.nome}</span>
+                <span class="badge ${pend > 0 ? 'badge-warn' : 'badge-ok'}">${pend} Pend. / ${conc} Conc.</span>
+              </div>
+              <div class="rank-metrics">
+                <span>Zona: <strong>${t.unidade_zona || "Santiago"}</strong> (${t.equipa || "Equipa"})</span>
+                <span style="display:flex; gap:6px;">
+                  <button class="btn" style="padding:1px 6px; font-size:10px;" onclick="event.stopPropagation(); abrirListaDoTecnicoNoM4('${nomeEsc}')">📋 Ver no Mód. 4</button>
+                  <button class="btn" style="padding:1px 6px; font-size:10px; color:#F87171;" onclick="event.stopPropagation(); removerTecnico(${t.id})" title="Remover técnico">✕</button>
+                </span>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      renderizarTabelaOrdensM3();
+    }
+
+    function filtrarPorTecnicoM3(nomeTec) {
+      filtroTecnicoM3 = (filtroTecnicoM3 === nomeTec) ? "" : nomeTec;
+      renderizarPainelM3();
+    }
+
+    function abrirListaDoTecnicoNoM4(nomeTec) {
+      selecionarModulo("mod4");
+      const sel = document.getElementById("m4-select-meu-tecnico");
+      if (sel) {
+        sel.value = nomeTec;
+        renderizarListaTarefasTecnicoM4();
+      }
+    }
+
+    async function adicionarTecnico() {
+      const nome = document.getElementById("m3-novo-tec-nome").value.trim();
+      const equipa = document.getElementById("m3-novo-tec-equipa").value.trim() || "Equipa 1";
+      const zona = document.getElementById("m3-novo-tec-zona").value;
+      const tel = document.getElementById("m3-novo-tec-tel").value.trim();
+      if (!nome) {
+        alert("Digite o nome do técnico ou equipa.");
+        return;
+      }
+      const nomeCompleto = nome.includes("•") ? nome : `${equipa} • ${nome}`;
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/tecnicos_santiago`, {
+          method: "POST",
+          headers: HEADERS,
+          body: JSON.stringify({ nome: nomeCompleto, equipa, unidade_zona: zona, telefone: tel, ativo: true })
+        });
+        document.getElementById("m3-novo-tec-nome").value = "";
+        document.getElementById("m3-novo-tec-tel").value = "";
+        await carregarDadosCampo();
+      } catch (e) {
+        alert("Erro ao adicionar técnico: " + e.message);
+      }
+    }
+
+    async function removerTecnico(id) {
+      if (!confirm("Deseja remover este técnico/equipa da lista ativa?")) return;
+      try {
+        await fetch(`${SUPABASE_URL}/rest/v1/tecnicos_santiago?id=eq.${id}`, {
+          method: "PATCH",
+          headers: HEADERS,
+          body: JSON.stringify({ ativo: false })
+        });
+        await carregarDadosCampo();
+      } catch (e) {
+        alert("Erro ao remover técnico: " + e.message);
+      }
+    }
+
+    async function buscarDadosContratoPorCIL(rawCil) {
+      const limpo = String(rawCil || "").replace(/\D/g, "");
+      if (!limpo) return null;
+      let num = parseInt(limpo, 10);
+      let cilNorm = (limpo.length <= 6 && num < 1000000) ? (60000000 + num) : num;
+
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?cil=in.(${num},${cilNorm})&limit=1`, { headers: HEADERS });
+      const d = await r.json();
+      return (Array.isArray(d) && d.length > 0) ? d[0] : null;
+    }
+
+    async function precarregarCILDespacho() {
+      const inp = document.getElementById("m3-cil");
+      const preview = document.getElementById("m3-preview-cliente");
+      const reg = await buscarDadosContratoPorCIL(inp.value);
+      clientePrecarregadoM3 = reg;
+      if (reg) {
+        inp.value = reg.cil;
+        preview.style.display = "block";
+        preview.innerHTML = `✅ <strong>CIL ${reg.cil}</strong> • ${reg.nome || "—"} | <strong>Unidade:</strong> ${reg.desc_uni || "—"} (${reg.localidade || "—"}) | <strong>PT:</strong> ${(reg.pt || "—").trim()} | <strong>Contador:</strong> ${reg.contador || "S/ Cont."} | <strong>Risco:</strong> ${reg.score_risco || 0}/100 (${reg.motivo_risco || "—"}) | <strong>Dívida:</strong> ${fmtECV(reg.valor)}`;
+      } else {
+        preview.style.display = "block";
+        preview.innerHTML = `⚠️ CIL não encontrado na base consolidada (será registado apenas com o número informado).`;
+      }
+    }
+
+    async function criarOrdemDespacho() {
+      const rawCil = document.getElementById("m3-cil").value.trim();
+      if (!rawCil) {
+        alert("Informe o CIL do cliente para atribuir a tarefa.");
+        return;
+      }
+      const selTec = document.getElementById("m3-select-tecnico");
+      const optTec = selTec.options[selTec.selectedIndex];
+      if (!optTec) {
+        alert("Selecione um técnico ou equipa.");
+        return;
+      }
+
+      const btn = document.getElementById("btn-criar-despacho");
+      btn.disabled = true;
+      try {
+        let reg = clientePrecarregadoM3;
+        if (!reg || String(reg.cil) !== rawCil.replace(/\D/g, "")) {
+          reg = await buscarDadosContratoPorCIL(rawCil);
+        }
+        const cilFinal = reg ? reg.cil : parseInt(rawCil.replace(/\D/g, ""), 10);
+        const payload = {
+          cil: cilFinal,
+          nome_cliente: reg?.nome || "Cliente em Averiguação",
+          desc_uni: reg?.desc_uni || null,
+          localidade: reg?.localidade || null,
+          pt: reg?.pt ? reg.pt.trim() : null,
+          contador: reg?.contador || null,
+          lat: reg?.lat || null,
+          long: reg?.long || null,
+          score_risco: reg?.score_risco || 0,
+          nivel_risco: reg?.nivel_risco || "MÉDIO",
+          motivo_alerta: reg?.motivo_risco || null,
+          valor_divida: reg?.valor || 0,
+          tecnico_id: parseInt(optTec.value, 10) || null,
+          tecnico_nome: optTec.getAttribute("data-nome") || optTec.textContent,
+          equipa: optTec.getAttribute("data-equipa") || "Equipa",
+          prioridade: document.getElementById("m3-prioridade").value,
+          tipo_missao: document.getElementById("m3-tipo-missao").value,
+          notas_despacho: document.getElementById("m3-notas").value.trim() || null,
+          status: "PENDENTE"
+        };
+
+        await fetch(`${SUPABASE_URL}/rest/v1/inspecoes_santiago`, {
+          method: "POST",
+          headers: HEADERS,
+          body: JSON.stringify(payload)
+        });
+
+        document.getElementById("m3-cil").value = "";
+        document.getElementById("m3-notas").value = "";
+        document.getElementById("m3-preview-cliente").style.display = "none";
+        clientePrecarregadoM3 = null;
+        await carregarDadosCampo();
+      } catch (e) {
+        alert("Erro ao criar ordem de inspeção: " + e.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function despacharLoteFiltroAtual() {
+      const selTec = document.getElementById("m3-select-tecnico");
+      const optTec = selTec?.options[selTec.selectedIndex];
+      if (!optTec) {
+        alert("Selecione primeiro o Técnico / Equipa que receberá os alvos.");
+        return;
+      }
+      const tecNome = optTec.getAttribute("data-nome") || optTec.textContent;
+      const alvos = registosPaginaAtual.slice(0, 5);
+      if (!alvos.length) {
+        alert("Não há contratos carregados no filtro atual do Módulo 1.");
+        return;
+      }
+      if (!confirm(`Deseja atribuir os Top ${alvos.length} clientes do filtro atual para "${tecNome}"?`)) return;
+
+      const cilsPendentes = new Set(listaOrdensCache.filter(o => o.status === "PENDENTE").map(o => Number(o.cil)));
+      const payloads = alvos.filter(r => !cilsPendentes.has(Number(r.cil))).map(reg => ({
+        cil: reg.cil,
+        nome_cliente: reg.nome || "Cliente",
+        desc_uni: reg.desc_uni || null,
+        localidade: reg.localidade || null,
+        pt: reg.pt ? reg.pt.trim() : null,
+        contador: reg.contador || null,
+        lat: reg.lat || null,
+        long: reg.long || null,
+        score_risco: reg.score_risco || 0,
+        nivel_risco: reg.nivel_risco || "ALTO",
+        motivo_alerta: reg.motivo_risco || null,
+        valor_divida: reg.valor || 0,
+        tecnico_id: parseInt(optTec.value, 10) || null,
+        tecnico_nome: tecNome,
+        equipa: optTec.getAttribute("data-equipa") || "Equipa",
+        prioridade: document.getElementById("m3-prioridade").value,
+        tipo_missao: document.getElementById("m3-tipo-missao").value,
+        notas_despacho: document.getElementById("m3-notas").value.trim() || "Despacho em lote a partir do filtro tático",
+        status: "PENDENTE"
+      }));
+
+      if (!payloads.length) {
+        alert("Estes 5 clientes já possuem tarefas pendentes atribuídas.");
+        return;
+      }
+
+      await fetch(`${SUPABASE_URL}/rest/v1/inspecoes_santiago`, {
+        method: "POST",
+        headers: HEADERS,
+        body: JSON.stringify(payloads)
+      });
+      await carregarDadosCampo();
+    }
+
+    function renderizarTabelaOrdensM3() {
+      const tbody = document.getElementById("m3-tabela-ordens");
+      const stFiltro = document.getElementById("m3-filtro-status")?.value || "";
+      let lista = listaOrdensCache.slice();
+      if (filtroTecnicoM3) {
+        lista = lista.filter(o => o.tecnico_nome === filtroTecnicoM3);
+      }
+      if (stFiltro) {
+        lista = lista.filter(o => o.status === stFiltro);
+      }
+
+      if (!lista.length) {
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:28px; color:var(--text-muted);">Nenhuma ordem de serviço encontrada para este filtro.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = lista.map(o => {
+        const stBadge = o.status === "CONCLUIDA"
+          ? `<span class="badge badge-ok">✅ CONCLUÍDA</span>`
+          : `<span class="badge badge-warn">⏳ PENDENTE</span>`;
+
+        const prioBadge = o.prioridade === "URGENTE"
+          ? `<span class="badge badge-danger">🔴 URGENTE</span>`
+          : (o.prioridade === "ALTA" ? `<span class="badge badge-warn">🟠 ALTA</span>` : `<span class="badge badge-info">🔵 NORMAL</span>`);
+
+        const resTxt = o.resultado
+          ? `<span class="badge ${(o.resultado.includes('Fraude') || o.resultado.includes('Direta')) ? 'badge-danger' : 'badge-ok'}" title="${o.observacoes_campo || ''}">${o.resultado}</span>`
+          : `<span style="color:var(--text-muted);">Aguardando campo</span>`;
+
+        const dtStr = (o.data_conclusao || o.data_atribuicao || "").slice(0, 16).replace("T", " ");
+
+        return `
+          <tr>
+            <td>${stBadge}</td>
+            <td>${prioBadge}</td>
+            <td style="font-weight:600; color:var(--accent-cyan);">${o.tecnico_nome || "—"}</td>
+            <td class="mono-cell" style="font-weight:700;">${o.cil}</td>
+            <td>${o.nome_cliente || "—"} <span style="color:var(--text-muted); font-size:11px;">(${o.localidade || o.desc_uni || "—"})</span></td>
+            <td class="mono-cell">${o.pt || "—"}</td>
+            <td class="mono-cell">${o.contador || "—"}</td>
+            <td style="font-size:11.5px;" title="${o.notas_despacho || o.motivo_alerta || ''}">
+              <strong>${o.tipo_missao || "Inspeção"}</strong>
+              ${o.notas_despacho ? `<div style="color:var(--accent-amber); font-size:11px;">Nota: ${o.notas_despacho}</div>` : ""}
+            </td>
+            <td>${resTxt}</td>
+            <td class="mono-cell" style="font-size:11px; color:var(--text-secondary);">${dtStr}</td>
+            <td style="text-align:right;">
+              <button class="btn" style="padding:3px 8px; font-size:11px;" onclick="selecionarTarefaParaInspecaoM4(${o.id}, true)">📋 Inspecionar</button>
+              <button class="btn" style="padding:3px 7px; font-size:11px; color:#F87171;" onclick="eliminarOrdem(${o.id})" title="Eliminar ordem">🗑</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function eliminarOrdem(id) {
+      if (!confirm("Deseja remover esta ordem de serviço?")) return;
+      await fetch(`${SUPABASE_URL}/rest/v1/inspecoes_santiago?id=eq.${id}`, {
+        method: "DELETE",
+        headers: HEADERS
+      });
+      await carregarDadosCampo();
+    }
+
+    function exportarOrdensCSV() {
+      if (!listaOrdensCache.length) {
+        alert("Não há ordens de serviço para exportar.");
+        return;
+      }
+      const cols = ["id", "status", "prioridade", "tecnico_nome", "cil", "nome_cliente", "desc_uni", "localidade", "pt", "contador", "valor_divida", "tipo_missao", "motivo_alerta", "notas_despacho", "resultado", "leitura_encontrada", "num_selo", "num_auto_cf1", "observacoes_campo", "data_atribuicao", "data_conclusao"];
+      const linhas = [
+        cols.join(";"),
+        ...listaOrdensCache.map(row => cols.map(c => `"${String(row[c] ?? "").replace(/"/g, '""')}"`).join(";"))
+      ];
+      const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `EDEC_Ordens_Inspecao_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================================================================
+    // MÓDULO 4: LISTA DE TAREFAS DO TÉCNICO + FORMULÁRIO DE INSPEÇÃO
+    // =========================================================================
+    function renderizarListaTarefasTecnicoM4() {
+      const container = document.getElementById("m4-lista-minhas-tarefas");
+      const meuTec = document.getElementById("m4-select-meu-tecnico")?.value || "";
+      const stFiltro = document.getElementById("m4-filtro-minhas")?.value ?? "PENDENTE";
+      const ordemAtivaId = Number(document.getElementById("m4-ordem-id")?.value || 0);
+
+      let minhas = listaOrdensCache.slice();
+      if (meuTec) {
+        minhas = minhas.filter(o => o.tecnico_nome === meuTec);
+        const selFormTec = document.getElementById("m4-form-tecnico");
+        if (selFormTec) selFormTec.value = meuTec;
+      }
+      if (stFiltro) {
+        minhas = minhas.filter(o => o.status === stFiltro);
+      }
+
+      document.getElementById("m4-badge-contador-tarefas").textContent = `${fmtInt(minhas.length)} tarefa(s) na lista`;
+
+      if (!minhas.length) {
+        container.innerHTML = `
+          <div style="padding:24px; text-align:center; color:var(--text-muted); border:1px dashed var(--border-dim); border-radius:6px;">
+            Nenhuma tarefa ${stFiltro === 'PENDENTE' ? 'pendente' : ''} para o filtro selecionado.<br/><br/>
+            Pode atribuir novas tarefas no <strong>Módulo 3 (Despacho)</strong> ou digitar diretamente um <strong>CIL</strong> no formulário ao lado.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = minhas.map(o => {
+        const ativa = ordemAtivaId === Number(o.id) ? "active" : "";
+        const gmaps = (o.lat && o.long) ? `https://www.google.com/maps?q=${String(o.lat).trim()},${String(o.long).trim()}` : null;
+        const badgePrio = o.prioridade === "URGENTE"
+          ? `<span class="badge badge-danger">🔴 URGENTE</span>`
+          : (o.prioridade === "ALTA" ? `<span class="badge badge-warn">🟠 ALTA</span>` : `<span class="badge badge-info">🔵 NORMAL</span>`);
+
+        return `
+          <div class="rank-item ${ativa}" onclick="selecionarTarefaParaInspecaoM4(${o.id}, false)" style="padding:10px 12px;">
+            <div class="rank-top">
+              <span style="font-family:var(--font-mono); color:var(--accent-cyan); font-size:13px;">CIL ${o.cil} • ${o.nome_cliente || "—"}</span>
+              ${o.status === "CONCLUIDA" ? `<span class="badge badge-ok">✅ ${o.resultado || "Concluída"}</span>` : badgePrio}
+            </div>
+            <div class="rank-metrics" style="margin-top:4px;">
+              <span>📍 <strong>${o.localidade || o.desc_uni || "Santiago"}</strong> | PT: <strong style="color:#E2E8F0;">${o.pt || "—"}</strong></span>
+              <span>📟 Cont: <strong style="color:#FBBF24;">${o.contador || "S/ Cont."}</strong> | Dív: <strong>${fmtECV(o.valor_divida)}</strong></span>
+            </div>
+            <div style="font-size:11.5px; color:var(--text-secondary); margin-top:4px;">
+              🎯 <strong>${o.tipo_missao || "Inspeção"}:</strong> ${o.motivo_alerta || "Verificação técnica"}
+              ${o.notas_despacho ? `<div style="color:var(--accent-amber); margin-top:2px;">💬 Instrução: ${o.notas_despacho}</div>` : ""}
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; padding-top:6px; border-top:1px solid var(--border-dim);">
+              <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">👷 ${o.tecnico_nome}</span>
+              <div style="display:flex; gap:6px;">
+                ${gmaps ? `<a href="${gmaps}" target="_blank" onclick="event.stopPropagation();" class="btn" style="padding:3px 8px; font-size:11px; text-decoration:none; color:var(--accent-cyan);">📍 GPS Maps</a>` : ""}
+                <button class="btn btn-amber" style="padding:3px 10px; font-size:11px;" onclick="event.stopPropagation(); selecionarTarefaParaInspecaoM4(${o.id}, false)">
+                  📝 Preencher Formulário →
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selecionarTarefaParaInspecaoM4(ordemId, mudarParaMod4 = false) {
+      if (mudarParaMod4) {
+        selecionarModulo("mod4");
+      }
+      const o = listaOrdensCache.find(x => Number(x.id) === Number(ordemId));
+      if (!o) return;
+
+      document.getElementById("m4-ordem-id").value = o.id;
+      document.getElementById("m4-cil").value = o.cil;
+      document.getElementById("m4-badge-modo-form").textContent = `Ordem #${o.id} (${o.status})`;
+
+      const selTec = document.getElementById("m4-form-tecnico");
+      if (selTec && o.tecnico_nome) selTec.value = o.tecnico_nome;
+
+      document.getElementById("m4-lbl-nome").textContent = o.nome_cliente || "—";
+      document.getElementById("m4-lbl-pt").textContent = `${o.localidade || o.desc_uni || "—"} • PT: ${o.pt || "—"}`;
+      document.getElementById("m4-lbl-cont").textContent = o.contador || "Sem Contador";
+      document.getElementById("m4-lbl-risco").textContent = `${fmtECV(o.valor_divida)} (Score ${o.score_risco || 0}/100)`;
+      document.getElementById("m4-lbl-motivo").textContent =
+        `${o.tipo_missao || "Inspeção"}: ${o.motivo_alerta || "—"}${o.notas_despacho ? " | Nota: " + o.notas_despacho : ""}`;
+
+      const boxGps = document.getElementById("m4-box-gps");
+      const linkGps = document.getElementById("m4-link-gps");
+      if (o.lat && o.long) {
+        boxGps.style.display = "block";
+        linkGps.href = `https://www.google.com/maps?q=${String(o.lat).trim()},${String(o.long).trim()}`;
+      } else {
+        boxGps.style.display = "none";
+      }
+
+      document.getElementById("m4-resultado").value = o.resultado || "";
+      document.getElementById("m4-leitura").value = o.leitura_encontrada ?? "";
+      document.getElementById("m4-selo").value = o.num_selo || "";
+      document.getElementById("m4-auto-cf1").value = o.num_auto_cf1 || "";
+      document.getElementById("m4-observacoes").value = o.observacoes_campo || "";
+      document.getElementById("m4-feedback-msg").textContent = "";
+
+      renderizarListaTarefasTecnicoM4();
+    }
+
+    async function carregarCILNoFormularioM4() {
+      const rawCil = document.getElementById("m4-cil").value.trim();
+      if (!rawCil) return;
+
+      // Verificar se já existe ordem pendente para este CIL
+      const ordExistente = listaOrdensCache.find(o => String(o.cil) === rawCil.replace(/\D/g, "") && o.status === "PENDENTE");
+      if (ordExistente) {
+        selecionarTarefaParaInspecaoM4(ordExistente.id, false);
+        return;
+      }
+
+      const reg = await buscarDadosContratoPorCIL(rawCil);
+      clientePrecarregadoM4 = reg;
+      document.getElementById("m4-ordem-id").value = "";
+      document.getElementById("m4-badge-modo-form").textContent = "Inspeção Direta / Avulsa";
+
+      if (reg) {
+        document.getElementById("m4-cil").value = reg.cil;
+        document.getElementById("m4-lbl-nome").textContent = reg.nome || "—";
+        document.getElementById("m4-lbl-pt").textContent = `${reg.localidade || reg.desc_uni || "—"} • PT: ${(reg.pt || "—").trim()}`;
+        document.getElementById("m4-lbl-cont").textContent = reg.contador || "Sem Contador";
+        document.getElementById("m4-lbl-risco").textContent = `${fmtECV(reg.valor)} (Score ${reg.score_risco || 0}/100)`;
+        document.getElementById("m4-lbl-motivo").textContent = reg.motivo_risco || "Inspeção Direta";
+
+        const boxGps = document.getElementById("m4-box-gps");
+        const linkGps = document.getElementById("m4-link-gps");
+        if (reg.lat && reg.long) {
+          boxGps.style.display = "block";
+          linkGps.href = `https://www.google.com/maps?q=${String(reg.lat).trim()},${String(reg.long).trim()}`;
+        } else {
+          boxGps.style.display = "none";
+        }
+      } else {
+        document.getElementById("m4-lbl-nome").textContent = "CIL Não Encontrado na Base";
+        document.getElementById("m4-lbl-pt").textContent = "—";
+        document.getElementById("m4-lbl-cont").textContent = "—";
+        document.getElementById("m4-lbl-risco").textContent = "—";
+        document.getElementById("m4-lbl-motivo").textContent = "Registo manual de CIL em campo";
+        document.getElementById("m4-box-gps").style.display = "none";
+      }
+    }
+
+    function limparFormularioInspecaoM4() {
+      document.getElementById("m4-ordem-id").value = "";
+      document.getElementById("m4-cil").value = "";
+      document.getElementById("m4-badge-modo-form").textContent = "Nova Inspeção Avulsa";
+      document.getElementById("m4-lbl-nome").textContent = "—";
+      document.getElementById("m4-lbl-pt").textContent = "—";
+      document.getElementById("m4-lbl-cont").textContent = "—";
+      document.getElementById("m4-lbl-risco").textContent = "—";
+      document.getElementById("m4-lbl-motivo").textContent = "Digite o CIL acima e clique em Buscar CIL.";
+      document.getElementById("m4-box-gps").style.display = "none";
+      document.getElementById("m4-resultado").value = "";
+      document.getElementById("m4-leitura").value = "";
+      document.getElementById("m4-selo").value = "";
+      document.getElementById("m4-auto-cf1").value = "";
+      document.getElementById("m4-observacoes").value = "";
+      document.getElementById("m4-feedback-msg").textContent = "";
+      clientePrecarregadoM4 = null;
+      renderizarListaTarefasTecnicoM4();
+    }
+
+    async function submeterFormularioInspecaoM4() {
+      const ordemId = document.getElementById("m4-ordem-id").value;
+      const rawCil = document.getElementById("m4-cil").value.trim();
+      const tecNome = document.getElementById("m4-form-tecnico").value;
+      const resultado = document.getElementById("m4-resultado").value;
+      const leituraRaw = document.getElementById("m4-leitura").value;
+      const selo = document.getElementById("m4-selo").value.trim();
+      const autoCf1 = document.getElementById("m4-auto-cf1").value.trim();
+      const obs = document.getElementById("m4-observacoes").value.trim();
+      const fb = document.getElementById("m4-feedback-msg");
+
+      if (!rawCil) {
+        alert("Selecione uma tarefa na lista ou informe o número do CIL.");
+        return;
+      }
+      if (!resultado) {
+        alert("Selecione o Resultado da Inspeção em Campo.");
+        return;
+      }
+
+      const btn = document.getElementById("btn-salvar-inspecao");
+      btn.disabled = true;
+      fb.style.color = "var(--accent-cyan)";
+      fb.textContent = "⏳ A gravar no Supabase...";
+
+      try {
+        const leituraNum = leituraRaw !== "" ? parseFloat(leituraRaw) : null;
+        if (ordemId) {
+          // Atualizar Ordem de Serviço existente para CONCLUIDA
+          await fetch(`${SUPABASE_URL}/rest/v1/inspecoes_santiago?id=eq.${ordemId}`, {
+            method: "PATCH",
+            headers: HEADERS,
+            body: JSON.stringify({
+              tecnico_nome: tecNome,
+              status: "CONCLUIDA",
+              resultado,
+              leitura_encontrada: isNaN(leituraNum) ? null : leituraNum,
+              num_selo: selo || null,
+              num_auto_cf1: autoCf1 || null,
+              observacoes_campo: obs || null,
+              data_conclusao: new Date().toISOString()
+            })
+          });
+        } else {
+          // Inserir Inspeção Espontânea / Direta já como CONCLUIDA
+          const reg = clientePrecarregadoM4 || await buscarDadosContratoPorCIL(rawCil);
+          const cilFinal = reg ? reg.cil : parseInt(rawCil.replace(/\D/g, ""), 10);
+          await fetch(`${SUPABASE_URL}/rest/v1/inspecoes_santiago`, {
+            method: "POST",
+            headers: HEADERS,
+            body: JSON.stringify({
+              cil: cilFinal,
+              nome_cliente: reg?.nome || "Inspeção Avulsa em Campo",
+              desc_uni: reg?.desc_uni || null,
+              localidade: reg?.localidade || null,
+              pt: reg?.pt ? reg.pt.trim() : null,
+              contador: reg?.contador || null,
+              lat: reg?.lat || null,
+              long: reg?.long || null,
+              score_risco: reg?.score_risco || 0,
+              nivel_risco: reg?.nivel_risco || "MÉDIO",
+              motivo_alerta: reg?.motivo_risco || "Inspeção Direta",
+              valor_divida: reg?.valor || 0,
+              tecnico_nome: tecNome,
+              prioridade: "NORMAL",
+              tipo_missao: "Inspeção Direta em Campo",
+              status: "CONCLUIDA",
+              resultado,
+              leitura_encontrada: isNaN(leituraNum) ? null : leituraNum,
+              num_selo: selo || null,
+              num_auto_cf1: autoCf1 || null,
+              observacoes_campo: obs || null,
+              data_conclusao: new Date().toISOString()
+            })
+          });
+        }
+
+        fb.style.color = "#34D399";
+        fb.textContent = `✅ Inspeção do CIL ${rawCil} gravada com sucesso!`;
+        await carregarDadosCampo();
+      } catch (e) {
+        fb.style.color = "#F87171";
+        fb.textContent = "Erro ao gravar: " + e.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Atalhos diretos a partir do Dossiê Técnico 360º
+    async function carregarHistoricoInspecoesDossie(cil) {
+      const box = document.getElementById("d-historico-inspecoes");
+      if (!box) return;
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/inspecoes_santiago?cil=eq.${cil}&order=data_atribuicao.desc`, { headers: HEADERS });
+        const lista = await r.json();
+        if (!Array.isArray(lista) || !lista.length) {
+          box.innerHTML = `<span style="color:var(--text-muted);">Nenhuma ordem de serviço ou inspeção de campo registada para este CIL.</span>`;
+          return;
+        }
+        box.innerHTML = lista.map(o => `
+          <div style="padding:6px 8px; margin-top:4px; border-radius:4px; background:var(--bg-panel); border:1px solid var(--border-dim);">
+            <strong>${o.status === 'CONCLUIDA' ? '✅ CONCLUÍDA' : '⏳ PENDENTE'}</strong> • 👷 ${o.tecnico_nome}
+            ${o.resultado ? ` • <strong style="color:#FBBF24;">${o.resultado}</strong>` : ""}
+            ${o.observacoes_campo ? `<div style="color:var(--text-primary); margin-top:2px;">💬 ${o.observacoes_campo}</div>` : ""}
+          </div>
+        `).join("");
+      } catch (e) {
+        box.textContent = "";
+      }
+    }
+
+    function enviarClienteParaDespachoM3() {
+      if (!ultimoDossieCliente) return;
+      const r = ultimoDossieCliente;
+      fecharDossie();
+      selecionarModulo("mod3");
+      clientePrecarregadoM3 = r;
+      document.getElementById("m3-cil").value = r.cil;
+      const preview = document.getElementById("m3-preview-cliente");
+      preview.style.display = "block";
+      preview.innerHTML = `✅ <strong>CIL ${r.cil}</strong> • ${r.nome || "—"} | <strong>Unidade:</strong> ${r.desc_uni || "—"} (${r.localidade || "—"}) | <strong>PT:</strong> ${(r.pt || "—").trim()} | <strong>Contador:</strong> ${r.contador || "S/ Cont."} | <strong>Dívida:</strong> ${fmtECV(r.valor)}`;
+    }
+
+    function enviarClienteParaInspecaoM4() {
+      if (!ultimoDossieCliente) return;
+      const r = ultimoDossieCliente;
+      fecharDossie();
+      selecionarModulo("mod4");
+      document.getElementById("m4-cil").value = r.cil;
+      carregarCILNoFormularioM4();
     }
 
     async function exportarCSVFiltrado() {
@@ -2089,6 +3108,7 @@
       iniciarMapa();
       carregarListasFiltros();
       aplicarFiltros(1);
+      carregarDadosCampo();
     });
   </script>
 </body>
