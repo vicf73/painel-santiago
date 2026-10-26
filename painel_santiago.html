@@ -661,6 +661,113 @@
       .pagination-bar > div:last-child {
         justify-content: center;
       }
+      .module-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+    }
+
+    /* MODULE NAVIGATION TABS */
+    .module-nav {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .module-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mod-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .mod-tab-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-panel-elevated);
+      border-color: var(--border-dim);
+    }
+
+    .mod-tab-btn.active {
+      color: #070A0F;
+      background: linear-gradient(135deg, var(--accent-amber), #D97706);
+      border-color: #FBBF24;
+      font-weight: 700;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.28);
+    }
+
+    .mod-pill-soon {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: rgba(148, 163, 184, 0.14);
+      color: var(--text-secondary);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      text-transform: uppercase;
+    }
+
+    .mod-tab-btn.active .mod-pill-soon {
+      background: rgba(7, 10, 15, 0.2);
+      color: #070A0F;
+      border-color: rgba(7, 10, 15, 0.35);
+    }
+
+    .module-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .module-pane.hidden {
+      display: none !important;
+    }
+
+    .under-update-box {
+      background: var(--bg-panel);
+      border: 1px dashed var(--border-bright);
+      border-radius: 8px;
+      padding: 64px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      min-height: 420px;
+    }
+
+    .under-update-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: var(--accent-amber-glow);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      display: grid;
+      place-items: center;
+      font-size: 26px;
     }
   </style>
 </head>
@@ -695,6 +802,37 @@
   </header>
 
   <main class="workspace">
+
+    <!-- BARRA DE NAVEGAÇÃO POR MÓDULOS -->
+    <nav class="module-nav" aria-label="Módulos do Sistema">
+      <div class="module-tabs">
+        <button class="mod-tab-btn active" id="tab-btn-mod1" onclick="selecionarModulo('mod1')">
+          📊 1. Triagem &amp; Contratos
+        </button>
+        <button class="mod-tab-btn" id="tab-btn-mod2" onclick="selecionarModulo('mod2')">
+          🗺️ 2. Mapa GIS &amp; Balanço PT
+          <span class="mod-pill-soon">Em Atualização</span>
+        </button>
+        <button class="mod-tab-btn" id="tab-btn-mod3" onclick="selecionarModulo('mod3')">
+          👷 3. Despacho &amp; Técnicos
+          <span class="mod-pill-soon">Em Atualização</span>
+        </button>
+        <button class="mod-tab-btn" id="tab-btn-mod4" onclick="selecionarModulo('mod4')">
+          📋 4. Formulário de Inspeção
+          <span class="mod-pill-soon">Em Atualização</span>
+        </button>
+        <button class="mod-tab-btn" id="tab-btn-mod5" onclick="selecionarModulo('mod5')">
+          ⚖️ 5. Jurídico CF1 &amp; Cobrança
+          <span class="mod-pill-soon">Em Atualização</span>
+        </button>
+      </div>
+      <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted); padding-right:6px;">
+        ARQUITETURA MODULAR • EDEC SANTIAGO
+      </div>
+    </nav>
+
+    <!-- MÓDULO 1: CENTRO DE COMANDO, TRIAGEM E CONTRATOS (ATIVO) -->
+    <div id="modulo-mod1" class="module-pane">
 
     <!-- 1. KPI COMMAND STRIP (8 CARDS) -->
     <section class="kpi-strip">
@@ -1000,6 +1138,25 @@
       </div>
     </section>
 
+    </div><!-- FIM MÓDULO 1 -->
+
+    <!-- MÓDULOS 2 A 5: EM ATUALIZAÇÃO -->
+    <div id="modulo-em-atualizacao" class="module-pane hidden">
+      <div class="under-update-box">
+        <div class="under-update-icon" id="mod-upd-icon">🚧</div>
+        <span class="brand-tag" style="font-size:11.5px; padding:4px 10px;">EM ATUALIZAÇÃO</span>
+        <h2 style="font-family:var(--font-display); font-size:22px; color:var(--text-primary);" id="mod-upd-titulo">
+          Módulo em Atualização
+        </h2>
+        <p style="max-width:560px; color:var(--text-secondary); font-size:13.5px; line-height:1.6;" id="mod-upd-desc">
+          Este módulo encontra-se atualmente em fase de implementação e será ativado nas próximas atualizações do Projeto Santiago (EDEC).
+        </p>
+        <button class="btn btn-amber" style="margin-top:8px;" onclick="selecionarModulo('mod1')">
+          ◀ Voltar para 1. Triagem &amp; Contratos
+        </button>
+      </div>
+    </div>
+
   </main>
 
   <!-- SLIDE-OVER TECHNICAL DOSSIER DRAWER -->
@@ -1040,6 +1197,57 @@
 
     const fmtInt = (n) => (n === null || n === undefined || isNaN(n)) ? "0" : Number(n).toLocaleString("pt-PT");
     const fmtECV = (n) => (n === null || n === undefined || isNaN(n)) ? "0 ECV" : Number(n).toLocaleString("pt-PT", { maximumFractionDigits: 0 }) + " ECV";
+
+    const INFO_MODULOS = {
+      mod2: {
+        icone: "🗺️",
+        titulo: "2. Mapa GIS & Balanço Energético de PTs — Em Atualização",
+        desc: "Em atualização: Integração dos Polígonos Geográficos das zonas de cada PT, cadastro técnico dos Transformadores e cálculo de Perda Energética por PT (kWh medido no PT vs soma da faturação T3 dos clientes)."
+      },
+      mod3: {
+        icone: "👷",
+        titulo: "3. Despacho & Gestão de Equipas Técnicas — Em Atualização",
+        desc: "Em atualização: Gestão de técnicos de terreno, atribuição de Ordens de Serviço por PT/Localidade e acompanhamento de produtividade das equipas em tempo real."
+      },
+      mod4: {
+        icone: "📋",
+        titulo: "4. Formulário de Inspeção no Terreno — Em Atualização",
+        desc: "Em atualização: Interface móvel para registo de inspeções no local (Fraude Confirmada, Corte por Dívida, Substituição de Contador, Leitura, Nº de Selo e Observações)."
+      },
+      mod5: {
+        icone: "⚖️",
+        titulo: "5. Auditoria Jurídica CF1 & Recuperação COB_J — Em Atualização",
+        desc: "Em atualização: Painel dedicado ao acompanhamento de processos de fraude enviados ao Ministério Público, reincidências CF1 e planos de amortização de dívida 2026."
+      }
+    };
+
+    function selecionarModulo(modId) {
+      document.querySelectorAll(".mod-tab-btn").forEach(btn => btn.classList.remove("active"));
+      const btnAtivo = document.getElementById(`tab-btn-${modId}`);
+      if (btnAtivo) btnAtivo.classList.add("active");
+
+      const paneMod1 = document.getElementById("modulo-mod1");
+      const paneUpd = document.getElementById("modulo-em-atualizacao");
+
+      if (modId === "mod1") {
+        paneUpd.classList.add("hidden");
+        paneMod1.classList.remove("hidden");
+        if (map) {
+          setTimeout(() => map.invalidateSize(), 60);
+        }
+      } else {
+        const info = INFO_MODULOS[modId] || {
+          icone: "🚧",
+          titulo: "Módulo em Atualização",
+          desc: "Este módulo está em atualização."
+        };
+        document.getElementById("mod-upd-icon").textContent = info.icone;
+        document.getElementById("mod-upd-titulo").textContent = info.titulo;
+        document.getElementById("mod-upd-desc").textContent = info.desc;
+        paneMod1.classList.add("hidden");
+        paneUpd.classList.remove("hidden");
+      }
+    }
 
     function iniciarMapa() {
       map = L.map("santiago-map", { preferCanvas: true }).setView([15.05, -23.60], 10);
