@@ -809,6 +809,12 @@
         <button class="mod-tab-btn active" id="tab-btn-mod1" onclick="selecionarModulo('mod1')">
           📊 1. Triagem &amp; Contratos
         </button>
+
+        <button class="mod-tab-btn" id="tab-btn-mod3" onclick="selecionarModulo('mod3')">
+
+          💰 3. Dívida &amp; Inadimplência
+
+        </button>
         <button class="mod-tab-btn" id="tab-btn-mod2" onclick="selecionarModulo('mod2')">
           🗺️ 2. Mapa GIS &amp; Balanço PT
           <span class="mod-pill-soon">Em Atualização</span>
@@ -1204,22 +1210,34 @@
       }
     };
 
+    let dividaIniciada = false;
+
     function selecionarModulo(modId) {
       document.querySelectorAll(".mod-tab-btn").forEach(btn => btn.classList.remove("active"));
       const btnAtivo = document.getElementById(`tab-btn-${modId}`);
       if (btnAtivo) btnAtivo.classList.add("active");
 
       const paneMod1 = document.getElementById("modulo-mod1");
+      const paneMod3 = document.getElementById("modulo-mod3");
       const paneUpd = document.getElementById("modulo-em-atualizacao");
+
+      // Esconder todos inicialmente
+      paneMod1.classList.add("hidden");
+      if (paneMod3) paneMod3.classList.add("hidden");
+      paneUpd.classList.add("hidden");
 
       if (modId === "mod1") {
         paneMod1.classList.remove("hidden");
-        paneUpd.classList.add("hidden");
         if (map) {
           setTimeout(() => map.invalidateSize(), 60);
         }
+      } else if (modId === "mod3") {
+        if (paneMod3) paneMod3.classList.remove("hidden");
+        if (!dividaIniciada) {
+          dividaIniciada = true;
+          aplicarFiltrosDivida(1);
+        }
       } else {
-        paneMod1.classList.add("hidden");
         const info = INFO_MODULOS[modId] || {
           icone: "🚧",
           titulo: "Módulo em Atualização",
@@ -2076,6 +2094,285 @@
       carregarListasFiltros();
       aplicarFiltros(1);
     });
+  
+    // =========================================================================
+    // MÓDULO 3: GESTÃO DEDICADA DE DÍVIDA & INADIMPLÊNCIA
+    // =========================================================================
+    let paginaDividaAtual = 1;
+    let totalDevedoresFiltrados = 0;
+    let tokenFiltroDivida = 0;
+    let registosDividaPagina = [];
+
+    function resetarFiltrosDivida() {
+      document.getElementById("div-busca").value = "";
+      document.getElementById("div-uni").value = "";
+      document.getElementById("div-localidade").value = "";
+      document.getElementById("div-grupo").value = "";
+      document.getElementById("div-produto").value = "";
+      document.getElementById("div-faixa").value = "todas";
+      document.getElementById("div-cobranca").value = "";
+      document.getElementById("div-qtd-fat").value = "";
+      document.getElementById("div-ordem").value = "valor.desc";
+      aplicarFiltrosDivida(1);
+    }
+
+    function construirParamsDivida() {
+      const p = new URLSearchParams();
+      // REGRA DE OURO: Apenas registos com Dívida > 0
+      p.append("valor", "gt.0");
+
+      const buscaRaw = (document.getElementById("div-busca")?.value || "").trim();
+      const uni = document.getElementById("div-uni")?.value || "";
+      const loc = (document.getElementById("div-localidade")?.value || "").trim();
+      const grupo = document.getElementById("div-grupo")?.value || "";
+      const prod = document.getElementById("div-produto")?.value || "";
+      const faixa = document.getElementById("div-faixa")?.value || "todas";
+      const cob = document.getElementById("div-cobranca")?.value || "";
+      const qtdFat = document.getElementById("div-qtd-fat")?.value || "";
+      const ordem = document.getElementById("div-ordem")?.value || "valor.desc";
+
+      if (uni) p.append("desc_uni", `eq.${uni}`);
+      if (loc) p.append("localidade", `ilike.*${loc}*`);
+      if (grupo) p.append("grup_tp_cli", `eq.${grupo}`);
+      if (prod) p.append("produto", `eq.${prod}`);
+      if (cob) p.append("status_cobranca", `eq.${cob}`);
+
+      // Faixas de Dívida
+      if (faixa === "grandes") p.append("valor", "gte.1000000");
+      else if (faixa === "250k") p.append("valor", "gte.250000");
+      else if (faixa === "50k") p.append("valor", "gte.50000");
+      else if (faixa === "10k") p.append("valor", "gte.10000");
+      else if (faixa === "ate10k") p.append("valor", "lte.10000");
+
+      // Qtd de faturas
+      if (qtdFat === "1a3") {
+        p.append("qtd", "gte.1");
+        p.append("qtd", "lte.3");
+      } else if (qtdFat === "4a12") {
+        p.append("qtd", "gte.4");
+        p.append("qtd", "lte.12");
+      } else if (qtdFat === "gt12") {
+        p.append("qtd", "gt.12");
+      }
+
+      // Busca por CIL, ID, NIB ou Nome
+      if (buscaRaw) {
+        const info = interpretarBusca(buscaRaw, "auto");
+        if (info.ehNumero) {
+          if (info.cilNorm && info.cilNorm !== info.numExato) {
+            p.append("or", `(cil.eq.${info.cilNorm},cil.eq.${info.numExato},id_cliente.eq.${info.numExato},nib.eq.${info.numExato})`);
+          } else {
+            p.append("or", `(cil.eq.${info.numExato},id_cliente.eq.${info.numExato},nib.eq.${info.numExato})`);
+          }
+        } else {
+          p.append("nome", `ilike.*${info.texto}*`);
+        }
+      }
+
+      p.append("order", `${ordem}.nullslast`);
+      return p;
+    }
+
+    async function aplicarFiltrosDivida(pagina = 1) {
+      const token = ++tokenFiltroDivida;
+      paginaDividaAtual = pagina;
+      const offset = (paginaDividaAtual - 1) * PAGE_SIZE;
+
+      const tbody = document.getElementById("tabela-divida-corpo");
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:32px; color:var(--text-secondary);">Consultando devedores no Supabase...</td></tr>`;
+      }
+
+      const params = construirParamsDivida();
+      params.append("limit", PAGE_SIZE);
+      params.append("offset", offset);
+
+      atualizarKPIsDivida(token);
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, {
+          headers: { ...HEADERS, "Prefer": "count=exact" }
+        });
+        if (token !== tokenFiltroDivida) return;
+
+        const cr = r.headers.get("content-range");
+        if (cr) {
+          const m = cr.match(/\/(\d+|\*)/);
+          if (m && m[1] !== "*") totalDevedoresFiltrados = parseInt(m[1], 10);
+        }
+
+        registosDividaPagina = await r.json();
+        renderizarTabelaDivida(registosDividaPagina);
+        atualizarPaginacaoDivida();
+      } catch (e) {
+        console.error("Erro ao carregar tabela de dívida:", e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; color:#F87171; padding:24px;">Erro ao consultar dívidas: ${e.message}</td></tr>`;
+      }
+    }
+
+    async function atualizarKPIsDivida(token) {
+      // Chama o resumo RPC passando p_divida = 'gt0' e os filtros compatíveis
+      const uni = document.getElementById("div-uni")?.value || null;
+      const grupo = document.getElementById("div-grupo")?.value || null;
+      const cob = document.getElementById("div-cobranca")?.value || null;
+      const busca = (document.getElementById("div-busca")?.value || "").trim();
+      const infoBusca = busca ? interpretarBusca(busca, "auto") : {};
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_resumo_santiago`, {
+          method: "POST",
+          headers: HEADERS,
+          body: JSON.stringify({
+            p_desc_uni: uni,
+            p_est_ctr: null,
+            p_grup_tp_cli: grupo,
+            p_anomalia: null,
+            p_alerta_desvio: null,
+            p_mat_contador: null,
+            p_mat_leitura: null,
+            p_nivel_risco: null,
+            p_pt: null,
+            p_cf1_filtro: null,
+            p_status_cobranca: cob,
+            p_divida: "gt0",
+            p_busca: infoBusca.texto || null,
+            p_tipo_busca: infoBusca.modo || "auto"
+          })
+        });
+        if (token !== tokenFiltroDivida) return;
+        const d = await r.json();
+
+        const totDiv = d.total_divida || 0;
+        const totCont = d.total_contratos || d.com_divida || 0;
+        const semPagDiv = d.divida_sem_pagamento || 0;
+        const qtdSemPag = d.devedor_sem_pagamento || 0;
+        const qtdAmort = d.com_cobranca_2026 || 0;
+        const totFat = d.total_faturas_divida || 0;
+
+        document.getElementById("kpi-div-total").textContent = fmtECV(totDiv);
+        document.getElementById("kpi-div-total-sub").textContent = `${fmtInt(totCont)} clientes com dívida`;
+
+        document.getElementById("kpi-div-critica").textContent = fmtECV(semPagDiv);
+        document.getElementById("kpi-div-critica-sub").textContent = `${fmtInt(qtdSemPag)} clientes s/ amortizar 2026`;
+
+        const divAmort = Math.max(0, totDiv - semPagDiv);
+        document.getElementById("kpi-div-amort").textContent = fmtECV(divAmort);
+        document.getElementById("kpi-div-amort-sub").textContent = `${fmtInt(qtdAmort)} pagando com saldo`;
+
+        document.getElementById("kpi-div-faturas").textContent = fmtInt(totFat);
+        const medFat = totCont > 0 ? (totFat / totCont).toFixed(1) : "0";
+        document.getElementById("kpi-div-faturas-sub").textContent = `Média: ${medFat} faturas/cliente`;
+
+        document.getElementById("kpi-div-contratos").textContent = fmtInt(totCont);
+        document.getElementById("kpi-div-contratos-sub").textContent = `Inadimplência filtrada`;
+
+        document.getElementById("div-contagem-total").textContent = `${fmtInt(totalDevedoresFiltrados || totCont)} contratos encontrados`;
+      } catch (e) {
+        console.error("Erro ao atualizar KPIs de dívida:", e);
+      }
+    }
+
+    function renderizarTabelaDivida(linhas) {
+      const tbody = document.getElementById("tabela-divida-corpo");
+      if (!tbody) return;
+
+      if (!linhas || !linhas.length) {
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato devedor encontrado com os filtros selecionados.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = linhas.map(r => {
+        const valDiv = r.valor || 0;
+        const qtdFat = r.qtd || 0;
+        const pago2026 = r.cob_valor_total || 0;
+        const stCob = r.status_cobranca || "";
+        const isGrande = valDiv >= 1000000;
+
+        const badgeDiv = isGrande
+          ? `<span class="badge badge-danger" title="Grande Devedor (> 1M ECV)">🔥 ${fmtInt(valDiv)} ECV</span>`
+          : `<span style="font-family:var(--font-mono); font-weight:600; color:#FBBF24;">${fmtInt(valDiv)} ECV</span>`;
+
+        const badgeSt = stCob === "Devedor Sem Pagamento 2026"
+          ? `<span class="badge badge-danger">🚨 Sem Pag. 2026</span>`
+          : (pago2026 > 0 ? `<span class="badge badge-warn">🟡 Em Amortização</span>` : `<span style="color:var(--text-muted);">${stCob || '—'}</span>`);
+
+        const badgeRisco = r.nivel_risco === "CRÍTICO"
+          ? `<span class="badge badge-danger">CRÍTICO</span>`
+          : (r.nivel_risco === "ALTO" ? `<span class="badge badge-warn">ALTO</span>` : `<span class="badge badge-ok">${r.nivel_risco || 'BAIXO'}</span>`);
+
+        return `
+          <tr>
+            <td style="font-family:var(--font-mono); font-weight:600; color:var(--accent-cyan);">${r.cil}</td>
+            <td style="font-family:var(--font-mono); color:var(--text-muted);">${r.id_cliente || '—'}</td>
+            <td style="font-weight:500; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.nome || ''}">${r.nome || '—'}</td>
+            <td><span class="badge" style="background:#131C2B; border:1px solid var(--border-bright);">${r.desc_uni || '—'}</span></td>
+            <td style="color:var(--text-secondary); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.localidade || ''}">${r.localidade || '—'}</td>
+            <td>${r.grup_tp_cli || '—'}</td>
+            <td><span class="badge" style="font-family:var(--font-mono);">${r.produto || '—'}</span></td>
+            <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(qtdFat)}</td>
+            <td style="text-align:right;">${badgeDiv}</td>
+            <td style="text-align:right; font-family:var(--font-mono); color:#34D399;">${pago2026 > 0 ? fmtInt(pago2026) + ' ECV' : '<span style="color:var(--text-muted);">0</span>'}</td>
+            <td>${badgeSt}</td>
+            <td>${badgeRisco}</td>
+            <td style="text-align:center;">
+              <button class="btn btn-sm" onclick="abrirDossieTecnico(${r.cil})" title="Ver Ficha Técnica Completa">Ver Ficha</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function atualizarPaginacaoDivida() {
+      const totalPags = Math.max(1, Math.ceil(totalDevedoresFiltrados / PAGE_SIZE));
+      const info = document.getElementById("div-paginacao-info");
+      if (info) {
+        info.textContent = `Página ${paginaDividaAtual} de ${totalPags} (${fmtInt(totalDevedoresFiltrados)} devedores)`;
+      }
+
+      const gerarBotoes = () => `
+        <button class="btn btn-sm" ${paginaDividaAtual <= 1 ? "disabled" : ""} onclick="aplicarFiltrosDivida(1)">« Primeira</button>
+        <button class="btn btn-sm" ${paginaDividaAtual <= 1 ? "disabled" : ""} onclick="aplicarFiltrosDivida(${paginaDividaAtual - 1})">‹ Anterior</button>
+        <span style="font-family:var(--font-mono); font-size:12px; padding:0 8px;">Pág. ${paginaDividaAtual}</span>
+        <button class="btn btn-sm" ${paginaDividaAtual >= totalPags ? "disabled" : ""} onclick="aplicarFiltrosDivida(${paginaDividaAtual + 1})">Próxima ›</button>
+        <button class="btn btn-sm" ${paginaDividaAtual >= totalPags ? "disabled" : ""} onclick="aplicarFiltrosDivida(${totalPags})">Última »</button>
+      `;
+
+      const top = document.getElementById("div-paginacao-topo");
+      const bot = document.getElementById("div-paginacao-baixo");
+      if (top) top.innerHTML = gerarBotoes();
+      if (bot) bot.innerHTML = gerarBotoes();
+    }
+
+    async function exportarCSVDivida() {
+      const params = construirParamsDivida();
+      params.append("limit", "5000"); // Exporta até 5.000 clientes prioritários
+      params.append("select", "cil,id_cliente,nome,desc_uni,localidade,grup_tp_cli,produto,tarifa,valor,qtd,cob_valor_total,status_cobranca,score_risco,nivel_risco");
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, { headers: HEADERS });
+        const dados = await r.json();
+        if (!dados.length) {
+          alert("Nenhum devedor encontrado para exportar.");
+          return;
+        }
+
+        const cols = Object.keys(dados[0]);
+        const csvLinhas = [
+          cols.join(";"),
+          ...dados.map(row => cols.map(c => `"${String(row[c] ?? "").replace(/"/g, '""')}"`).join(";"))
+        ];
+        const blob = new Blob(["\uFEFF" + csvLinhas.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `EDEC_Divida_Santiago_${dados.length}_devedores_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        alert("Erro ao exportar CSV de dívida: " + e.message);
+      }
+    }
+
   </script>
 </body>
 </html>
