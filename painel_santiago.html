@@ -1140,6 +1140,203 @@
 
 
     <!-- MÓDULOS 2 E 5: EM ATUALIZAÇÃO -->
+    
+    <!-- ================================================================= -->
+    <!-- MÓDULO 3: GESTÃO DEDICADA DE DÍVIDA & INADIMPLÊNCIA (ATIVO)        -->
+    <!-- ================================================================= -->
+    <div id="modulo-mod3" class="module-pane hidden">
+
+      <!-- Faixa de KPIs Executivos de Dívida -->
+      <section class="kpi-strip">
+        <div class="kpi-card amber">
+          <div class="kpi-label"><span>DÍVIDA TOTAL FILTRADA</span><span>SANTIAGO (ECV)</span></div>
+          <div class="kpi-value" id="kpi-div-total">--</div>
+          <div class="kpi-sub" id="kpi-div-total-sub">Carregando dívidas...</div>
+        </div>
+
+        <div class="kpi-card red">
+          <div class="kpi-label"><span>INADIMPLÊNCIA CRÍTICA</span><span>SEM PAG. 2026</span></div>
+          <div class="kpi-value" id="kpi-div-critica">--</div>
+          <div class="kpi-sub" id="kpi-div-critica-sub">-- clientes estagnados</div>
+        </div>
+
+        <div class="kpi-card emerald">
+          <div class="kpi-label"><span>EM AMORTIZAÇÃO</span><span>RECUPERANDO</span></div>
+          <div class="kpi-value" id="kpi-div-amort">--</div>
+          <div class="kpi-sub" id="kpi-div-amort-sub">-- pagadores ativos</div>
+        </div>
+
+        <div class="kpi-card purple">
+          <div class="kpi-label"><span>FATURAS EM DÍVIDA</span><span>TOTAL TÍTULOS</span></div>
+          <div class="kpi-value" id="kpi-div-faturas">--</div>
+          <div class="kpi-sub" id="kpi-div-faturas-sub">Média: -- fat/cliente</div>
+        </div>
+
+        <div class="kpi-card cyan">
+          <div class="kpi-label"><span>TOTAL DEVEDORES</span><span>CONTRATOS</span></div>
+          <div class="kpi-value" id="kpi-div-contratos">--</div>
+          <div class="kpi-sub" id="kpi-div-contratos-sub">--% da base filtrada</div>
+        </div>
+      </section>
+
+      <!-- Painel de Filtros Especializados de Dívida -->
+      <section class="filter-panel" style="margin-bottom:18px;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="icon">🔍</span>
+            Filtros Especializados de Inadimplência &amp; Grandes Devedores
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn" onclick="resetarFiltrosDivida()">↺ Limpar Filtros</button>
+            <button class="btn btn-amber" onclick="exportarCSVDivida()">⬇ Exportar Lista de Devedores (CSV)</button>
+          </div>
+        </div>
+
+        <div class="filters-grid">
+          <!-- Busca Rápida -->
+          <div class="field-group" style="grid-column: span 2;">
+            <label>Pesquisa Rápida (CIL, ID Cliente, Nome, NIB)</label>
+            <div class="search-box">
+              <input type="text" id="div-busca" class="input-ctrl" placeholder="Ex: 60017107, 60103056, Maria..." onkeydown="if(event.key==='Enter') aplicarFiltrosDivida(1)">
+              <button class="btn" onclick="aplicarFiltrosDivida(1)">Pesquisar</button>
+            </div>
+          </div>
+
+          <!-- Unidade Comercial / Concelho -->
+          <div class="field-group">
+            <label>Unidade Comercial (Concelho)</label>
+            <select id="div-uni" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="">Todas as Unidades</option>
+              <option value="Praia">Praia</option>
+              <option value="Santa Catarina">Santa Catarina</option>
+              <option value="Santa Cruz">Santa Cruz</option>
+              <option value="Tarrafal">Tarrafal</option>
+              <option value="Calheta S. Miguel">Calheta S. Miguel</option>
+              <option value="São Domingos">São Domingos</option>
+            </select>
+          </div>
+
+          <!-- Localidade / Bairro -->
+          <div class="field-group">
+            <label>Localidade / Bairro</label>
+            <input type="text" id="div-localidade" class="input-ctrl" placeholder="Ex: Palmarejo, Assomada..." onkeydown="if(event.key==='Enter') aplicarFiltrosDivida(1)">
+          </div>
+
+          <!-- Tipo de Cliente -->
+          <div class="field-group">
+            <label>Tipo de Cliente</label>
+            <select id="div-grupo" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="">Todos os Tipos</option>
+              <option value="Doméstico">Doméstico</option>
+              <option value="Empresa Privada">Empresa Privada</option>
+              <option value="Autarquia">Autarquia</option>
+              <option value="Estado">Estado</option>
+              <option value="Empresa Publica">Empresa Pública</option>
+            </select>
+          </div>
+
+          <!-- Produto -->
+          <div class="field-group">
+            <label>Produto / Nível Tensão</label>
+            <select id="div-produto" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="">Todos os Produtos</option>
+              <option value="EB">EB - Baixa Tensão Normal</option>
+              <option value="EE">EE - Especial / BTE</option>
+              <option value="EM">EM - Média Tensão</option>
+            </select>
+          </div>
+
+          <!-- Faixa de Dívida -->
+          <div class="field-group">
+            <label>Faixa de Valor da Dívida</label>
+            <select id="div-faixa" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="todas">Qualquer Valor (> 0 ECV)</option>
+              <option value="grandes">🔥 Grandes Devedores (&gt; 1.000.000 ECV)</option>
+              <option value="250k">&gt; 250.000 ECV</option>
+              <option value="50k">&gt; 50.000 ECV</option>
+              <option value="10k">&gt; 10.000 ECV</option>
+              <option value="ate10k">Até 10.000 ECV</option>
+            </select>
+          </div>
+
+          <!-- Status de Cobrança 2026 -->
+          <div class="field-group">
+            <label>Perfil Cobrança 2026</label>
+            <select id="div-cobranca" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="">Todos os Devedores</option>
+              <option value="Devedor Sem Pagamento 2026">🚨 Sem Pagamento em 2026 (Crítico)</option>
+              <option value="Devedor em Amortização">🟡 Em Amortização (Com Pagamento)</option>
+            </select>
+          </div>
+
+          <!-- Quantidade de Faturas -->
+          <div class="field-group">
+            <label>Qtd Faturas em Dívida</label>
+            <select id="div-qtd-fat" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="">Qualquer Quantidade</option>
+              <option value="1a3">1 a 3 faturas</option>
+              <option value="4a12">4 a 12 faturas</option>
+              <option value="gt12">&gt; 12 faturas (Dívida Antiga)</option>
+            </select>
+          </div>
+
+          <!-- Ordenação -->
+          <div class="field-group">
+            <label>Classificar Por</label>
+            <select id="div-ordem" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="valor.desc">💰 Maior Dívida Total (ECV)</option>
+              <option value="qtd.desc">📑 Maior Qtd de Faturas</option>
+              <option value="cob_valor_total.desc">💵 Maior Pagamento 2026</option>
+              <option value="score_risco.desc">⚠️ Maior Score de Risco</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabela de Devedores -->
+      <section class="table-container">
+        <div class="panel-header" style="border-bottom:1px solid var(--border-dim); padding-bottom:12px;">
+          <div class="panel-title">
+            <span class="icon">📋</span>
+            Lista Operacional de Devedores e Inadimplência
+            <span style="font-family:var(--font-mono); font-size:12px; color:var(--accent-amber); margin-left:8px;" id="div-contagem-total">0 contratos</span>
+          </div>
+          <div class="pagination-controls" id="div-paginacao-topo"></div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="telemetry-table">
+            <thead>
+              <tr>
+                <th>CIL</th>
+                <th>ID CLIENTE</th>
+                <th>NOME DO CLIENTE</th>
+                <th>UNIDADE</th>
+                <th>LOCALIDADE</th>
+                <th>TIPO</th>
+                <th>PROD</th>
+                <th style="text-align:right;">FATURAS</th>
+                <th style="text-align:right;">DÍVIDA TOTAL</th>
+                <th style="text-align:right;">PAGO 2026</th>
+                <th>STATUS COBRANÇA</th>
+                <th>RISCO</th>
+                <th style="text-align:center;">AÇÃO</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-divida-corpo">
+              <tr><td colspan="13" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando devedores de Santiago...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px;">
+          <div style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);" id="div-paginacao-info">Página 1 de 1</div>
+          <div class="pagination-controls" id="div-paginacao-baixo"></div>
+        </div>
+      </section>
+    </div>
+
+
     <div id="modulo-em-atualizacao" class="module-pane hidden">
       <div class="under-update-box">
         <div class="under-update-icon" id="mod-upd-icon">🚧</div>
