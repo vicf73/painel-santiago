@@ -521,6 +521,257 @@
       font-size: 12px;
     }
 
+    
+    /* PNT DIAGNOSTIC PANEL (MODULO 1) */
+    .pnt-diag-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .pnt-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .pnt-pattern-card {
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .pnt-pattern-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    .pnt-pattern-card.active {
+      box-shadow: 0 0 0 2px var(--accent-amber), 0 8px 24px rgba(245, 158, 11, 0.25);
+    }
+    .pnt-pattern-card.pattern-bypass { border-left: 4px solid #EF4444; }
+    .pnt-pattern-card.pattern-bypass:hover { border-color: #EF4444; }
+    .pnt-pattern-card.pattern-meter { border-left: 4px solid #F59E0B; }
+    .pnt-pattern-card.pattern-meter:hover { border-color: #F59E0B; }
+    .pnt-pattern-card.pattern-blind { border-left: 4px solid #6366F1; }
+    .pnt-pattern-card.pattern-blind:hover { border-color: #6366F1; }
+    .pnt-pattern-card.pattern-cf1 { border-left: 4px solid #A855F7; }
+    .pnt-pattern-card.pattern-cf1:hover { border-color: #A855F7; }
+
+    .pnt-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.05em;
+    }
+    .pnt-title {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+    .pnt-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      margin-bottom: 10px;
+      flex-grow: 1;
+    }
+    .pnt-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      border-top: 1px dashed var(--border-dim);
+      padding-top: 8px;
+    }
+    .pnt-btn-action {
+      font-weight: 600;
+      color: var(--accent-amber);
+    }
+    @media (max-width: 1100px) {
+      .pnt-cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .pnt-cards-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ACTION MATRIX CARDS (MODULO 3) */
+    .action-matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .action-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 13px 15px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    .action-card.active {
+      box-shadow: 0 0 0 2px var(--accent-amber), 0 8px 24px rgba(245, 158, 11, 0.25);
+    }
+    .action-card.action-cut { border-left: 4px solid #EF4444; }
+    .action-card.action-cut:hover { border-color: #EF4444; }
+    .action-card.action-fraud { border-left: 4px solid #F59E0B; }
+    .action-card.action-fraud:hover { border-color: #F59E0B; }
+    .action-card.action-gov { border-left: 4px solid #6366F1; }
+    .action-card.action-gov:hover { border-color: #6366F1; }
+    .action-card.action-deal { border-left: 4px solid #10B981; }
+    .action-card.action-deal:hover { border-color: #10B981; }
+
+    @media (max-width: 1024px) {
+      .action-matrix-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .action-matrix-grid { grid-template-columns: 1fr; }
+    }
+
+    
+    /* SIMULADOR & ROTEIRIZADOR DE PIQUETE (MODULO 3) */
+    .sim-panel-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+    .sim-slider-row {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .sim-slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    .sim-slider-label span:first-child {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .sim-slider-label span:last-child {
+      font-family: var(--font-mono);
+      color: var(--accent-amber);
+      font-weight: 700;
+    }
+    .sim-range-input {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #1E293B;
+      outline: none;
+      -webkit-appearance: none;
+      accent-color: var(--accent-amber);
+      cursor: pointer;
+    }
+    .sim-kpi-result {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--border-bright);
+      border-radius: 6px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .pt-cluster-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+    }
+    .pt-summary-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+      margin-bottom: 14px;
+    }
+    .pt-summary-card {
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      padding: 10px 12px;
+    }
+    .pt-summary-card .pt-lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pt-summary-card .pt-val {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 2px;
+    }
+    @media (max-width: 900px) {
+      .sim-slider-row { grid-template-columns: 1fr; }
+      .pt-summary-bar { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #modal-ordem-piquete, #modal-ordem-piquete * {
+        visibility: visible !important;
+      }
+      #modal-ordem-piquete {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        background: #fff !important;
+        color: #000 !important;
+        display: block !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .ordem-folha-print {
+        color: #000 !important;
+        background: #fff !important;
+        padding: 10px !important;
+      }
+      .ordem-folha-print table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        color: #000 !important;
+      }
+      .ordem-folha-print th, .ordem-folha-print td {
+        border: 1px solid #333 !important;
+        color: #000 !important;
+        padding: 5px 6px !important;
+        font-size: 11px !important;
+      }
+    }
+
     /* DOSSIER DRAWER */
     .drawer-backdrop {
       position: fixed;
@@ -792,9 +1043,12 @@
         <span id="conn-text">CONECTANDO SUPABASE...</span>
       </div>
       <div class="status-pill" id="latency-pill">LATÊNCIA: -- ms</div>
-      <button class="btn" onclick="resetarTodosFiltros()" title="Limpar todos os filtros ativos">
-        ↺ Limpar Filtros
-      </button>
+      <button class="btn" onclick="resetarTodosFiltros()" title="Limpar todos os filtros ativos">
+        ↺ Limpar Filtros
+      </button>
+      <a href="apresentacao_edec_administracao.html" target="_blank" class="btn" style="text-decoration:none; border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600;" title="Abrir Apresentação Executiva para o Conselho de Administração">
+        📑 Apresentação CA
+      </a>
       <button class="btn btn-amber" onclick="exportarCSVFiltrado()" id="btn-export" title="Exporta 100% dos registos do filtro ativo em lotes automáticos">
         ⬇ Exportar CSV Completo (Filtro Atual)
       </button>
@@ -883,6 +1137,106 @@
       </div>
     </section>
 
+        <!-- PAINEL DIAGNÓSTICO DOS 4 GRANDES PADRÕES DE PERDAS & ESTIMADOR DE ENERGIA -->
+    <section class="pnt-diag-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <div style="font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span>🔍</span> DIAGNÓSTICO DE ENGENHARIA DE PERDAS NÃO TÉCNICAS (PNT) &amp; ESTIMADOR DE ENERGIA
+            <span class="brand-tag" style="background:rgba(239,68,68,0.15); color:#F87171; border-color:rgba(239,68,68,0.35);">AUDITORIA AVANÇADA</span>
+          </div>
+          <p style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary); margin-top:2px;">
+            Identificação preditiva de padrões de desvio, submedição física, cegueira de rota e reincidência para despacho de brigadas
+          </p>
+        </div>
+        
+        <!-- Faixa de Estimador MWh & Financeiro -->
+        <div style="display:flex; gap:14px; align-items:center; background:rgba(15,23,42,0.7); border:1px solid var(--border-bright); border-radius:6px; padding:6px 14px;">
+          <div>
+            <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted); text-transform:uppercase;">Energia Desviada Estimada</div>
+            <div style="font-family:var(--font-mono); font-size:15px; font-weight:700; color:#FBBF24;" id="diag-mwh-estimado">~2.808 MWh/mês</div>
+          </div>
+          <div style="width:1px; height:26px; background:var(--border-dim);"></div>
+          <div>
+            <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted); text-transform:uppercase;">Impacto Financeiro Mensal</div>
+            <div style="font-family:var(--font-mono); font-size:15px; font-weight:700; color:#F87171;" id="diag-ecv-estimado">~73.0M ECV/mês</div>
+          </div>
+          <div style="width:1px; height:26px; background:var(--border-dim);"></div>
+          <div>
+            <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted); text-transform:uppercase;">Projeção Anual (12M)</div>
+            <div style="font-family:var(--font-mono); font-size:15px; font-weight:700; color:#EF4444;" id="diag-ano-estimado">~876.0M ECV/ano</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid dos 4 Padrões de Perdas (Cards Interativos com 1 Clique) -->
+      <div class="pnt-cards-grid">
+        <!-- Padrão 1: Bypass / Ligação Clandestina -->
+        <div class="pnt-pattern-card pattern-bypass" id="card-pnt-bypass" onclick="ativarPadraoPerda('bypass')">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span class="pnt-tag" style="color:#F87171; background:rgba(239,68,68,0.12);">🚨 PADRÃO 1: BYPASS / CLANDESTINO</span>
+            <span class="badge badge-danger" id="badge-count-bypass">19.363 CILs</span>
+          </div>
+          <div class="pnt-title">Consumo Zerado c/ Contrato Ativo</div>
+          <div class="pnt-desc">
+            Clientes em vigor com histórico habitual (Med_Fat &gt; 0) que faturaram 0 kWh no último trimestre (Desv_Fat). Suspeita crítica de derivação clandestina antes do medidor.
+          </div>
+          <div class="pnt-footer">
+            <span style="color:#F87171;">Perda Est.: ~2,8 GWh/mês</span>
+            <span class="pnt-btn-action">Filtrar para Vistoria ➔</span>
+          </div>
+        </div>
+
+        <!-- Padrão 2: Submedição por Medidor Obsoleto -->
+        <div class="pnt-pattern-card pattern-meter" id="card-pnt-meter" onclick="ativarPadraoPerda('obsoleto')">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span class="pnt-tag" style="color:#FBBF24; background:rgba(245,158,11,0.12);">📟 PADRÃO 2: SUBMEDIÇÃO FÍSICA</span>
+            <span class="badge badge-warn" id="badge-count-meter">12.672 CILs</span>
+          </div>
+          <div class="pnt-title">Parque Medição Antigo (&gt; 20 anos)</div>
+          <div class="pnt-desc">
+            Medidores com mais de 2 décadas de serviço. Fadiga de discos e mancais mecânicos geram submedição contínua de 15% a 30% da energia real consumida.
+          </div>
+          <div class="pnt-footer">
+            <span style="color:#FBBF24;">Alvo: Troca Programada</span>
+            <span class="pnt-btn-action">Filtrar Troca Medidores ➔</span>
+          </div>
+        </div>
+
+        <!-- Padrão 3: Cegueira de Rota / Estimativa Prolongada -->
+        <div class="pnt-pattern-card pattern-blind" id="card-pnt-blind" onclick="ativarPadraoPerda('cegueira')">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span class="pnt-tag" style="color:#818CF8; background:rgba(99,102,241,0.12);">👁️ PADRÃO 3: CEGUEIRA DE ROTA</span>
+            <span class="badge" style="background:#1E1B4B; color:#C7D2FE;" id="badge-count-blind">14.668 CILs</span>
+          </div>
+          <div class="pnt-title">Sem Leitura Real (&gt; 5 meses)</div>
+          <div class="pnt-desc">
+            Locais sem visita ou leitura real há mais de 150 dias, faturados apenas por média estimada. Risco elevado de contadores parados, fraudes ocultas e litígios.
+          </div>
+          <div class="pnt-footer">
+            <span style="color:#818CF8;">Alvo: Auditoria de Leitura</span>
+            <span class="pnt-btn-action">Filtrar Rotas Cegas ➔</span>
+          </div>
+        </div>
+
+        <!-- Padrão 4: Fraude CF1 Reincidente -->
+        <div class="pnt-pattern-card pattern-cf1" id="card-pnt-cf1" onclick="ativarPadraoPerda('cf1_reincidente')">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span class="pnt-tag" style="color:#C084FC; background:rgba(168,85,247,0.12);">⚖️ PADRÃO 4: REINCIDÊNCIA CF1</span>
+            <span class="badge badge-purple" id="badge-count-cf1">916 CILs</span>
+          </div>
+          <div class="pnt-title">Reincidentes c/ Autos de Fraude</div>
+          <div class="pnt-desc">
+            Clientes com 2 ou mais autos de fiscalização registados ou processos enviados ao Ministério Público. Alvos de blindagem de medição e ação judicial executiva.
+          </div>
+          <div class="pnt-footer">
+            <span style="color:#C084FC;">Dív. Fraude: ~108M ECV</span>
+            <span class="pnt-btn-action">Filtrar Reincidentes ➔</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 2. MULTI-FILTER COMMAND BAR -->
     <section class="command-bar">
       <div class="filter-row-top">
@@ -900,6 +1254,18 @@
             </select>
             <input type="text" id="f-busca" class="input-ctrl mono" placeholder="Ex: 60042095 (ou 42095), EugenioLima2, FARMACIA..." onkeydown="if(event.key==='Enter') aplicarFiltros(1)" />
           </div>
+        </div>
+
+                <div class="field-group">
+          <label>Prioridade Vistoria (P1 a P5)</label>
+          <select id="f-prioridade" class="select-ctrl" onchange="aplicarFiltros(1)" title="Classificação por urgência de fiscalização">
+            <option value="">Todas as Prioridades</option>
+            <option value="P1">🚨 P1 • Emergencial 24h (⭐⭐⭐⭐⭐)</option>
+            <option value="P2">🔥 P2 • Crítico 72h (⭐⭐⭐⭐)</option>
+            <option value="P3">⚠️ P3 • Alta Prioridade 7d (⭐⭐⭐)</option>
+            <option value="P4">📟 P4 • Troca Programada (⭐⭐)</option>
+            <option value="P5">✅ P5 • Monitoramento (⭐)</option>
+          </select>
         </div>
 
         <div class="field-group">
@@ -1101,6 +1467,8 @@
         <table class="scada-table">
           <thead>
             <tr>
+              <th style="min-width:130px;">Prioridade Vistoria</th>
+              <th style="text-align:right; min-width:110px;">Perda Est. (ECV/mês)</th>
               <th>Score / Risco</th>
               <th>CIL</th>
               <th>Unidade</th>
@@ -1122,7 +1490,7 @@
             </tr>
           </thead>
           <tbody id="tabela-corpo">
-            <tr><td colspan="18" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando registos do Supabase...</td></tr>
+            <tr><td colspan="20" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando registos do Supabase...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1144,38 +1512,383 @@
     <!-- ================================================================= -->
     <!-- MÓDULO 3: GESTÃO DEDICADA DE DÍVIDA & INADIMPLÊNCIA (ATIVO)        -->
     <!-- ================================================================= -->
-    <div id="modulo-mod3" class="module-pane hidden">
+        <div id="modulo-mod3" class="module-pane hidden">
 
-      <!-- Faixa de KPIs Executivos de Dívida -->
-      <section class="kpi-strip">
+      <!-- Header Executivo da Aba -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:12px 16px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:36px; height:36px; border-radius:6px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); display:grid; place-items:center; font-size:18px;">
+            💰
+          </div>
+          <div>
+            <h2 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+              Centro de Gestão de Dívida &amp; Inadimplência Estrutural
+              <span class="brand-tag" style="background:rgba(239,68,68,0.15); color:#F87171; border-color:rgba(239,68,68,0.35);">Recuperação de Receita</span>
+            </h2>
+            <p style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary); margin-top:2px;">
+              Inteligência de crédito, aging da dívida, segregação institucional e esteira tática de corte e negociação
+            </p>
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="resetarFiltrosDivida()">↺ Limpar Filtros</button>
+          <button class="btn btn-amber" onclick="exportarCSVDivida()">⬇ Exportar Base Devedores (CSV)</button>
+        </div>
+      </div>
+
+      <!-- Faixa de KPIs Executivos de Dívida (8 Cards em Grid 4x2) -->
+      <section class="kpi-strip" style="margin-bottom:18px;">
         <div class="kpi-card amber">
-          <div class="kpi-label"><span>DÍVIDA TOTAL FILTRADA</span><span>SANTIAGO (ECV)</span></div>
+          <div class="kpi-label"><span>DÍVIDA TOTAL CARTEIRA</span><span>SANTIAGO (ECV)</span></div>
           <div class="kpi-value" id="kpi-div-total">--</div>
-          <div class="kpi-sub" id="kpi-div-total-sub">Carregando dívidas...</div>
+          <div class="kpi-sub" id="kpi-div-total-sub">Carregando carteira devedora...</div>
         </div>
 
         <div class="kpi-card red">
-          <div class="kpi-label"><span>INADIMPLÊNCIA CRÍTICA</span><span>SEM PAG. 2026</span></div>
+          <div class="kpi-label"><span>INADIMPLÊNCIA CRÍTICA</span><span>SEM AMORTIZAÇÃO</span></div>
           <div class="kpi-value" id="kpi-div-critica">--</div>
-          <div class="kpi-sub" id="kpi-div-critica-sub">-- clientes estagnados</div>
+          <div class="kpi-sub" id="kpi-div-critica-sub">-- clientes estagnados em 2026</div>
         </div>
 
         <div class="kpi-card emerald">
-          <div class="kpi-label"><span>EM AMORTIZAÇÃO</span><span>RECUPERANDO</span></div>
-          <div class="kpi-value" id="kpi-div-amort">--</div>
-          <div class="kpi-sub" id="kpi-div-amort-sub">-- pagadores ativos</div>
-        </div>
-
-        <div class="kpi-card purple">
-          <div class="kpi-label"><span>FATURAS EM DÍVIDA</span><span>TOTAL TÍTULOS</span></div>
-          <div class="kpi-value" id="kpi-div-faturas">--</div>
-          <div class="kpi-sub" id="kpi-div-faturas-sub">Média: -- fat/cliente</div>
+          <div class="kpi-label"><span>COBRANÇA REALIZADA 2026</span><span>ARRECADADO COB_J</span></div>
+          <div class="kpi-value" id="kpi-div-arrecadado">--</div>
+          <div class="kpi-sub" id="kpi-div-arrecadado-sub">-- clientes pagando com saldo</div>
         </div>
 
         <div class="kpi-card cyan">
-          <div class="kpi-label"><span>TOTAL DEVEDORES</span><span>CONTRATOS</span></div>
-          <div class="kpi-value" id="kpi-div-contratos">--</div>
-          <div class="kpi-sub" id="kpi-div-contratos-sub">--% da base filtrada</div>
+          <div class="kpi-label"><span>TAXA DE RECUPERAÇÃO</span><span>EFICÁCIA 2026</span></div>
+          <div class="kpi-value" id="kpi-div-taxa-recup">--</div>
+          <div class="kpi-sub" id="kpi-div-taxa-recup-sub">Arrecadado vs. Total Carteira</div>
+        </div>
+
+        <div class="kpi-card purple">
+          <div class="kpi-label"><span>TICKET MÉDIO DEVEDOR</span><span>EXPOSIÇÃO / CLIENTE</span></div>
+          <div class="kpi-value" id="kpi-div-ticket-medio">--</div>
+          <div class="kpi-sub" id="kpi-div-ticket-medio-sub">Média: -- faturas / cliente</div>
+        </div>
+
+        <div class="kpi-card amber">
+          <div class="kpi-label"><span>CONCENTRAÇÃO TOP DEVEDORES</span><span>PARETO 80/20</span></div>
+          <div class="kpi-value" id="kpi-div-grandes">--</div>
+          <div class="kpi-sub" id="kpi-div-grandes-sub">Grandes Contas (>250k ECV)</div>
+        </div>
+
+        <div class="kpi-card red">
+          <div class="kpi-label"><span>DEVEDORES C/ AUTO CF1</span><span>FRAUDE + DÍVIDA</span></div>
+          <div class="kpi-value" id="kpi-div-cf1">--</div>
+          <div class="kpi-sub" id="kpi-div-cf1-sub">-- no Ministério Público</div>
+        </div>
+
+        <div class="kpi-card cyan">
+          <div class="kpi-label"><span>CARTEIRA EM RISCO</span><span>CRÍTICO + ALTO</span></div>
+          <div class="kpi-value" id="kpi-div-risco">--</div>
+          <div class="kpi-sub" id="kpi-div-risco-sub">Score Médio de Risco: --/100</div>
+        </div>
+      </section>
+
+      <!-- MATRIZ DE DECISÃO OPERACIONAL DA GESTÃO (AÇÕES TÁTICAS COM 1 CLIQUE) -->
+      <section style="margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span>⚡</span> MATRIZ DE DECISÃO GERENCIAL: AÇÕES TÁTICAS RECOMENDADAS
+            <span class="badge badge-warn" style="font-size:10px;">SELEÇÃO RÁPIDA</span>
+          </div>
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">
+            Clique em qualquer ação para filtrar automaticamente a esteira operacional
+          </div>
+        </div>
+
+        <div class="action-matrix-grid">
+          <!-- Ação 1: Corte Imediato -->
+          <div class="action-card action-cut" id="card-act-corte" onclick="ativarAcaoGestao('corte_urgente')">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:#F87171; text-transform:uppercase; letter-spacing:0.05em;">🚨 Ação 1: Piquete / Corte</span>
+              <span class="badge badge-danger" style="font-size:9.5px; padding:1px 6px;">CORTE IMEDIATO</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Grandes Devedores s/ Pagamento</div>
+            <div style="font-size:11px; color:var(--text-secondary); line-height:1.4; margin-bottom:8px;">
+              Privados &amp; Domésticos (&gt; 250k ECV) estagnados sem amortização em 2026. Alvos de suspensão imediata de fornecimento.
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#F87171; font-weight:600;">
+              <span>Filtrar Alvos de Corte</span> ➔
+            </div>
+          </div>
+
+          <!-- Ação 2: Brigada Mista CF1 + Dívida -->
+          <div class="action-card action-fraud" id="card-act-fraude" onclick="ativarAcaoGestao('fraude_cf1')">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:#FBBF24; text-transform:uppercase; letter-spacing:0.05em;">⚡ Ação 2: Brigada Mista</span>
+              <span class="badge badge-warn" style="font-size:9.5px; padding:1px 6px;">FRAUDE + DÍVIDA</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Devedores com Auto CF1</div>
+            <div style="font-size:11px; color:var(--text-secondary); line-height:1.4; margin-bottom:8px;">
+              Contratos com autos de fiscalização/anomalia e dívida faturada. Prioridade de vistoria e acompanhamento jurídico/MP.
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#FBBF24; font-weight:600;">
+              <span>Filtrar Casos CF1</span> ➔
+            </div>
+          </div>
+
+          <!-- Ação 3: Protocolo Estado & Autarquias -->
+          <div class="action-card action-gov" id="card-act-gov" onclick="ativarAcaoGestao('governo_autarquia')">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:#818CF8; text-transform:uppercase; letter-spacing:0.05em;">🏛️ Ação 3: Protocolo Gestão</span>
+              <span class="badge" style="background:#1E1B4B; color:#C7D2FE; font-size:9.5px; padding:1px 6px;">SETOR PÚBLICO</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Autarquias &amp; Setor Público</div>
+            <div style="font-size:11px; color:var(--text-secondary); line-height:1.4; margin-bottom:8px;">
+              Câmaras Municipais e entidades de Estado (&gt; 1.4B ECV). Exige conciliação contábil, encontro de contas e protocolo diretivo.
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#818CF8; font-weight:600;">
+              <span>Filtrar Setor Público</span> ➔
+            </div>
+          </div>
+
+          <!-- Ação 4: Negociação & Acordo Ativo -->
+          <div class="action-card action-deal" id="card-act-deal" onclick="ativarAcaoGestao('acordo_amortizacao')">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:#34D399; text-transform:uppercase; letter-spacing:0.05em;">🤝 Ação 4: Renegociação</span>
+              <span class="badge badge-ok" style="font-size:9.5px; padding:1px 6px;">AMORTIZAÇÃO</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Devedores em Amortização</div>
+            <div style="font-size:11px; color:var(--text-secondary); line-height:1.4; margin-bottom:8px;">
+              Clientes com pagamentos efetuados em 2026 mas com dívida acumulada. Perfil ideal para plano estruturado de parcelamento.
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#34D399; font-weight:600;">
+              <span>Filtrar em Amortização</span> ➔
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+      <!-- ============================================================== -->
+      <!-- SIMULADOR FINANCEIRO DE RECUPERAÇÃO DE RECEITA (CASH-IN)       -->
+      <!-- ============================================================== -->
+      <section class="sim-panel-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+              <span>💼</span> SIMULADOR FINANCEIRO DE RECUPERAÇÃO DE RECEITA (CASH-IN SIMULATOR)
+              <span class="badge badge-warn" style="font-size:10px;">PROJEÇÃO ESTRATÉGICA</span>
+            </div>
+            <p style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary); margin-top:2px;">
+              Ajuste as metas de liquidez por segmento de carteira para projetar a injeção direta de caixa da EDEC
+            </p>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sm" onclick="aplicarCenarioSimulacao('conservador')" title="Cenário de Baixo Impacto (5% Grandes, 10% Estado, 3% Massa)">Conservador</button>
+            <button class="btn btn-sm btn-amber" onclick="aplicarCenarioSimulacao('moderado')" title="Cenário Recomendado (15% Grandes, 25% Estado, 7% Massa)">Moderado</button>
+            <button class="btn btn-sm" style="border-color:#EF4444; color:#F87171;" onclick="aplicarCenarioSimulacao('agressivo')" title="Cenário de Choque Operacional (25% Grandes, 40% Estado, 12% Massa)">Agressivo</button>
+            <button class="btn btn-sm" onclick="exportarRelatorioSimulacao()">⬇ Exportar Cenário (CSV)</button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap:18px;">
+          <!-- Coluna dos Sliders -->
+          <div>
+            <!-- Slider 1: Grandes Devedores Privados -->
+            <div style="margin-bottom:12px;">
+              <div class="sim-slider-label">
+                <span>🔥 Grandes Devedores Privados (&gt;250k ECV):</span>
+                <span id="lbl-sim-grandes">15% (375.0 M ECV)</span>
+              </div>
+              <input type="range" min="0" max="50" value="15" step="1" id="slider-sim-grandes" class="sim-range-input" oninput="atualizarSimulador()">
+              <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
+                <span>0% (0 ECV)</span><span>Base: ~2.50 Bilhões ECV</span><span>50% (1.25 B ECV)</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: Protocolo Estado & Autarquias -->
+            <div style="margin-bottom:12px;">
+              <div class="sim-slider-label">
+                <span>🏛️ Protocolo Estado &amp; Autarquias (Setor Público):</span>
+                <span id="lbl-sim-gov" style="color:#818CF8;">25% (362.5 M ECV)</span>
+              </div>
+              <input type="range" min="0" max="50" value="25" step="1" id="slider-sim-gov" class="sim-range-input" style="accent-color:#818CF8;" oninput="atualizarSimulador()">
+              <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
+                <span>0% (0 ECV)</span><span>Base: ~1.45 Bilhão ECV</span><span>50% (725.0 M ECV)</span>
+              </div>
+            </div>
+
+            <!-- Slider 3: Cobrança em Massa Doméstica / PME -->
+            <div style="margin-bottom:12px;">
+              <div class="sim-slider-label">
+                <span>🏠 Cobrança em Massa &amp; Pré-Pago (Doméstico/PME):</span>
+                <span id="lbl-sim-massa" style="color:#34D399;">7% (147.0 M ECV)</span>
+              </div>
+              <input type="range" min="0" max="30" value="7" step="1" id="slider-sim-massa" class="sim-range-input" style="accent-color:#34D399;" oninput="atualizarSimulador()">
+              <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
+                <span>0% (0 ECV)</span><span>Base: ~2.10 Bilhões ECV</span><span>30% (630.0 M ECV)</span>
+              </div>
+            </div>
+
+            <!-- Slider 4: Regularização Fraudes CF1 -->
+            <div>
+              <div class="sim-slider-label">
+                <span>⚡ Regularização de Fraudes CF1 (Autos Faturados):</span>
+                <span id="lbl-sim-cf1" style="color:#C084FC;">30% (32.5 M ECV)</span>
+              </div>
+              <input type="range" min="0" max="100" value="30" step="5" id="slider-sim-cf1" class="sim-range-input" style="accent-color:#C084FC;" oninput="atualizarSimulador()">
+              <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
+                <span>0% (0 ECV)</span><span>Base: ~108.2 Milhões ECV</span><span>100% (108.2 M ECV)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna de Impacto Financeiro Projetado -->
+          <div class="sim-kpi-result">
+            <div>
+              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.05em;">
+                INJEÇÃO ADICIONAL DE CAIXA (CASH-IN)
+              </div>
+              <div style="font-family:var(--font-mono); font-size:26px; font-weight:800; color:#34D399; margin-top:2px;" id="sim-res-total">
+                +917.000.000 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted); margin-top:2px;" id="sim-res-sub">
+                Projeção líquida de entrada direta no caixa da distribuidora
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px dashed var(--border-bright); padding-top:10px;">
+              <div>
+                <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">NOVA TAXA RECUPERAÇÃO</div>
+                <div style="font-family:var(--font-mono); font-size:17px; font-weight:700; color:#FBBF24;" id="sim-res-taxa">37.2%</div>
+                <div style="font-size:10px; color:var(--text-secondary);">Atual: ~26.3%</div>
+              </div>
+              <div>
+                <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">META MENSAL (12M)</div>
+                <div style="font-family:var(--font-mono); font-size:17px; font-weight:700; color:var(--accent-cyan);" id="sim-res-mensal">76.4M ECV/mês</div>
+                <div style="font-size:10px; color:var(--text-secondary);">Fluxo mensalizado</div>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:4px;">
+              <button class="btn btn-amber" style="width:100%; font-size:12px;" onclick="ativarAcaoGestao('corte_urgente')">
+                🎯 Executar Piquetes Prioritários
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- ROTEIRIZADOR DE PIQUETES POR POSTO DE TRANSFORMAÇÃO (PT)       -->
+      <!-- ============================================================== -->
+      <section class="pt-cluster-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="font-family:var(--font-display); font-size:14px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+              <span>⚡</span> ROTEIRIZADOR OPERACIONAL DE PIQUETES POR POSTO DE TRANSFORMAÇÃO (PT)
+              <span class="badge badge-info" style="font-size:10px;">CLUSTER GEOGRÁFICO DE CORTE</span>
+            </div>
+            <p style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary); margin-top:2px;">
+              Selecione um transformador para gerar a Ordem de Serviço (OS) com os clientes vizinhos mais críticos
+            </p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <select id="sel-roteiro-pt" class="select-ctrl" style="min-width:220px;" onchange="carregarRoteiroPT(this.value)">
+              <option value="Tirachapeu">⚡ PT Tirachapeu (Praia)</option>
+              <option value="EugenioLima1">⚡ PT EugenioLima1 (Praia)</option>
+              <option value="AchadinhaCima1">⚡ PT AchadinhaCima1 (Praia)</option>
+              <option value="AchadinhaCima2">⚡ PT AchadinhaCima2 (Praia)</option>
+              <option value="VilaNova">⚡ PT VilaNova (Praia)</option>
+              <option value="Calabaceira1">⚡ PT Calabaceira1 (Praia)</option>
+              <option value="Safende2">⚡ PT Safende2 (Praia)</option>
+              <option value="PSTSafende">⚡ PT PSTSafende (Praia)</option>
+              <option value="BelaVista">⚡ PT BelaVista (Praia)</option>
+              <option value="ElectraAsomada">⚡ PT ElectraAsomada (St. Catarina)</option>
+              <option value="ChaoBom">⚡ PT ChaoBom (Tarrafal)</option>
+              <option value="AchadaFazenda">⚡ PT AchadaFazenda (Santa Cruz)</option>
+            </select>
+            <button class="btn btn-amber" onclick="abrirModalOrdemPiquete()">📋 Gerar Folha de Piquete (Imprimir OS)</button>
+            <button class="btn" onclick="exportarRoteiroPTCSV()">⬇ Exportar Roteiro (CSV)</button>
+          </div>
+        </div>
+
+        <!-- Barra de Métricas do PT Selecionado -->
+        <div class="pt-summary-bar">
+          <div class="pt-summary-card">
+            <div class="pt-lbl">Dívida Acumulada no PT</div>
+            <div class="pt-val" style="color:#FBBF24;" id="pt-card-divida">113.446.288 ECV</div>
+          </div>
+          <div class="pt-summary-card">
+            <div class="pt-lbl">Contratos Devedores</div>
+            <div class="pt-val" style="color:var(--accent-cyan);" id="pt-card-contratos">896 clientes</div>
+          </div>
+          <div class="pt-summary-card">
+            <div class="pt-lbl">Autos de Fraude CF1</div>
+            <div class="pt-val" style="color:#F87171;" id="pt-card-cf1">132 autos</div>
+          </div>
+          <div class="pt-summary-card">
+            <div class="pt-lbl">Arrecadado 2026 no PT</div>
+            <div class="pt-val" style="color:#34D399;" id="pt-card-cobrado">9.478.839 ECV</div>
+          </div>
+        </div>
+
+        <!-- Preview da Rota de Campo do PT (Top 5 Devedores Imediatos) -->
+        <div style="background:var(--bg-input); border:1px solid var(--border-dim); border-radius:6px; padding:10px 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:var(--text-primary);">
+              🎯 Alvos Prioritários de Campo neste PT (Top Contratos para Piquete):
+            </span>
+            <button class="btn btn-sm" onclick="filtrarTabelaPorPTAtual()">
+              🔍 Ver Todos os Devedores deste PT na Tabela Principal
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="telemetry-table" style="font-size:12px;">
+              <thead>
+                <tr>
+                  <th>CIL</th>
+                  <th>CONTADOR</th>
+                  <th>NOME DO CLIENTE</th>
+                  <th>LOCALIDADE / RUA</th>
+                  <th style="text-align:right;">DÍVIDA</th>
+                  <th style="text-align:right;">FATURAS</th>
+                  <th>STATUS</th>
+                  <th>FRAUDE</th>
+                  <th style="text-align:center;">AÇÃO PIQUETE</th>
+                </tr>
+              </thead>
+              <tbody id="corpo-preview-roteiro-pt">
+                <tr><td colspan="9" style="text-align:center; padding:16px; color:var(--text-muted);">A carregar alvos do PT...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- VISÃO DE INTELIGÊNCIA DE DISTRIBUIÇÃO (CONCELHOS & TOP PTS) -->
+      <section class="middle-grid" style="grid-template-columns: 1.15fr 1fr; margin-bottom: 18px;">
+        <!-- Distribuição por Concelho -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="icon">📍</span>
+              Concentração &amp; Eficácia por Concelho (Unidades)
+            </div>
+            <span class="panel-badge" id="badge-concelhos-total">Ilha de Santiago</span>
+          </div>
+          <div class="ranking-list" id="lista-unidades-divida" style="max-height: 250px;">
+            <div style="text-align:center; padding:24px; color:var(--text-muted);">Carregando distribuição por concelho...</div>
+          </div>
+        </div>
+
+        <!-- Top Postos de Transformação (PTs) com Maior Dívida -->
+        <div class="panel-box">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span class="icon">⚡</span>
+              Top Postos de Transformação (PTs) com Maior Dívida
+            </div>
+            <span class="panel-badge" style="color:var(--accent-amber);" id="badge-pts-criticos">Foco Operacional</span>
+          </div>
+          <div class="ranking-list" id="lista-pts-divida" style="max-height: 250px;">
+            <div style="text-align:center; padding:24px; color:var(--text-muted);">Carregando PTs críticos de Santiago...</div>
+          </div>
         </div>
       </section>
 
@@ -1216,10 +1929,10 @@
             </select>
           </div>
 
-          <!-- Localidade / Bairro -->
+          <!-- Localidade / Bairro / PT -->
           <div class="field-group">
-            <label>Localidade / Bairro</label>
-            <input type="text" id="div-localidade" class="input-ctrl" placeholder="Ex: Palmarejo, Assomada..." onkeydown="if(event.key==='Enter') aplicarFiltrosDivida(1)">
+            <label>Localidade / Bairro / PT</label>
+            <input type="text" id="div-localidade" class="input-ctrl" placeholder="Ex: Palmarejo, Tirachapeu..." onkeydown="if(event.key==='Enter') aplicarFiltrosDivida(1)">
           </div>
 
           <!-- Tipo de Cliente -->
@@ -1269,14 +1982,25 @@
             </select>
           </div>
 
+          <!-- Fraude Fiscalização CF1 -->
+          <div class="field-group">
+            <label>Fiscalização CF1 / Fraude</label>
+            <select id="div-cf1" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="">Todos (Com e Sem CF1)</option>
+              <option value="com_cf1">⚡ Com Auto de Fraude CF1</option>
+              <option value="cf1_mp">⚖️ Processo Enviado ao MP</option>
+              <option value="sem_cf1">Sem Registo de Auto CF1</option>
+            </select>
+          </div>
+
           <!-- Quantidade de Faturas -->
           <div class="field-group">
             <label>Qtd Faturas em Dívida</label>
             <select id="div-qtd-fat" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
               <option value="">Qualquer Quantidade</option>
-              <option value="1a3">1 a 3 faturas</option>
-              <option value="4a12">4 a 12 faturas</option>
-              <option value="gt12">&gt; 12 faturas (Dívida Antiga)</option>
+              <option value="1a3">1 a 3 faturas (Recente)</option>
+              <option value="4a12">4 a 12 faturas (Média)</option>
+              <option value="gt12">&gt; 12 faturas (Dívida Antiga / Crítica)</option>
             </select>
           </div>
 
@@ -1293,12 +2017,12 @@
         </div>
       </section>
 
-      <!-- Tabela de Devedores -->
+      <!-- Tabela de Devedores Enriquecida -->
       <section class="table-container">
         <div class="panel-header" style="border-bottom:1px solid var(--border-dim); padding-bottom:12px;">
           <div class="panel-title">
             <span class="icon">📋</span>
-            Lista Operacional de Devedores e Inadimplência
+            Lista Operacional de Devedores &amp; Recomendações Táticas
             <span style="font-family:var(--font-mono); font-size:12px; color:var(--accent-amber); margin-left:8px;" id="div-contagem-total">0 contratos</span>
           </div>
           <div class="pagination-controls" id="div-paginacao-topo"></div>
@@ -1312,19 +2036,20 @@
                 <th>ID CLIENTE</th>
                 <th>NOME DO CLIENTE</th>
                 <th>UNIDADE</th>
-                <th>LOCALIDADE</th>
+                <th>LOCALIDADE / PT</th>
                 <th>TIPO</th>
                 <th>PROD</th>
                 <th style="text-align:right;">FATURAS</th>
                 <th style="text-align:right;">DÍVIDA TOTAL</th>
                 <th style="text-align:right;">PAGO 2026</th>
                 <th>STATUS COBRANÇA</th>
-                <th>RISCO</th>
-                <th style="text-align:center;">AÇÃO</th>
+                <th>FRAUDE CF1</th>
+                <th>AÇÃO RECOMENDADA</th>
+                <th style="text-align:center;">FICHA</th>
               </tr>
             </thead>
             <tbody id="tabela-divida-corpo">
-              <tr><td colspan="13" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando devedores de Santiago...</td></tr>
+              <tr><td colspan="14" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando esteira de devedores de Santiago...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1354,6 +2079,70 @@
     </div>
 
   </main>
+
+  
+  <!-- MODAL DE IMPRESSÃO: ORDEM DE SERVIÇO DE PIQUETE (FOLHA DE CAMPO) -->
+  <div id="modal-ordem-piquete" class="drawer-backdrop" style="align-items:center; justify-content:center;">
+    <div style="background:#0F172A; border:1px solid var(--border-bright); border-radius:8px; width:920px; max-width:95vw; max-height:90vh; overflow-y:auto; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.8); color:var(--text-primary);" class="ordem-folha-print">
+      
+      <!-- Cabeçalho Oficial -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:2px solid #334155; padding-bottom:14px; margin-bottom:16px;">
+        <div>
+          <div style="font-family:var(--font-display); font-size:18px; font-weight:800; color:#FBBF24;">
+            EDEC - EMPRESA DE DISTRIBUIÇÃO DE ELETRICIDADE DE CABO VERDE
+          </div>
+          <div style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--text-primary); margin-top:2px;">
+            ORDEM DE SERVIÇO DE PIQUETE: CORTE, COBRANÇA &amp; FISCALIZAÇÃO NO TERRENO
+          </div>
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); margin-top:4px;" id="print-os-meta">
+            ILHA DE SANTIAGO • POSTO DE TRANSFORMAÇÃO: <strong>Tirachapeu</strong> • EMISSÃO: 28/10/2026
+          </div>
+        </div>
+        <div class="no-print" style="display:flex; gap:8px;">
+          <button class="btn btn-amber" onclick="window.print()">🖨️ Imprimir Ordem de Piquete</button>
+          <button class="btn" onclick="fecharModalOrdemPiquete()">✕ Fechar</button>
+        </div>
+      </div>
+
+      <!-- Dados de Operação -->
+      <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; background:rgba(30,41,59,0.5); padding:10px 14px; border-radius:4px; margin-bottom:16px; font-family:var(--font-mono); font-size:11px;">
+        <div><strong>Brigada:</strong> ________________</div>
+        <div><strong>Viatura:</strong> ________________</div>
+        <div><strong>Data Saída:</strong> ___/___/2026</div>
+        <div><strong>Supervisor:</strong> _______________</div>
+      </div>
+
+      <!-- Tabela de Campo -->
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px; font-family:var(--font-mono);">
+          <thead>
+            <tr style="background:#1E293B; border-bottom:1px solid #475569; text-align:left;">
+              <th style="padding:6px;">CIL</th>
+              <th style="padding:6px;">CONTADOR</th>
+              <th style="padding:6px;">CLIENTE</th>
+              <th style="padding:6px;">MORADA / REF.</th>
+              <th style="padding:6px; text-align:right;">DÍVIDA</th>
+              <th style="padding:6px; text-align:center;">FAT.</th>
+              <th style="padding:6px; text-align:center;">RESULTADO DE CAMPO</th>
+              <th style="padding:6px;">RUBRICA TÉCNICO</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela-ordem-piquete">
+            <!-- Inserido dinamicamente via JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Rodapé de Assinaturas -->
+      <div style="margin-top:24px; padding-top:16px; border-top:1px dashed #475569; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; font-family:var(--font-mono); font-size:11px; text-align:center;">
+        <div>________________________________<br>Técnico Encarregado de Campo</div>
+        <div>________________________________<br>Técnico de Fiscalização / Medição</div>
+        <div>________________________________<br>Direção Comercial / Validação</div>
+      </div>
+
+    </div>
+  </div>
+
 
   <!-- SLIDE-OVER TECHNICAL DOSSIER DRAWER -->
   <div class="drawer-backdrop" id="drawer-backdrop" onclick="if(event.target===this) fecharDossie()">
@@ -1552,6 +2341,17 @@
       const desvio = document.getElementById("f-desvio").value;
       const ordem = document.getElementById("f-ordem").value;
 
+      const prioridade = document.getElementById("f-prioridade")?.value || "";
+      if (prioridade === "P1") {
+        params.append("or", "(cf1_qtd_autos.gte.2,and(score_risco.gte.60,faturacao_alerta_desvio.eq.Desv_Fat))");
+      } else if (prioridade === "P2") {
+        params.append("faturacao_alerta_desvio", "eq.Desv_Fat");
+      } else if (prioridade === "P3") {
+        params.append("or", "(cf1_qtd_autos.eq.1,and(mat_leitura.eq.> 5 meses,anomalia.not.is.null))");
+      } else if (prioridade === "P4") {
+        params.append("mat_contador", "eq.> 20 ano");
+      }
+
       if (risco === "CRITICO_ALTO") {
         params.append("nivel_risco", "in.(CRÍTICO,ALTO)");
       } else if (risco) {
@@ -1728,6 +2528,30 @@
         const pctGeo = total > 0 ? ((d.com_geo / total) * 100).toFixed(1) : "0.0";
         document.getElementById("kpi-geo-sub").textContent = `${pctGeo}% georreferenciado em PTs`;
 
+        // Atualizar Estimador de Perdas Não Técnicas (MWh & ECV)
+        const qtdDesvio = d.com_desvio_fat || 0;
+        const medFatGeral = d.media_med_fat || 145; // kWh médio mensal
+        const mwhMes = Math.round((qtdDesvio * medFatGeral) / 1000);
+        const tarifaMediaECV = 26; // ~26 ECV/kWh tarifa média de Santiago
+        const ecvMes = (qtdDesvio * medFatGeral) * tarifaMediaECV;
+        const ecvAno = ecvMes * 12;
+
+        const elMwh = document.getElementById("diag-mwh-estimado");
+        const elEcv = document.getElementById("diag-ecv-estimado");
+        const elAno = document.getElementById("diag-ano-estimado");
+        if (elMwh) elMwh.textContent = `~${fmtInt(mwhMes)} MWh/mês`;
+        if (elEcv) elEcv.textContent = `~${fmtECV(ecvMes)}/mês`;
+        if (elAno) elAno.textContent = `~${fmtECV(ecvAno)}/ano`;
+
+        const bBypass = document.getElementById("badge-count-bypass");
+        const bMeter = document.getElementById("badge-count-meter");
+        const bBlind = document.getElementById("badge-count-blind");
+        const bCf1 = document.getElementById("badge-count-cf1");
+        if (bBypass) bBypass.textContent = `${fmtInt(qtdDesvio)} CILs`;
+        if (bMeter) bMeter.textContent = `${fmtInt(d.contador_antigo || 12672)} CILs`;
+        if (bBlind) bBlind.textContent = `${fmtInt(d.leitura_antiga || 14668)} CILs`;
+        if (bCf1) bCf1.textContent = `${fmtInt(d.cf1_reincidentes || 916)} CILs`;
+
         renderizarRankingUnidades(d.por_unidade || [], total);
         renderizarRankingPTs(d.top_pts_divida || []);
       } catch (e) {
@@ -1806,6 +2630,54 @@
       aplicarFiltros(1);
     }
 
+    
+    // =========================================================================
+    // PAINEL DE DIAGNÓSTICO PNT & PADRÕES DE PERDAS (MODULO 1)
+    // =========================================================================
+    function resetarFiltrosMod1Inputs() {
+      ["f-busca", "f-prioridade", "f-risco", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+      const elOrdem = document.getElementById("f-ordem");
+      if (elOrdem) elOrdem.value = "score_risco.desc.nullslast,valor.desc.nullslast";
+      document.querySelectorAll(".pnt-pattern-card").forEach(c => c.classList.remove("active"));
+    }
+
+    function ativarPadraoPerda(padrao) {
+      resetarFiltrosMod1Inputs();
+
+      if (padrao === "bypass") {
+        document.getElementById("card-pnt-bypass")?.classList.add("active");
+        const elDesv = document.getElementById("f-desvio");
+        const elEst = document.getElementById("f-estado");
+        const elOrd = document.getElementById("f-ordem");
+        if (elDesv) elDesv.value = "Desv_Fat";
+        if (elEst) elEst.value = "Contrato em Vigor";
+        if (elOrd) elOrd.value = "med_fat.desc.nullslast";
+      } else if (padrao === "obsoleto") {
+        document.getElementById("card-pnt-meter")?.classList.add("active");
+        const elMat = document.getElementById("f-mat-cont");
+        const elOrd = document.getElementById("f-ordem");
+        if (elMat) elMat.value = "> 20 ano";
+        if (elOrd) elOrd.value = "med_fat.desc.nullslast";
+      } else if (padrao === "cegueira") {
+        document.getElementById("card-pnt-blind")?.classList.add("active");
+        const elMatL = document.getElementById("f-mat-leit");
+        const elOrd = document.getElementById("f-ordem");
+        if (elMatL) elMatL.value = "> 5 meses";
+        if (elOrd) elOrd.value = "med_fat.desc.nullslast";
+      } else if (padrao === "cf1_reincidente") {
+        document.getElementById("card-pnt-cf1")?.classList.add("active");
+        const elCf1 = document.getElementById("f-cf1");
+        const elOrd = document.getElementById("f-ordem");
+        if (elCf1) elCf1.value = "__REINCIDENTE__";
+        if (elOrd) elOrd.value = "cf1_val_divida.desc.nullslast";
+      }
+
+      aplicarFiltros(1);
+    }
+
     function atalhoAuditoria(tipo) {
       if (tipo === "critico") {
         const selR = document.getElementById("f-risco");
@@ -1825,7 +2697,7 @@
     let ultimoTokenFiltro = 0;
 
     function resetarTodosFiltros() {
-      ["f-busca", "f-risco", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
+      ["f-busca", "f-prioridade", "f-risco", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
         document.getElementById(id).value = "";
       });
       document.getElementById("f-tipo-busca").value = "auto";
@@ -1843,7 +2715,7 @@
 
       const t0 = performance.now();
       const tbody = document.getElementById("tabela-corpo");
-      tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:28px; color:var(--text-secondary);">Consultando Supabase...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; padding:28px; color:var(--text-secondary);">Consultando Supabase...</td></tr>`;
 
       if (!apenasPagina) {
         atualizarKPIsERankings(tokenAtual);
@@ -1873,7 +2745,7 @@
         if (tokenAtual !== ultimoTokenFiltro) return;
         console.error("Erro na consulta:", e);
         document.getElementById("conn-text").textContent = "ERRO DE CONEXÃO";
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:28px; color:#F87171;">Erro ao comunicar com o Supabase: ${e.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; padding:28px; color:#F87171;">Erro ao comunicar com o Supabase: ${e.message}</td></tr>`;
       }
     }
 
@@ -1910,10 +2782,90 @@
       return `<span style="color:var(--text-muted);">0 ECV</span>`;
     }
 
+    
+    // =========================================================================
+    // SCORECARD DE PRIORIDADE DE VISTORIA DE CAMPO (ENGENHARIA PNT)
+    // =========================================================================
+    function calcularPrioridadeVistoria(row) {
+      const score = Number(row.score_risco || 0);
+      const desvio = row.faturacao_alerta_desvio === "Desv_Fat";
+      const cf1Qtd = Number(row.cf1_qtd_autos || 0);
+      const cf1Jur = row.cf1_estado_juridico || "";
+      const medFat = Number(row.med_fat || 0);
+      const t3 = Number(row.faturacao_t3 || 0);
+      const estCtr = row.est_ctr || "";
+      const matLeit = row.mat_leitura || "";
+      const matCont = row.mat_contador || "";
+      const anom = row.anomalia || "";
+
+      // Cálculo de Perda Estimada em ECV/mês (Tarifa Média: 26 ECV/kWh)
+      let kwhPerdido = 0;
+      if (desvio && medFat > 0) {
+        kwhPerdido = medFat; // Consumo mensal esperado que zerou no trimestre
+      } else if (matCont === "> 20 ano" && medFat > 0) {
+        kwhPerdido = Math.round(medFat * 0.20); // Submedição típica de 20%
+      }
+      const perdaEcvMes = Math.round(kwhPerdido * 26);
+
+      // Classificação 1 a 5 Estrelas
+      // P1: Emergencial 24h
+      if ((cf1Qtd >= 2 || cf1Jur === "Enviado ao MP" || cf1Jur === "A enviar ao MP") || (desvio && medFat >= 150 && estCtr === "Contrato em Vigor")) {
+        return {
+          nivel: 1,
+          badge: `<span class="badge badge-danger" style="font-weight:700; background:rgba(239,68,68,0.25); border-color:#EF4444;" title="Intervenção em 24h: Fraude Reincidente ou Bypass de Alto Consumo">🚨 P1 • 24h ⭐⭐⭐⭐⭐</span>`,
+          perdaEcvMes: perdaEcvMes,
+          rotulo: "Emergencial 24h",
+          instrucao: "Vistoria prioritária com brigada especializada. Inspecionar ramal aéreo/subterrâneo antes do medidor, testar carga com pinça amperimétrica e verificar selos."
+        };
+      }
+
+      // P2: Crítico 72h
+      if (desvio && estCtr === "Contrato em Vigor") {
+        return {
+          nivel: 2,
+          badge: `<span class="badge badge-danger" title="Intervenção em 72h: Queda Brusca de Consumo (Desv_Fat)">🔥 P2 • 72h ⭐⭐⭐⭐</span>`,
+          perdaEcvMes: perdaEcvMes,
+          rotulo: "Crítico 72h",
+          instrucao: "Inspecionar medição direta. Confrontar leitura atual com histórico e verificar se houve desvio de fase ou religação à revelia."
+        };
+      }
+
+      // P3: Alta Prioridade 7d
+      if (cf1Qtd === 1 || (matLeit === "> 5 meses" && anom) || score >= 40) {
+        return {
+          nivel: 3,
+          badge: `<span class="badge badge-warn" title="Intervenção em 7 dias: Histórico CF1 ou Cegueira de Leitura c/ Anomalia">⚠️ P3 • 7d ⭐⭐⭐</span>`,
+          perdaEcvMes: perdaEcvMes,
+          rotulo: "Alta Prioridade",
+          instrucao: "Auditoria de rota de leitura. Realizar ensaio de rotação de disco/pulsos LED e registrar foto da fachada e padrão de entrada."
+        };
+      }
+
+      // P4: Troca Programada de Medidor
+      if (matCont === "> 20 ano" || matLeit === "> 5 meses") {
+        return {
+          nivel: 4,
+          badge: `<span class="badge" style="background:#1E1B4B; color:#C7D2FE; border:1px solid #4338CA;" title="Plano de Troca de Medidor Obsoleto ou Visita de Leiturista">📟 P4 • Rota ⭐⭐</span>`,
+          perdaEcvMes: perdaEcvMes,
+          rotulo: "Troca Programada",
+          instrucao: "Agendar substituição por medidor eletrônico moderno de telemedição ou inspeção de acessibilidade ao contador."
+        };
+      }
+
+      // P5: Monitoramento Regular
+      return {
+        nivel: 5,
+        badge: `<span class="badge badge-ok" style="opacity:0.8;" title="Parâmetros Regulares de Consumo">✅ P5 • Regular ⭐</span>`,
+        perdaEcvMes: 0,
+        rotulo: "Monitoramento Regular",
+        instrucao: "Manter no ciclo regular de leitura e faturação comercial."
+      };
+    }
+
     function renderizarTabela(linhas) {
       const tbody = document.getElementById("tabela-corpo");
       if (!linhas.length) {
-        tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato encontrado com os filtros selecionados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="20" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato encontrado com os filtros selecionados.</td></tr>`;
         return;
       }
 
@@ -1940,8 +2892,15 @@
           ? `<strong style="color:#FBBF24;">${Number(row.valor).toLocaleString("pt-PT", { maximumFractionDigits: 0 })}</strong>`
           : `<span style="color:var(--text-muted);">0</span>`;
 
+        const prio = calcularPrioridadeVistoria(row);
+        const perdaBadge = prio.perdaEcvMes > 0
+          ? `<strong style="color:#F87171; font-family:var(--font-mono); font-size:11.5px;">+${fmtInt(prio.perdaEcvMes)} ECV</strong>`
+          : `<span style="color:var(--text-muted); font-size:11px;">—</span>`;
+
         return `
           <tr onclick="abrirDossie(${idx})">
+            <td style="white-space:nowrap;">${prio.badge}</td>
+            <td class="num-right">${perdaBadge}</td>
             <td>${badgeRisco(row.score_risco, row.nivel_risco)}</td>
             <td class="mono-cell" style="color:var(--accent-cyan); font-weight:600;">${row.cil}</td>
             <td>${row.desc_uni || "—"}</td>
@@ -2140,6 +3099,25 @@
           </div>
         </div>
 
+        <!-- Bloco de Engenharia de Vistoria de Campo -->
+        <div class="dossier-section" style="border-color:rgba(245,158,11,0.45); background:rgba(245,158,11,0.06);">
+          <h4>🎯 Classificação de Prioridade de Vistoria &amp; Perda Estimada</h4>
+          <div class="dossier-grid">
+            <div class="kv-item">
+              <div class="k">Nível de Prioridade de Campo</div>
+              <div class="v">${calcularPrioridadeVistoria(r).badge}</div>
+            </div>
+            <div class="kv-item">
+              <div class="k">Perda Financeira Mensal Estimada</div>
+              <div class="v" style="color:#F87171; font-weight:700;">${calcularPrioridadeVistoria(r).perdaEcvMes > 0 ? '+' + fmtECV(calcularPrioridadeVistoria(r).perdaEcvMes) + '/mês' : 'Sem desvio relevante'}</div>
+            </div>
+          </div>
+          <div class="kv-item" style="margin-top:10px;">
+            <div class="k">Protocolo Técnico Recomendado para a Brigada</div>
+            <div class="v" style="color:var(--text-primary); font-size:12px; line-height:1.5;">${calcularPrioridadeVistoria(r).instrucao}</div>
+          </div>
+        </div>
+
         <div class="dossier-section" style="border-color:${temCf1 ? 'rgba(168,85,247,0.5)' : 'var(--border-dim)'}; background:${temCf1 ? 'rgba(168,85,247,0.06)' : 'var(--bg-input)'};">
           <h4 style="color:#C084FC;">⚖️ 1. Histórico de Autos de Fraude (CF1) &amp; Processo Jurídico</h4>
           <div class="dossier-grid">
@@ -2292,24 +3270,343 @@
       aplicarFiltros(1);
     });
   
+        // =========================================================================
+    // MÓDULO 3: GESTÃO DEDICADA DE DÍVIDA & INADIMPLÊNCIA (ESTRATÉGICO & OPERACIONAL)
     // =========================================================================
-    // MÓDULO 3: GESTÃO DEDICADA DE DÍVIDA & INADIMPLÊNCIA
+    
     // =========================================================================
+    // SIMULADOR FINANCEIRO DE RECUPERAÇÃO DE RECEITA (CASH-IN SIMULATOR)
+    // =========================================================================
+    const BASE_SIMULACAO = {
+      grandes: 2500000000, // ~2.5 Bilhões em contas > 250k ECV
+      gov: 1450000000,     // ~1.45 Bilhão em Autarquias e Estado
+      massa: 2100000000,   // ~2.1 Bilhões em Domésticos e PMEs
+      cf1: 108220000       // ~108.2 Milhões em autos de fraude CF1
+    };
+
+    function atualizarSimulador() {
+      const pGrandes = Number(document.getElementById("slider-sim-grandes")?.value || 15);
+      const pGov = Number(document.getElementById("slider-sim-gov")?.value || 25);
+      const pMassa = Number(document.getElementById("slider-sim-massa")?.value || 7);
+      const pCf1 = Number(document.getElementById("slider-sim-cf1")?.value || 30);
+
+      const valGrandes = BASE_SIMULACAO.grandes * (pGrandes / 100);
+      const valGov = BASE_SIMULACAO.gov * (pGov / 100);
+      const valMassa = BASE_SIMULACAO.massa * (pMassa / 100);
+      const valCf1 = BASE_SIMULACAO.cf1 * (pCf1 / 100);
+      const totalRecuperado = valGrandes + valGov + valMassa + valCf1;
+
+      // Atualizar labels dos sliders
+      const elLGrandes = document.getElementById("lbl-sim-grandes");
+      const elLGov = document.getElementById("lbl-sim-gov");
+      const elLMassa = document.getElementById("lbl-sim-massa");
+      const elLCf1 = document.getElementById("lbl-sim-cf1");
+
+      if (elLGrandes) elLGrandes.textContent = `${pGrandes}% (${(valGrandes/1e6).toFixed(1)} M ECV)`;
+      if (elLGov) elLGov.textContent = `${pGov}% (${(valGov/1e6).toFixed(1)} M ECV)`;
+      if (elLMassa) elLMassa.textContent = `${pMassa}% (${(valMassa/1e6).toFixed(1)} M ECV)`;
+      if (elLCf1) elLCf1.textContent = `${pCf1}% (${(valCf1/1e6).toFixed(1)} M ECV)`;
+
+      // Atualizar KPIs de Impacto no Caixa
+      const elTot = document.getElementById("sim-res-total");
+      const elTaxa = document.getElementById("sim-res-taxa");
+      const elMensal = document.getElementById("sim-res-mensal");
+
+      if (elTot) elTot.textContent = `+${fmtECV(totalRecuperado)}`;
+
+      const arrecadadoBase = dadosResumoDivida?.cob_total_2026 || 2194115146;
+      const totalDivida = dadosResumoDivida?.total_divida || 6157513692;
+      const novaTaxa = ((arrecadadoBase + totalRecuperado) / (arrecadadoBase + totalDivida)) * 100;
+
+      if (elTaxa) elTaxa.textContent = `${novaTaxa.toFixed(1)}%`;
+      if (elMensal) elMensal.textContent = `${(totalRecuperado / 12 / 1e6).toFixed(1)}M ECV/mês`;
+    }
+
+    function aplicarCenarioSimulacao(cenario) {
+      const sGrandes = document.getElementById("slider-sim-grandes");
+      const sGov = document.getElementById("slider-sim-gov");
+      const sMassa = document.getElementById("slider-sim-massa");
+      const sCf1 = document.getElementById("slider-sim-cf1");
+
+      if (cenario === "conservador") {
+        if (sGrandes) sGrandes.value = 5;
+        if (sGov) sGov.value = 10;
+        if (sMassa) sMassa.value = 3;
+        if (sCf1) sCf1.value = 15;
+      } else if (cenario === "moderado") {
+        if (sGrandes) sGrandes.value = 15;
+        if (sGov) sGov.value = 25;
+        if (sMassa) sMassa.value = 7;
+        if (sCf1) sCf1.value = 30;
+      } else if (cenario === "agressivo") {
+        if (sGrandes) sGrandes.value = 25;
+        if (sGov) sGov.value = 40;
+        if (sMassa) sMassa.value = 12;
+        if (sCf1) sCf1.value = 50;
+      }
+      atualizarSimulador();
+    }
+
+    function exportarRelatorioSimulacao() {
+      const pGrandes = document.getElementById("slider-sim-grandes")?.value || 15;
+      const pGov = document.getElementById("slider-sim-gov")?.value || 25;
+      const pMassa = document.getElementById("slider-sim-massa")?.value || 7;
+      const pCf1 = document.getElementById("slider-sim-cf1")?.value || 30;
+
+      const vGrandes = BASE_SIMULACAO.grandes * (pGrandes / 100);
+      const vGov = BASE_SIMULACAO.gov * (pGov / 100);
+      const vMassa = BASE_SIMULACAO.massa * (pMassa / 100);
+      const vCf1 = BASE_SIMULACAO.cf1 * (pCf1 / 100);
+      const total = vGrandes + vGov + vMassa + vCf1;
+
+      const linhas = [
+        "Segmento;Base Dívida (ECV);Meta Recuperação (%);Impacto Financeiro Projetado (ECV);Meta Mensal 12M (ECV)",
+        `Grandes Devedores Privados;${BASE_SIMULACAO.grandes};${pGrandes}%;${vGrandes};${Math.round(vGrandes/12)}`,
+        `Protocolo Estado e Autarquias;${BASE_SIMULACAO.gov};${pGov}%;${vGov};${Math.round(vGov/12)}`,
+        `Carteira Doméstica e PME;${BASE_SIMULACAO.massa};${pMassa}%;${vMassa};${Math.round(vMassa/12)}`,
+        `Regularização Fraudes CF1;${BASE_SIMULACAO.cf1};${pCf1}%;${vCf1};${Math.round(vCf1/12)}`,
+        `TOTAL PROJETADO EM CAIXA;${BASE_SIMULACAO.grandes + BASE_SIMULACAO.gov + BASE_SIMULACAO.massa + BASE_SIMULACAO.cf1};-;${total};${Math.round(total/12)}`
+      ];
+
+      const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `EDEC_Simulacao_Recuperacao_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // =========================================================================
+    // ROTEIRIZADOR DE PIQUETES POR POSTO DE TRANSFORMAÇÃO (PT)
+    // =========================================================================
+    let clientesRoteiroPT = [];
+    let ptAtivoRoteiro = "Tirachapeu";
+
+    async function carregarRoteiroPT(ptNome) {
+      if (!ptNome) return;
+      ptAtivoRoteiro = ptNome;
+
+      // Atualizar métricas resumidas do PT a partir dos dados já em memória ou padrão
+      const ptInfo = (dadosResumoDivida?.top_pts_divida || []).find(p => p.pt === ptNome);
+      if (ptInfo) {
+        document.getElementById("pt-card-divida").textContent = fmtECV(ptInfo.soma_divida || 0);
+        document.getElementById("pt-card-contratos").textContent = `${fmtInt(ptInfo.qtd_contratos || 0)} clientes`;
+        document.getElementById("pt-card-cf1").textContent = `${fmtInt(ptInfo.qtd_cf1 || 0)} autos`;
+        document.getElementById("pt-card-cobrado").textContent = fmtECV(ptInfo.soma_cob_2026 || 0);
+      } else {
+        document.getElementById("pt-card-divida").textContent = "--";
+        document.getElementById("pt-card-contratos").textContent = "--";
+        document.getElementById("pt-card-cf1").textContent = "--";
+        document.getElementById("pt-card-cobrado").textContent = "--";
+      }
+
+      const tbody = document.getElementById("corpo-preview-roteiro-pt");
+      if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:16px; color:var(--text-secondary);">A consultar alvos prioritários do PT ${ptNome}...</td></tr>`;
+      }
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?pt=eq.${ptNome}&valor=gt.0&order=valor.desc&limit=25&select=cil,id_cliente,nome,localidade,contador,valor,qtd,cf1_qtd_autos,cf1_estado_juridico,status_cobranca,pt,desc_uni`, {
+          headers: HEADERS
+        });
+        clientesRoteiroPT = await r.json();
+
+        // Se o ptInfo não estava no top 10, atualizar agora com os clientes
+        if (!ptInfo && clientesRoteiroPT.length > 0) {
+          const somaDiv = clientesRoteiroPT.reduce((acc, c) => acc + (c.valor || 0), 0);
+          document.getElementById("pt-card-divida").textContent = fmtECV(somaDiv);
+          document.getElementById("pt-card-contratos").textContent = `${fmtInt(clientesRoteiroPT.length)}+ clientes`;
+        }
+
+        renderizarPreviewRoteiroPT(clientesRoteiroPT);
+      } catch (e) {
+        console.error("Erro ao carregar roteiro do PT:", e);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; color:#F87171; padding:16px;">Erro: ${e.message}</td></tr>`;
+      }
+    }
+
+    function renderizarPreviewRoteiroPT(lista) {
+      const tbody = document.getElementById("corpo-preview-roteiro-pt");
+      if (!tbody) return;
+
+      if (!lista || !lista.length) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:16px; color:var(--text-muted);">Nenhum cliente devedor encontrado para este transformador.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = lista.slice(0, 6).map(c => {
+        const cf1 = Number(c.cf1_qtd_autos || 0);
+        const stCob = c.status_cobranca === "Devedor Sem Pagamento 2026"
+          ? `<span class="badge badge-danger">🚨 Sem Pag. 2026</span>`
+          : `<span class="badge badge-ok">🟡 Amortizando</span>`;
+
+        const badgeCf1 = cf1 > 0 ? `<span class="badge badge-danger">⚡ ${cf1} Auto(s)</span>` : `<span style="color:var(--text-muted);">-</span>`;
+
+        return `
+          <tr>
+            <td style="font-family:var(--font-mono); font-weight:700; color:var(--accent-cyan);">${c.cil}</td>
+            <td style="font-family:var(--font-mono); color:var(--text-secondary);">${c.contador || 'Sem Contador'}</td>
+            <td style="font-weight:600; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${c.nome}">${c.nome}</td>
+            <td style="color:var(--text-secondary); max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.localidade || '-'}</td>
+            <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#FBBF24;">${fmtECV(c.valor)}</td>
+            <td style="text-align:right; font-family:var(--font-mono);">${c.qtd}</td>
+            <td>${stCob}</td>
+            <td>${badgeCf1}</td>
+            <td style="text-align:center;">
+              <button class="btn btn-sm" onclick="abrirDossiePorCIL(${c.cil})" title="Ver Ficha Completa">Ficha</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function filtrarTabelaPorPTAtual() {
+      resetarFiltrosDividaInputs();
+      const el = document.getElementById("div-localidade");
+      if (el) el.value = ptAtivoRoteiro;
+      aplicarFiltrosDivida(1);
+    }
+
+    function abrirModalOrdemPiquete() {
+      const modal = document.getElementById("modal-ordem-piquete");
+      if (!modal) return;
+
+      const meta = document.getElementById("print-os-meta");
+      if (meta) {
+        meta.innerHTML = `ILHA DE SANTIAGO • POSTO DE TRANSFORMAÇÃO: <strong>${ptAtivoRoteiro}</strong> • ALVOS PRIORITÁRIOS: <strong>${clientesRoteiroPT.length}</strong> • EMISSÃO: ${new Date().toLocaleDateString('pt-PT')}`;
+      }
+
+      const tbody = document.getElementById("corpo-tabela-ordem-piquete");
+      if (tbody) {
+        if (!clientesRoteiroPT.length) {
+          tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">Nenhum devedor carregado para este PT.</td></tr>`;
+        } else {
+          tbody.innerHTML = clientesRoteiroPT.map((c, idx) => `
+            <tr style="border-bottom:1px solid #334155;">
+              <td style="padding:6px; font-weight:700;">${c.cil}</td>
+              <td style="padding:6px;">${c.contador || 'S/N'}</td>
+              <td style="padding:6px; font-weight:600; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.nome}</td>
+              <td style="padding:6px; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${c.localidade || '-'}</td>
+              <td style="padding:6px; text-align:right; font-weight:700;">${fmtInt(c.valor)} ECV</td>
+              <td style="padding:6px; text-align:center;">${c.qtd}</td>
+              <td style="padding:6px; text-align:center;">
+                [ &nbsp; ] Cortado &nbsp; [ &nbsp; ] Negociou &nbsp; [ &nbsp; ] Ausente
+              </td>
+              <td style="padding:6px; border-bottom:1px dashed #64748B;"></td>
+            </tr>
+          `).join("");
+        }
+      }
+
+      modal.style.display = "flex";
+    }
+
+    function fecharModalOrdemPiquete() {
+      const modal = document.getElementById("modal-ordem-piquete");
+      if (modal) modal.style.display = "none";
+    }
+
+    function exportarRoteiroPTCSV() {
+      if (!clientesRoteiroPT.length) {
+        alert("Nenhum cliente disponível no roteiro atual para exportar.");
+        return;
+      }
+
+      const linhas = [
+        "PT;CIL;Contador;Nome;Localidade;Divida_Total_ECV;Faturas_Qtd;Status_Cobranca;Autos_CF1;Acao_Campo_Sugerida",
+        ...clientesRoteiroPT.map(c => `"${c.pt}";"${c.cil}";"${c.contador || ''}";"${(c.nome || '').replace(/"/g, '""')}";"${(c.localidade || '').replace(/"/g, '""')}";${c.valor};${c.qtd};"${c.status_cobranca || ''}";${c.cf1_qtd_autos || 0};"Corte / Vistoria Piquete"`)
+      ];
+
+      const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `EDEC_Roteiro_Piquete_PT_${ptAtivoRoteiro}_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+
     let paginaDividaAtual = 1;
     let totalDevedoresFiltrados = 0;
     let tokenFiltroDivida = 0;
     let registosDividaPagina = [];
+    let dadosResumoDivida = null;
+
+    const abrirDossieTecnico = abrirDossiePorCIL;
+
+    function resetarFiltrosDividaInputs() {
+      const elBusca = document.getElementById("div-busca");
+      const elUni = document.getElementById("div-uni");
+      const elLoc = document.getElementById("div-localidade");
+      const elGrupo = document.getElementById("div-grupo");
+      const elProd = document.getElementById("div-produto");
+      const elFaixa = document.getElementById("div-faixa");
+      const elCob = document.getElementById("div-cobranca");
+      const elCf1 = document.getElementById("div-cf1");
+      const elQtd = document.getElementById("div-qtd-fat");
+      const elOrdem = document.getElementById("div-ordem");
+
+      if (elBusca) elBusca.value = "";
+      if (elUni) elUni.value = "";
+      if (elLoc) elLoc.value = "";
+      if (elGrupo) elGrupo.value = "";
+      if (elProd) elProd.value = "";
+      if (elFaixa) elFaixa.value = "todas";
+      if (elCob) elCob.value = "";
+      if (elCf1) elCf1.value = "";
+      if (elQtd) elQtd.value = "";
+      if (elOrdem) elOrdem.value = "valor.desc";
+
+      document.querySelectorAll(".action-card").forEach(c => c.classList.remove("active"));
+    }
 
     function resetarFiltrosDivida() {
-      document.getElementById("div-busca").value = "";
-      document.getElementById("div-uni").value = "";
-      document.getElementById("div-localidade").value = "";
-      document.getElementById("div-grupo").value = "";
-      document.getElementById("div-produto").value = "";
-      document.getElementById("div-faixa").value = "todas";
-      document.getElementById("div-cobranca").value = "";
-      document.getElementById("div-qtd-fat").value = "";
-      document.getElementById("div-ordem").value = "valor.desc";
+      resetarFiltrosDividaInputs();
+      aplicarFiltrosDivida(1);
+    }
+
+    function ativarAcaoGestao(tipo) {
+      resetarFiltrosDividaInputs();
+      document.querySelectorAll(".action-card").forEach(c => c.classList.remove("active"));
+
+      if (tipo === "corte_urgente") {
+        document.getElementById("card-act-corte")?.classList.add("active");
+        const f = document.getElementById("div-faixa");
+        const c = document.getElementById("div-cobranca");
+        if (f) f.value = "250k";
+        if (c) c.value = "Devedor Sem Pagamento 2026";
+      } else if (tipo === "fraude_cf1") {
+        document.getElementById("card-act-fraude")?.classList.add("active");
+        const cf1 = document.getElementById("div-cf1");
+        if (cf1) cf1.value = "com_cf1";
+      } else if (tipo === "governo_autarquia") {
+        document.getElementById("card-act-gov")?.classList.add("active");
+        const g = document.getElementById("div-grupo");
+        if (g) g.value = "Autarquia";
+      } else if (tipo === "acordo_amortizacao") {
+        document.getElementById("card-act-deal")?.classList.add("active");
+        const c = document.getElementById("div-cobranca");
+        const q = document.getElementById("div-qtd-fat");
+        if (c) c.value = "Devedor em Amortização";
+        if (q) q.value = "4a12";
+      }
+
+      aplicarFiltrosDivida(1);
+    }
+
+    function filtrarConcelhoDivida(concelho) {
+      resetarFiltrosDividaInputs();
+      const el = document.getElementById("div-uni");
+      if (el) el.value = concelho;
+      aplicarFiltrosDivida(1);
+    }
+
+    function filtrarPTDivida(pt) {
+      resetarFiltrosDividaInputs();
+      const el = document.getElementById("div-localidade");
+      if (el) el.value = pt;
       aplicarFiltrosDivida(1);
     }
 
@@ -2325,11 +3622,14 @@
       const prod = document.getElementById("div-produto")?.value || "";
       const faixa = document.getElementById("div-faixa")?.value || "todas";
       const cob = document.getElementById("div-cobranca")?.value || "";
+      const cf1 = document.getElementById("div-cf1")?.value || "";
       const qtdFat = document.getElementById("div-qtd-fat")?.value || "";
       const ordem = document.getElementById("div-ordem")?.value || "valor.desc";
 
       if (uni) p.append("desc_uni", `eq.${uni}`);
-      if (loc) p.append("localidade", `ilike.*${loc}*`);
+      if (loc) {
+        p.append("or", `(localidade.ilike.*${loc}*,pt.ilike.*${loc}*)`);
+      }
       if (grupo) p.append("grup_tp_cli", `eq.${grupo}`);
       if (prod) p.append("produto", `eq.${prod}`);
       if (cob) p.append("status_cobranca", `eq.${cob}`);
@@ -2340,6 +3640,15 @@
       else if (faixa === "50k") p.append("valor", "gte.50000");
       else if (faixa === "10k") p.append("valor", "gte.10000");
       else if (faixa === "ate10k") p.append("valor", "lte.10000");
+
+      // Fraude CF1
+      if (cf1 === "com_cf1") {
+        p.append("cf1_qtd_autos", "gt.0");
+      } else if (cf1 === "cf1_mp") {
+        p.append("cf1_estado_juridico", "eq.Enviado ao MP");
+      } else if (cf1 === "sem_cf1") {
+        p.append("cf1_qtd_autos", "eq.0");
+      }
 
       // Qtd de faturas
       if (qtdFat === "1a3") {
@@ -2377,7 +3686,7 @@
 
       const tbody = document.getElementById("tabela-divida-corpo");
       if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:32px; color:var(--text-secondary);">Consultando devedores no Supabase...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding:32px; color:var(--text-secondary);">Consultando devedores no Supabase...</td></tr>`;
       }
 
       const params = construirParamsDivida();
@@ -2403,17 +3712,23 @@
         atualizarPaginacaoDivida();
       } catch (e) {
         console.error("Erro ao carregar tabela de dívida:", e);
-        if (tbody) tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; color:#F87171; padding:24px;">Erro ao consultar dívidas: ${e.message}</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; color:#F87171; padding:24px;">Erro ao consultar dívidas: ${e.message}</td></tr>`;
       }
     }
 
     async function atualizarKPIsDivida(token) {
-      // Chama o resumo RPC passando p_divida = 'gt0' e os filtros compatíveis
       const uni = document.getElementById("div-uni")?.value || null;
       const grupo = document.getElementById("div-grupo")?.value || null;
       const cob = document.getElementById("div-cobranca")?.value || null;
+      const cf1 = document.getElementById("div-cf1")?.value || "";
+      const loc = (document.getElementById("div-localidade")?.value || "").trim();
       const busca = (document.getElementById("div-busca")?.value || "").trim();
       const infoBusca = busca ? interpretarBusca(busca, "auto") : {};
+
+      let cf1FiltroRpc = null;
+      if (cf1 === "com_cf1") cf1FiltroRpc = "__COM_CF1__";
+      else if (cf1 === "cf1_mp") cf1FiltroRpc = "Enviado ao MP";
+      else if (cf1 === "sem_cf1") cf1FiltroRpc = "__SEM_CF1__";
 
       try {
         const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_resumo_santiago`, {
@@ -2428,8 +3743,8 @@
             p_mat_contador: null,
             p_mat_leitura: null,
             p_nivel_risco: null,
-            p_pt: null,
-            p_cf1_filtro: null,
+            p_pt: loc || null,
+            p_cf1_filtro: cf1FiltroRpc,
             p_status_cobranca: cob,
             p_divida: "gt0",
             p_busca: infoBusca.texto || null,
@@ -2438,6 +3753,7 @@
         });
         if (token !== tokenFiltroDivida) return;
         const d = await r.json();
+        dadosResumoDivida = d;
 
         const totDiv = d.total_divida || 0;
         const totCont = d.total_contratos || d.com_divida || 0;
@@ -2445,28 +3761,171 @@
         const qtdSemPag = d.devedor_sem_pagamento || 0;
         const qtdAmort = d.com_cobranca_2026 || 0;
         const totFat = d.total_faturas_divida || 0;
+        const cobTotal2026 = d.cob_total_2026 || 0;
+        const comCf1 = d.com_cf1 || 0;
+        const cf1Div = d.cf1_divida_total || 0;
+        const crit = d.risco_critico || 0;
+        const alto = d.risco_alto || 0;
 
+        // KPI 1: Dívida Total Carteira
         document.getElementById("kpi-div-total").textContent = fmtECV(totDiv);
-        document.getElementById("kpi-div-total-sub").textContent = `${fmtInt(totCont)} clientes com dívida`;
+        document.getElementById("kpi-div-total-sub").textContent = `${fmtInt(totCont)} clientes (${fmtInt(totFat)} faturas)`;
 
+        // KPI 2: Inadimplência Crítica (Sem Amortização)
         document.getElementById("kpi-div-critica").textContent = fmtECV(semPagDiv);
-        document.getElementById("kpi-div-critica-sub").textContent = `${fmtInt(qtdSemPag)} clientes s/ amortizar 2026`;
+        const pctCritica = totDiv > 0 ? ((semPagDiv / totDiv) * 100).toFixed(1) : "0.0";
+        document.getElementById("kpi-div-critica-sub").textContent = `${fmtInt(qtdSemPag)} clientes (${pctCritica}% estagnada)`;
 
-        const divAmort = Math.max(0, totDiv - semPagDiv);
-        document.getElementById("kpi-div-amort").textContent = fmtECV(divAmort);
-        document.getElementById("kpi-div-amort-sub").textContent = `${fmtInt(qtdAmort)} pagando com saldo`;
+        // KPI 3: Cobrança Realizada 2026
+        document.getElementById("kpi-div-arrecadado").textContent = fmtECV(cobTotal2026);
+        document.getElementById("kpi-div-arrecadado-sub").textContent = `${fmtInt(qtdAmort)} pagando com saldo`;
 
-        document.getElementById("kpi-div-faturas").textContent = fmtInt(totFat);
+        // KPI 4: Taxa de Recuperação 2026
+        const baseRecup = cobTotal2026 + totDiv;
+        const taxaRecup = baseRecup > 0 ? ((cobTotal2026 / baseRecup) * 100).toFixed(1) : "0.0";
+        document.getElementById("kpi-div-taxa-recup").textContent = `${taxaRecup}%`;
+        document.getElementById("kpi-div-taxa-recup-sub").textContent = `Cobrança 2026 vs Carteira Total`;
+
+        // KPI 5: Ticket Médio Devedor
+        const ticketMedio = totCont > 0 ? Math.round(totDiv / totCont) : 0;
         const medFat = totCont > 0 ? (totFat / totCont).toFixed(1) : "0";
-        document.getElementById("kpi-div-faturas-sub").textContent = `Média: ${medFat} faturas/cliente`;
+        document.getElementById("kpi-div-ticket-medio").textContent = fmtECV(ticketMedio);
+        document.getElementById("kpi-div-ticket-medio-sub").textContent = `Média: ${medFat} fat./cliente`;
 
-        document.getElementById("kpi-div-contratos").textContent = fmtInt(totCont);
-        document.getElementById("kpi-div-contratos-sub").textContent = `Inadimplência filtrada`;
+        // KPI 6: Concentração Grandes Contas
+        document.getElementById("kpi-div-grandes").textContent = fmtECV(totDiv * 0.72); // Pareto referencial
+        document.getElementById("kpi-div-grandes-sub").textContent = `~72% detido por >250k ECV`;
+
+        // KPI 7: Devedores com Auto CF1
+        document.getElementById("kpi-div-cf1").textContent = `${fmtInt(comCf1)} clientes`;
+        document.getElementById("kpi-div-cf1-sub").textContent = `Dív. CF1: ${fmtECV(cf1Div)} • MP: ${fmtInt(d.cf1_enviado_mp || 0)}`;
+
+        // KPI 8: Carteira em Risco
+        document.getElementById("kpi-div-risco").textContent = `${fmtInt(crit + alto)} clientes`;
+        document.getElementById("kpi-div-risco-sub").textContent = `${fmtInt(crit)} Crít. / ${fmtInt(alto)} Alto • Sc: ${d.score_medio || 0}`;
 
         document.getElementById("div-contagem-total").textContent = `${fmtInt(totalDevedoresFiltrados || totCont)} contratos encontrados`;
+
+        // Renderizar Painéis de Distribuição (Concelhos & PTs)
+        renderizarDistribuicaoConcelhos(d.por_unidade || []);
+        renderizarTopPTsDivida(d.top_pts_divida || []);
+        atualizarSimulador();
+        if (clientesRoteiroPT.length === 0) {
+          carregarRoteiroPT(ptAtivoRoteiro);
+        }
       } catch (e) {
         console.error("Erro ao atualizar KPIs de dívida:", e);
       }
+    }
+
+    function renderizarDistribuicaoConcelhos(unidades) {
+      const container = document.getElementById("lista-unidades-divida");
+      if (!container) return;
+
+      if (!unidades || !unidades.length) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Sem dados de unidades para os filtros atuais.</div>`;
+        return;
+      }
+
+      const totalSomaDivida = unidades.reduce((acc, u) => acc + (u.soma_divida || 0), 0) || 1;
+
+      container.innerHTML = unidades.map(u => {
+        const divVal = u.soma_divida || 0;
+        const cobVal = u.soma_cob_2026 || 0;
+        const pctShare = ((divVal / totalSomaDivida) * 100).toFixed(1);
+        const taxaRecup = (cobVal + divVal) > 0 ? ((cobVal / (cobVal + divVal)) * 100).toFixed(1) : "0.0";
+
+        return `
+          <div class="rank-item" onclick="filtrarConcelhoDivida('${u.desc_uni}')" title="Clique para filtrar apenas o concelho ${u.desc_uni}">
+            <div class="rank-top">
+              <span style="color:var(--text-primary); font-weight:700;">📍 ${u.desc_uni}</span>
+              <span style="font-family:var(--font-mono); color:#FBBF24;">${fmtECV(divVal)}</span>
+            </div>
+            <div class="rank-metrics">
+              <span>${fmtInt(u.qtd_contratos || 0)} devedores (${pctShare}% share)</span>
+              <span>Arrecadado: <strong style="color:#34D399;">${fmtECV(cobVal)}</strong> (Recup: ${taxaRecup}%)</span>
+            </div>
+            <div class="rank-bar-track">
+              <div class="rank-bar-fill" style="width: ${Math.min(100, Math.max(5, pctShare))}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderizarTopPTsDivida(pts) {
+      const container = document.getElementById("lista-pts-divida");
+      if (!container) return;
+
+      if (!pts || !pts.length) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">Sem postos de transformação críticos.</div>`;
+        return;
+      }
+
+      const maxDiv = Math.max(...pts.map(p => p.soma_divida || 0), 1);
+
+      container.innerHTML = pts.slice(0, 8).map(pt => {
+        const divVal = pt.soma_divida || 0;
+        const cobVal = pt.soma_cob_2026 || 0;
+        const pctBar = ((divVal / maxDiv) * 100).toFixed(0);
+
+        return `
+          <div class="rank-item" onclick="filtrarPTDivida('${pt.pt}')" title="Clique para filtrar clientes do PT ${pt.pt}">
+            <div class="rank-top">
+              <span style="color:var(--accent-amber); font-weight:700;">⚡ PT ${pt.pt || 'Não Identificado'}</span>
+              <span style="font-family:var(--font-mono); color:#F87171;">${fmtECV(divVal)}</span>
+            </div>
+            <div class="rank-metrics">
+              <span>${fmtInt(pt.qtd_contratos || 0)} contratos • ${pt.qtd_cf1 || 0} autos CF1</span>
+              <span>Cobrado: <strong style="color:#34D399;">${fmtECV(cobVal)}</strong></span>
+            </div>
+            <div class="rank-bar-track">
+              <div class="rank-bar-fill" style="width: ${pctBar}%; background: linear-gradient(90deg, #F59E0B, #EF4444);"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function calcularAcaoRecomendada(r) {
+      const val = Number(r.valor || 0);
+      const qtdFat = Number(r.qtd || 0);
+      const pago2026 = Number(r.cob_valor_total || 0);
+      const stCob = r.status_cobranca || "";
+      const grupo = (r.grup_tp_cli || "").toLowerCase();
+      const cf1Qtd = Number(r.cf1_qtd_autos || 0);
+      const cf1Jur = r.cf1_estado_juridico || "";
+
+      // 1. Fraude CF1 com MP ou reincidência
+      if (cf1Qtd > 0) {
+        if (cf1Jur === "Enviado ao MP" || cf1Jur === "A enviar ao MP") {
+          return `<span class="badge" style="background:#450A0A; color:#FCA5A5; border:1px solid #B91C1C;" title="Processo de Fraude CF1 no Ministério Público">⚖️ Jurídico MP + Fraude</span>`;
+        }
+        return `<span class="badge" style="background:#451A03; color:#FCD34D; border:1px solid #D97706;" title="Auto de fiscalização CF1 registado">⚡ Brigada CF1</span>`;
+      }
+
+      // 2. Setor Público (Autarquias / Estado / Empresa Pública)
+      if (grupo.includes("autarquia") || grupo.includes("estado") || grupo.includes("publica") || grupo.includes("pública")) {
+        return `<span class="badge" style="background:#1E1B4B; color:#C7D2FE; border:1px solid #4338CA;" title="Cliente de Estado / Câmara Municipal">🏛️ Protocolo Estado</span>`;
+      }
+
+      // 3. Corte Imediato (Dívida alta sem amortização recente)
+      if (val >= 100000 && (pago2026 <= 0 || stCob === "Devedor Sem Pagamento 2026")) {
+        return `<span class="badge badge-danger" title="Grande devedor sem qualquer pagamento em 2026">🚨 Corte Imediato</span>`;
+      }
+
+      // 4. Acordo / Parcelamento (Pagando regularmente ou amortizando)
+      if (pago2026 > 0 || stCob.includes("Amortiza")) {
+        return `<span class="badge badge-ok" title="Cliente ativo em pagamento com saldo residual">🤝 Acordo / Parcelar</span>`;
+      }
+
+      // 5. Cobrança Rápida / Notificação de Corte
+      if (qtdFat >= 4) {
+        return `<span class="badge badge-warn" title="Mais de 3 faturas acumuladas">⚠️ Notificar Pré-Corte</span>`;
+      }
+
+      // 6. Monitoramento de Baixo Valor
+      return `<span class="badge" style="background:#1E293B; color:#94A3B8; border:1px solid #475569;" title="Dívida recente ou de baixa complexidade">✉️ Cobrança Normal</span>`;
     }
 
     function renderizarTabelaDivida(linhas) {
@@ -2474,7 +3933,7 @@
       if (!tbody) return;
 
       if (!linhas || !linhas.length) {
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato devedor encontrado com os filtros selecionados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding:32px; color:var(--text-muted);">Nenhum contrato devedor encontrado com os filtros selecionados.</td></tr>`;
         return;
       }
 
@@ -2484,33 +3943,41 @@
         const pago2026 = r.cob_valor_total || 0;
         const stCob = r.status_cobranca || "";
         const isGrande = valDiv >= 1000000;
+        const isMedioGrande = valDiv >= 250000;
 
         const badgeDiv = isGrande
           ? `<span class="badge badge-danger" title="Grande Devedor (> 1M ECV)">🔥 ${fmtInt(valDiv)} ECV</span>`
-          : `<span style="font-family:var(--font-mono); font-weight:600; color:#FBBF24;">${fmtInt(valDiv)} ECV</span>`;
+          : (isMedioGrande
+              ? `<span class="badge badge-warn" title="Devedor Elevado (> 250k ECV)">⚡ ${fmtInt(valDiv)} ECV</span>`
+              : `<span style="font-family:var(--font-mono); font-weight:600; color:#FBBF24;">${fmtInt(valDiv)} ECV</span>`);
 
         const badgeSt = stCob === "Devedor Sem Pagamento 2026"
           ? `<span class="badge badge-danger">🚨 Sem Pag. 2026</span>`
           : (pago2026 > 0 ? `<span class="badge badge-warn">🟡 Em Amortização</span>` : `<span style="color:var(--text-muted);">${stCob || '—'}</span>`);
 
-        const badgeRisco = r.nivel_risco === "CRÍTICO"
-          ? `<span class="badge badge-danger">CRÍTICO</span>`
-          : (r.nivel_risco === "ALTO" ? `<span class="badge badge-warn">ALTO</span>` : `<span class="badge badge-ok">${r.nivel_risco || 'BAIXO'}</span>`);
+        const cf1Qtd = Number(r.cf1_qtd_autos || 0);
+        const cf1Jur = r.cf1_estado_juridico || "";
+        const badgeCf1 = cf1Qtd > 0
+          ? (cf1Jur === "Enviado ao MP" ? `<span class="badge badge-danger" title="${cf1Qtd} auto(s) no MP">⚡ ${cf1Qtd} (MP)</span>` : `<span class="badge badge-purple" title="${cf1Qtd} auto(s) CF1">⚡ ${cf1Qtd} Auto(s)</span>`)
+          : `<span style="color:var(--text-muted); font-size:11px;">—</span>`;
+
+        const badgeAcao = calcularAcaoRecomendada(r);
 
         return `
           <tr>
             <td style="font-family:var(--font-mono); font-weight:600; color:var(--accent-cyan);">${r.cil}</td>
-            <td style="font-family:var(--font-mono); color:var(--text-muted);">${r.id_cliente || '—'}</td>
-            <td style="font-weight:500; max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.nome || ''}">${r.nome || '—'}</td>
+            <td style="font-family:var(--font-mono); color:var(--text-muted);">${r.id_cliente || r.id || '—'}</td>
+            <td style="font-weight:500; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.nome || ''}">${r.nome || '—'}</td>
             <td><span class="badge" style="background:#131C2B; border:1px solid var(--border-bright);">${r.desc_uni || '—'}</span></td>
-            <td style="color:var(--text-secondary); max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.localidade || ''}">${r.localidade || '—'}</td>
+            <td style="color:var(--text-secondary); max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.localidade || ''} • PT: ${r.pt || '-'}">${r.localidade || '—'}${r.pt ? ' <span style="color:var(--accent-cyan); font-family:var(--font-mono); font-size:10px;">(' + r.pt + ')</span>' : ''}</td>
             <td>${r.grup_tp_cli || '—'}</td>
             <td><span class="badge" style="font-family:var(--font-mono);">${r.produto || '—'}</span></td>
-            <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(qtdFat)}</td>
+            <td style="text-align:right; font-family:var(--font-mono); ${qtdFat > 12 ? 'color:#F87171; font-weight:700;' : ''}">${fmtInt(qtdFat)}</td>
             <td style="text-align:right;">${badgeDiv}</td>
             <td style="text-align:right; font-family:var(--font-mono); color:#34D399;">${pago2026 > 0 ? fmtInt(pago2026) + ' ECV' : '<span style="color:var(--text-muted);">0</span>'}</td>
             <td>${badgeSt}</td>
-            <td>${badgeRisco}</td>
+            <td style="text-align:center;">${badgeCf1}</td>
+            <td>${badgeAcao}</td>
             <td style="text-align:center;">
               <button class="btn btn-sm" onclick="abrirDossieTecnico(${r.cil})" title="Ver Ficha Técnica Completa">Ver Ficha</button>
             </td>
@@ -2543,7 +4010,7 @@
     async function exportarCSVDivida() {
       const params = construirParamsDivida();
       params.append("limit", "5000"); // Exporta até 5.000 clientes prioritários
-      params.append("select", "cil,id_cliente,nome,desc_uni,localidade,grup_tp_cli,produto,tarifa,valor,qtd,cob_valor_total,status_cobranca,score_risco,nivel_risco");
+      params.append("select", "cil,id_cliente,nome,desc_uni,localidade,pt,grup_tp_cli,produto,tarifa,valor,qtd,cob_valor_total,status_cobranca,cf1_qtd_autos,cf1_estado_juridico,score_risco,nivel_risco");
 
       try {
         const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, { headers: HEADERS });
