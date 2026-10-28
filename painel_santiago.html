@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('santiago_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) {}
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EDEC • Centro de Comando e Telemetria Comercial — Santiago</title>
@@ -10,7 +18,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    :root {
+    :root, [data-theme="dark"] {
       --bg-void: #070A0F;
       --bg-panel: #0D131D;
       --bg-panel-elevated: #131C2B;
@@ -29,9 +37,184 @@
       --accent-emerald: #10B981;
       --accent-purple: #A855F7;
       --accent-purple-glow: rgba(168, 85, 247, 0.15);
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+      --topbar-bg: rgba(13, 19, 29, 0.92);
+      --table-th-bg: #111927;
+      --table-hover: rgba(6, 182, 212, 0.08);
       --font-display: 'Space Grotesk', sans-serif;
       --font-sans: 'IBM Plex Sans', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="light"] {
+      --bg-void: #F8FAFC;
+      --bg-panel: #FFFFFF;
+      --bg-panel-elevated: #F1F5F9;
+      --bg-input: #FFFFFF;
+      --border-dim: #E2E8F0;
+      --border-bright: #CBD5E1;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --accent-amber: #D97706;
+      --accent-amber-glow: rgba(217, 119, 6, 0.12);
+      --accent-cyan: #0284C7;
+      --accent-cyan-glow: rgba(2, 132, 199, 0.12);
+      --accent-red: #DC2626;
+      --accent-red-glow: rgba(220, 38, 38, 0.12);
+      --accent-emerald: #059669;
+      --accent-purple: #7C3AED;
+      --accent-purple-glow: rgba(124, 58, 237, 0.12);
+      --card-shadow: 0 2px 8px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+      --topbar-bg: rgba(255, 255, 255, 0.95);
+      --table-th-bg: #F1F5F9;
+      --table-hover: #F0FDF4;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-sans: 'IBM Plex Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* CUSTOM SLEEK SCROLLBARS */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-void); }
+    ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* REFINAMENTOS DE TEMA CLARO */
+    [data-theme="light"] body {
+      background-color: var(--bg-void);
+      background-image:
+        radial-gradient(circle at 12% 0%, rgba(2, 132, 199, 0.04), transparent 35%),
+        radial-gradient(circle at 88% 0%, rgba(217, 119, 6, 0.04), transparent 35%),
+        linear-gradient(rgba(203, 213, 225, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(203, 213, 225, 0.4) 1px, transparent 1px);
+      color: var(--text-primary);
+    }
+    [data-theme="light"] .scada-topbar {
+      background: var(--topbar-bg);
+      border-bottom: 1px solid var(--border-dim);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    }
+    [data-theme="light"] .panel-box,
+    [data-theme="light"] .kpi-card,
+    [data-theme="light"] .filter-box,
+    [data-theme="light"] .table-container,
+    [data-theme="light"] .action-card,
+    [data-theme="light"] .pnt-diagnostic-panel,
+    [data-theme="light"] .pt-router-box,
+    [data-theme="light"] .sim-card {
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-dim);
+    }
+    [data-theme="light"] table.scada-table thead th {
+      background: var(--table-th-bg);
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-bright);
+    }
+    [data-theme="light"] table.scada-table tbody tr {
+      border-bottom: 1px solid var(--border-dim);
+    }
+    [data-theme="light"] table.scada-table tbody tr:hover {
+      background: var(--table-hover);
+    }
+    [data-theme="light"] .btn {
+      background: #FFFFFF;
+      border-color: var(--border-bright);
+      color: var(--text-primary);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    [data-theme="light"] .btn:hover {
+      background: #F8FAFC;
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+    [data-theme="light"] .btn-amber {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #070A0F;
+      border-color: #FBBF24;
+    }
+    [data-theme="light"] .input-ctrl, [data-theme="light"] .select-ctrl {
+      background: #FFFFFF;
+      border-color: var(--border-bright);
+      color: var(--text-primary);
+    }
+    [data-theme="light"] .status-pill {
+      background: #FFFFFF;
+      border-color: var(--border-dim);
+      color: var(--text-secondary);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+    [data-theme="light"] .rank-item {
+      background: #FFFFFF;
+      border-color: var(--border-dim);
+    }
+    [data-theme="light"] .rank-item:hover, [data-theme="light"] .rank-item.active {
+      background: #FEF3C7;
+      border-color: var(--accent-amber);
+    }
+    [data-theme="light"] .rank-bar-track {
+      background: #E2E8F0;
+    }
+    [data-theme="light"] .dossier-drawer {
+      background: #FFFFFF;
+      box-shadow: -8px 0 30px rgba(15, 23, 42, 0.15);
+      border-left: 1px solid var(--border-dim);
+    }
+    [data-theme="light"] .drawer-header {
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--border-dim);
+    }
+    [data-theme="light"] .dossier-section {
+      background: #F8FAFC;
+      border: 1px solid var(--border-dim);
+    }
+    [data-theme="light"] #modal-ordem-piquete > div {
+      background: #FFFFFF !important;
+      border: 1px solid var(--border-bright) !important;
+      color: #0F172A !important;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2) !important;
+    }
+    [data-theme="light"] #santiago-map {
+      background: #E2E8F0;
+    }
+
+    /* THEME SWITCH CONTROL */
+    .theme-switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .theme-toggle-btn:hover {
+      color: var(--text-primary);
+    }
+    .theme-toggle-btn.active {
+      background: var(--accent-amber);
+      color: #070A0F;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+    [data-theme="light"] .theme-toggle-btn.active {
+      background: #0F172A;
+      color: #FFFFFF;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
     }
 
     * {
@@ -1038,16 +1221,30 @@
     </div>
 
     <div class="telemetry-status">
+      <!-- SELETOR DE TEMA DARK / BRANCO -->
+      <div class="theme-switch-wrap" title="Alternar entre Modo Escuro (SCADA) e Modo Branco (Corporativo)">
+        <button id="theme-btn-dark" class="theme-toggle-btn active" onclick="setTema('dark')">
+          <span>🌙</span> <span>Dark</span>
+        </button>
+        <button id="theme-btn-light" class="theme-toggle-btn" onclick="setTema('light')">
+          <span>☀️</span> <span>Branco</span>
+        </button>
+      </div>
       <div class="status-pill">
         <span class="pulse-dot" id="conn-dot"></span>
         <span id="conn-text">CONECTANDO SUPABASE...</span>
       </div>
       <div class="status-pill" id="latency-pill">LATÊNCIA: -- ms</div>
-      <button class="btn" onclick="resetarTodosFiltros()" title="Limpar todos os filtros ativos">
-        ↺ Limpar Filtros
-      </button>
-      <a href="apresentacao_edec_administracao.html" target="_blank" class="btn" style="text-decoration:none; border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600;" title="Abrir Apresentação Executiva para o Conselho de Administração">
-        📑 Apresentação CA
+      <button class="btn" onclick="resetarTodosFiltros()" title="Limpar todos os filtros ativos">
+
+        ↺ Limpar Filtros
+
+      </button>
+
+      <a href="apresentacao_edec_administracao.html" target="_blank" class="btn" style="text-decoration:none; border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600;" title="Abrir Apresentação Executiva para o Conselho de Administração">
+
+        📑 Apresentação CA
+
       </a>
       <button class="btn btn-amber" onclick="exportarCSVFiltrado()" id="btn-export" title="Exporta 100% dos registos do filtro ativo em lotes automáticos">
         ⬇ Exportar CSV Completo (Filtro Atual)
@@ -2241,22 +2438,65 @@
       tileDark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
         attribution: "&copy; OpenStreetMap &copy; CARTO",
         maxZoom: 20
-      }).addTo(map);
+      });
+
+      tileLight = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+        attribution: "&copy; OpenStreetMap &copy; CARTO",
+        maxZoom: 20
+      });
 
       tileSat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
         attribution: "&copy; Esri World Imagery",
         maxZoom: 19
       });
 
+      const initT = document.documentElement.getAttribute('data-theme') || 'dark';
+      if (initT === 'light') {
+        tileLight.addTo(map);
+      } else {
+        tileDark.addTo(map);
+      }
+
       markersLayer = L.layerGroup().addTo(map);
     }
 
+    function setTema(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem('santiago_theme', theme); } catch(e) {}
+
+      const btnDark = document.getElementById('theme-btn-dark');
+      const btnLight = document.getElementById('theme-btn-light');
+      if (btnDark && btnLight) {
+        if (theme === 'light') {
+          btnLight.classList.add('active');
+          btnDark.classList.remove('active');
+        } else {
+          btnDark.classList.add('active');
+          btnLight.classList.remove('active');
+        }
+      }
+
+      // Sincronizar camada base do Mapa Leaflet
+      if (typeof map !== 'undefined' && map && !usandoSatelite && typeof tileDark !== 'undefined' && typeof tileLight !== 'undefined') {
+        if (theme === 'light') {
+          if (map.hasLayer(tileDark)) map.removeLayer(tileDark);
+          if (!map.hasLayer(tileLight)) tileLight.addTo(map);
+        } else {
+          if (map.hasLayer(tileLight)) map.removeLayer(tileLight);
+          if (!map.hasLayer(tileDark)) tileDark.addTo(map);
+        }
+      }
+    }
+
     function alternarCamadaMapa() {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const defaultTile = isLight ? tileLight : tileDark;
       if (usandoSatelite) {
         map.removeLayer(tileSat);
-        tileDark.addTo(map);
+        defaultTile.addTo(map);
       } else {
-        map.removeLayer(tileDark);
+        if (map.hasLayer(tileDark)) map.removeLayer(tileDark);
+        if (map.hasLayer(tileLight)) map.removeLayer(tileLight);
         tileSat.addTo(map);
       }
       usandoSatelite = !usandoSatelite;
