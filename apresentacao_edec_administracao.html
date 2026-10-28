@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('santiago_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch(e) {}
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EDEC • Apresentação Executiva à Administração - Santiago 2026</title>
@@ -8,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
+    :root, [data-theme="dark"] {
       --bg-void: #06090E;
       --bg-card: #0D1420;
       --bg-card-elevated: #131E30;
@@ -28,6 +36,112 @@
       --font-display: 'Space Grotesk', sans-serif;
       --font-sans: 'IBM Plex Sans', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="light"] {
+      --bg-void: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --bg-card-elevated: #F1F5F9;
+      --border-dim: #E2E8F0;
+      --border-bright: #CBD5E1;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --accent-amber: #D97706;
+      --accent-amber-glow: rgba(217, 119, 6, 0.12);
+      --accent-emerald: #059669;
+      --accent-emerald-glow: rgba(5, 150, 105, 0.12);
+      --accent-red: #DC2626;
+      --accent-red-glow: rgba(220, 38, 38, 0.12);
+      --accent-cyan: #0284C7;
+      --accent-purple: #7C3AED;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-sans: 'IBM Plex Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="light"] body {
+      background-color: var(--bg-void);
+      background-image:
+        radial-gradient(circle at 10% 0%, rgba(2, 132, 199, 0.05), transparent 30%),
+        radial-gradient(circle at 90% 0%, rgba(217, 119, 6, 0.04), transparent 30%),
+        linear-gradient(rgba(203, 213, 225, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(203, 213, 225, 0.4) 1px, transparent 1px);
+      color: var(--text-primary);
+    }
+
+    [data-theme="light"] .top-header {
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 1px solid var(--border-dim);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    [data-theme="light"] .card,
+    [data-theme="light"] .kpi-box,
+    [data-theme="light"] .slide {
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+    [data-theme="light"] .card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-dim);
+    }
+    [data-theme="light"] .table-custom thead th {
+      background: #F1F5F9;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-bright);
+    }
+    [data-theme="light"] .table-custom tbody tr {
+      border-bottom: 1px solid var(--border-dim);
+    }
+    [data-theme="light"] .table-custom tbody tr:hover {
+      background: #F8FAFC;
+    }
+    [data-theme="light"] .btn {
+      background: #FFFFFF;
+      border-color: var(--border-bright);
+      color: var(--text-primary);
+    }
+    [data-theme="light"] .btn:hover {
+      background: #F8FAFC;
+      border-color: var(--accent-cyan);
+    }
+
+    /* THEME SWITCH CONTROL */
+    .theme-switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 20px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .theme-toggle-btn:hover {
+      color: var(--text-primary);
+    }
+    .theme-toggle-btn.active {
+      background: var(--accent-amber);
+      color: #070A0F;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+    [data-theme="light"] .theme-toggle-btn.active {
+      background: #0F172A;
+      color: #FFFFFF;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
     }
 
     * {
@@ -549,6 +663,16 @@
           🟢 SINCRONIZADO AO VIVO (SUPABASE)
         </span>
       </div>
+      <!-- SELETOR DE TEMA DARK / BRANCO -->
+      <div class="theme-switch-wrap" style="margin-right:8px;" title="Alternar entre Modo Escuro (Projeção) e Modo Branco (Corporativo / Impressão)">
+        <button id="theme-btn-dark" class="theme-toggle-btn active" onclick="setTemaApresentacao('dark')">
+          <span>🌙</span> <span>Dark</span>
+        </button>
+        <button id="theme-btn-light" class="theme-toggle-btn" onclick="setTemaApresentacao('light')">
+          <span>☀️</span> <span>Branco</span>
+        </button>
+      </div>
+
       <div class="nav-controls">
       <button class="btn" onclick="mudarSlide(-1)" id="btn-prev" title="Slide Anterior (Seta Esquerda)">◀ Anterior</button>
       <span class="slide-counter" id="slide-num">1 / 6</span>
@@ -989,6 +1113,22 @@
     let slideAtual = 1;
     const totalSlides = 6;
 
+    function setTemaApresentacao(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem('santiago_theme', theme); } catch(e) {}
+      const btnDark = document.getElementById('theme-btn-dark');
+      const btnLight = document.getElementById('theme-btn-light');
+      if (btnDark && btnLight) {
+        if (theme === 'light') {
+          btnLight.classList.add('active');
+          btnDark.classList.remove('active');
+        } else {
+          btnDark.classList.add('active');
+          btnLight.classList.remove('active');
+        }
+      }
+    }
+
     function atualizarSlide() {
       document.querySelectorAll(".slide").forEach((s, idx) => {
         s.classList.toggle("active", idx + 1 === slideAtual);
@@ -1002,7 +1142,9 @@
       slideAtual += direcao;
       if (slideAtual < 1) slideAtual = 1;
       if (slideAtual > totalSlides) slideAtual = totalSlides;
-      atualizarSlide();
+      const curTema = document.documentElement.getAttribute('data-theme') || 'dark';
+    setTemaApresentacao(curTema);
+    atualizarSlide();
     }
 
     function alternarTelaCheia() {
