@@ -1,1306 +1,2140 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-PT" data-theme="light">
 <head>
-  <script>
-    (function() {
-      try {
-        var t = localStorage.getItem('santiago_theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', t);
-      } catch(e) {}
-    })();
-  </script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EDEC • Apresentação Executiva à Administração - Santiago 2026</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root, [data-theme="dark"] {
-      --bg-void: #06090E;
-      --bg-card: #0D1420;
-      --bg-card-elevated: #131E30;
-      --border-dim: #1E293B;
-      --border-bright: #334155;
-      --text-primary: #F8FAFC;
-      --text-secondary: #94A3B8;
-      --text-muted: #64748B;
-      --accent-amber: #F59E0B;
-      --accent-amber-glow: rgba(245, 158, 11, 0.18);
-      --accent-emerald: #10B981;
-      --accent-emerald-glow: rgba(16, 185, 129, 0.18);
-      --accent-red: #EF4444;
-      --accent-red-glow: rgba(239, 68, 68, 0.18);
-      --accent-cyan: #06B6D4;
-      --accent-purple: #8B5CF6;
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-sans: 'IBM Plex Sans', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apresentação Executiva CA — EDEC Região Sul | Tableau Story</title>
+    <script>
+        (function() {
+            var t = localStorage.getItem('santiago_theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* =========================================================
+           TABLEAU PUBLIC EXECUTIVE STORY DESIGN SYSTEM
+           Light-first analytical canvas + Dark Mode Enterprise
+           ========================================================= */
+        :root {
+            --tableau-blue: #4E79A7;
+            --tableau-blue-dark: #2B5C8F;
+            --tableau-orange: #F28E2B;
+            --tableau-red: #E15759;
+            --tableau-teal: #76B7B2;
+            --tableau-green: #59A14F;
+            --tableau-yellow: #EDC948;
+            --tableau-purple: #B07AA1;
+            --tableau-pink: #FF9DA7;
+            --tableau-brown: #9C755F;
+            --tableau-grey: #BAB0AC;
 
-    [data-theme="light"] {
-      --bg-void: #F8FAFC;
-      --bg-card: #FFFFFF;
-      --bg-card-elevated: #F1F5F9;
-      --border-dim: #E2E8F0;
-      --border-bright: #CBD5E1;
-      --text-primary: #0F172A;
-      --text-secondary: #475569;
-      --text-muted: #64748B;
-      --accent-amber: #D97706;
-      --accent-amber-glow: rgba(217, 119, 6, 0.12);
-      --accent-emerald: #059669;
-      --accent-emerald-glow: rgba(5, 150, 105, 0.12);
-      --accent-red: #DC2626;
-      --accent-red-glow: rgba(220, 38, 38, 0.12);
-      --accent-cyan: #0284C7;
-      --accent-purple: #7C3AED;
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-sans: 'IBM Plex Sans', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+            --bg-canvas: #F4F6F9;
+            --bg-topbar: #FFFFFF;
+            --bg-storybar: #EBEEF3;
+            --bg-card: #FFFFFF;
+            --bg-card-alt: #F8FAFC;
+            --bg-hover: #F1F5F9;
 
-    [data-theme="light"] body {
-      background-color: var(--bg-void);
-      background-image:
-        radial-gradient(circle at 10% 0%, rgba(2, 132, 199, 0.05), transparent 30%),
-        radial-gradient(circle at 90% 0%, rgba(217, 119, 6, 0.04), transparent 30%),
-        linear-gradient(rgba(203, 213, 225, 0.4) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(203, 213, 225, 0.4) 1px, transparent 1px);
-      color: var(--text-primary);
-    }
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --text-muted: #64748B;
 
-    [data-theme="light"] .top-header {
-      background: rgba(255, 255, 255, 0.94);
-      border-bottom: 1px solid var(--border-dim);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-    [data-theme="light"] .card,
-    [data-theme="light"] .kpi-box,
-    [data-theme="light"] .slide {
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
-    }
-    [data-theme="light"] .card {
-      background: #FFFFFF;
-      border: 1px solid var(--border-dim);
-    }
-    [data-theme="light"] .table-custom thead th {
-      background: #F1F5F9;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-bright);
-    }
-    [data-theme="light"] .table-custom tbody tr {
-      border-bottom: 1px solid var(--border-dim);
-    }
-    [data-theme="light"] .table-custom tbody tr:hover {
-      background: #F8FAFC;
-    }
-    [data-theme="light"] .btn {
-      background: #FFFFFF;
-      border-color: var(--border-bright);
-      color: var(--text-primary);
-    }
-    [data-theme="light"] .btn:hover {
-      background: #F8FAFC;
-      border-color: var(--accent-cyan);
-    }
+            --border-subtle: #E2E8F0;
+            --border-strong: #CBD5E1;
 
-    /* THEME SWITCH CONTROL */
-    .theme-switch-wrap {
-      display: inline-flex;
-      align-items: center;
-      background: var(--bg-card);
-      border: 1px solid var(--border-dim);
-      border-radius: 20px;
-      padding: 2px;
-      gap: 2px;
-    }
-    .theme-toggle-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 16px;
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .theme-toggle-btn:hover {
-      color: var(--text-primary);
-    }
-    .theme-toggle-btn.active {
-      background: var(--accent-amber);
-      color: #070A0F;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    }
-    [data-theme="light"] .theme-toggle-btn.active {
-      background: #0F172A;
-      color: #FFFFFF;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
-    }
+            --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+            --shadow-elevated: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+            --accent-blue: #4E79A7;
+            --accent-orange: #D97706;
+            --accent-red: #DC2626;
+            --accent-green: #16A34A;
+            --accent-teal: #0D9488;
+            --accent-purple: #7C3AED;
+        }
 
-    body {
-      background-color: var(--bg-void);
-      color: var(--text-primary);
-      font-family: var(--font-sans);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 10% 0%, rgba(6, 182, 212, 0.08), transparent 30%),
-        radial-gradient(circle at 90% 0%, rgba(245, 158, 11, 0.08), transparent 30%),
-        linear-gradient(rgba(30, 41, 59, 0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30, 41, 59, 0.12) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
-    }
+        html[data-theme="dark"] {
+            --bg-canvas: #0B1120;
+            --bg-topbar: #0F172A;
+            --bg-storybar: #131C31;
+            --bg-card: #1E293B;
+            --bg-card-alt: #162032;
+            --bg-hover: #26334D;
 
-    /* TOP BAR */
-    .top-header {
-      background: rgba(13, 20, 32, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-dim);
-      padding: 12px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+            --text-primary: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --text-muted: #94A3B8;
 
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+            --border-subtle: #334155;
+            --border-strong: #475569;
 
-    .brand-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--accent-amber), #D97706);
-      border-radius: 6px;
-      display: grid;
-      place-items: center;
-      color: #070A0F;
-      font-weight: 800;
-      font-family: var(--font-mono);
-      font-size: 18px;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
-    }
+            --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.35);
+            --shadow-elevated: 0 12px 30px rgba(0, 0, 0, 0.5);
 
-    .brand-text h1 {
-      font-family: var(--font-display);
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
+            --accent-blue: #60A5FA;
+            --accent-orange: #FBBF24;
+            --accent-red: #F87171;
+            --accent-green: #4ADE80;
+            --accent-teal: #2DD4BF;
+            --accent-purple: #C084FC;
+        }
 
-    .brand-text p {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .nav-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
 
-    .btn {
-      padding: 7px 14px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      background: var(--bg-card-elevated);
-      color: var(--text-primary);
-      border: 1px solid var(--border-bright);
-      font-family: var(--font-sans);
-    }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-variant-numeric: tabular-nums;
+        }
 
-    .btn:hover {
-      background: #1E293B;
-      border-color: var(--accent-amber);
-    }
+        /* =========================================================
+           TABLEAU TOPBAR & STORY POINTS NAVIGATION
+           ========================================================= */
+        .tableau-topbar {
+            background: var(--bg-topbar);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 24px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
 
-    .btn-amber {
-      background: linear-gradient(135deg, var(--accent-amber), #D97706);
-      color: #070A0F;
-      border: 1px solid #FBBF24;
-      font-weight: 700;
-    }
+        .tb-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .btn-amber:hover {
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
-    }
+        .tb-logo-cross {
+            display: grid;
+            grid-template-columns: repeat(2, 8px);
+            grid-template-rows: repeat(2, 8px);
+            gap: 2px;
+            padding: 4px;
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+        }
+        .tb-logo-cross span:nth-child(1) { background: var(--tableau-orange); border-radius: 1px; }
+        .tb-logo-cross span:nth-child(2) { background: var(--tableau-blue); border-radius: 1px; }
+        .tb-logo-cross span:nth-child(3) { background: var(--tableau-red); border-radius: 1px; }
+        .tb-logo-cross span:nth-child(4) { background: var(--tableau-green); border-radius: 1px; }
 
-    .slide-counter {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent-cyan);
-      padding: 0 10px;
-    }
+        .tb-title-group {
+            display: flex;
+            flex-direction: column;
+        }
 
-    /* SLIDE STYLES */
-    .slide-viewport {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-    }
+        .tb-workbook-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--tableau-blue);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    .slide {
-      display: none;
-      width: 1120px;
-      max-width: 95vw;
-      min-height: 580px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-bright);
-      border-radius: 12px;
-      padding: 36px 42px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-      flex-direction: column;
-      justify-content: space-between;
-      position: relative;
-      animation: fadeIn 0.25s ease-out;
-    }
+        .tb-workbook-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
 
-    .slide.active {
-      display: flex;
-    }
+        .tb-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        .tb-sync-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            background: rgba(89, 161, 79, 0.12);
+            color: var(--accent-green);
+            border: 1px solid rgba(89, 161, 79, 0.3);
+        }
 
-    .slide-header {
-      border-bottom: 1px solid var(--border-dim);
-      padding-bottom: 16px;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
+        .tb-filter-group {
+            display: inline-flex;
+            align-items: center;
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-strong);
+            border-radius: 5px;
+            padding: 2px 8px;
+            gap: 6px;
+        }
 
-    .slide-header .tag {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--accent-amber);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 4px;
-    }
+        .tb-filter-group label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.04em;
+        }
 
-    .slide-header h2 {
-      font-family: var(--font-display);
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-    }
+        .tb-select {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 4px 2px;
+            cursor: pointer;
+            outline: none;
+        }
+        .tb-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
 
-    .slide-header .slide-meta {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      text-align: right;
-    }
+        .tb-btn {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-strong);
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
 
-    .slide-body {
-      flex: 1;
-    }
+        .tb-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--tableau-blue);
+        }
 
-    .slide-footer {
-      border-top: 1px solid var(--border-dim);
-      padding-top: 14px;
-      margin-top: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+        .tb-btn-primary {
+            background: var(--tableau-blue);
+            color: #FFFFFF;
+            border-color: var(--tableau-blue-dark);
+        }
 
-    /* SPECIFIC SLIDE DESIGNS */
-    /* Cover Slide */
-    .cover-container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      min-height: 480px;
-      gap: 20px;
-    }
+        .tb-btn-primary:hover {
+            background: var(--tableau-blue-dark);
+            color: #FFFFFF;
+        }
 
-    .cover-emblem {
-      width: 72px;
-      height: 72px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--accent-amber), #D97706);
-      display: grid;
-      place-items: center;
-      font-size: 36px;
-      box-shadow: 0 0 30px rgba(245, 158, 11, 0.35);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-    }
+        /* =========================================================
+           TABLEAU STORY POINTS BAR (TABS)
+           ========================================================= */
+        .tableau-storybar {
+            background: var(--bg-storybar);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 6px 24px 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            overflow-x: auto;
+        }
 
-    .cover-title {
-      font-family: var(--font-display);
-      font-size: 34px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
-      max-width: 860px;
-    }
+        .story-points-list {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            overflow-x: auto;
+        }
 
-    .cover-subtitle {
-      font-size: 16px;
-      color: var(--text-secondary);
-      max-width: 720px;
-      line-height: 1.5;
-    }
+        .story-point-tab {
+            background: rgba(148, 163, 184, 0.12);
+            border: 1px solid var(--border-subtle);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            padding: 7px 14px;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+            position: relative;
+        }
 
-    .cover-meta-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 18px;
-      width: 100%;
-      max-width: 780px;
-    }
+        .story-point-tab:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
 
-    .cover-meta-card {
-      background: var(--bg-card-elevated);
-      border: 1px solid var(--border-bright);
-      border-radius: 6px;
-      padding: 12px 16px;
-      text-align: left;
-    }
+        .story-point-tab.active {
+            background: var(--bg-canvas);
+            color: var(--tableau-blue);
+            font-weight: 700;
+            border-top: 3px solid var(--tableau-blue);
+            padding-top: 5px;
+        }
 
-    .cover-meta-card .label {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
+        .story-point-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            background: rgba(78, 121, 167, 0.14);
+            color: var(--tableau-blue);
+        }
 
-    .cover-meta-card .val {
-      font-family: var(--font-mono);
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-top: 4px;
-    }
+        .story-point-tab.active .story-point-num {
+            background: var(--tableau-blue);
+            color: #FFFFFF;
+        }
 
-    /* KPI Grid */
-    .kpi-grid-6 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
+        .story-nav-arrows {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-bottom: 6px;
+        }
 
-    .kpi-card {
-      background: var(--bg-card-elevated);
-      border: 1px solid var(--border-dim);
-      border-radius: 8px;
-      padding: 16px 20px;
-      border-top: 3px solid var(--border-bright);
-    }
+        .story-counter {
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 0 8px;
+        }
 
-    .kpi-card.red { border-top-color: var(--accent-red); }
-    .kpi-card.amber { border-top-color: var(--accent-amber); }
-    .kpi-card.emerald { border-top-color: var(--accent-emerald); }
-    .kpi-card.cyan { border-top-color: var(--accent-cyan); }
-    .kpi-card.purple { border-top-color: var(--accent-purple); }
+        /* =========================================================
+           SLIDE CONTAINER & WORKSHEET LAYOUT
+           ========================================================= */
+        .slides-viewport {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            max-width: 1480px;
+            margin: 0 auto;
+            padding: 20px 28px 28px 28px;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .kpi-card .k-label {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 6px;
-    }
+        .slide {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeSlide 0.22s ease-out;
+        }
 
-    .kpi-card .k-value {
-      font-family: var(--font-mono);
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text-primary);
-    }
+        .slide.active {
+            display: flex;
+        }
 
-    .kpi-card .k-desc {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 6px;
-      line-height: 1.4;
-    }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    /* 3 Anomalies Comparison */
-    .anom-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
+        /* Story Navigator Caption Box (Tableau Story Header) */
+        .slide-header-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-left: 4px solid var(--tableau-blue);
+            border-radius: 6px;
+            padding: 14px 20px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
 
-    .anom-box {
-      background: var(--bg-card-elevated);
-      border: 1px solid var(--border-dim);
-      border-radius: 8px;
-      padding: 18px 20px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+        .slide-kicker {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--tableau-blue);
+            margin-bottom: 3px;
+        }
 
-    .anom-tag {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 3px;
-      display: inline-block;
-      margin-bottom: 10px;
-      width: fit-content;
-    }
+        .slide-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
 
-    .anom-title {
-      font-family: var(--font-display);
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
+        .slide-subtitle {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
 
-    .anom-desc {
-      font-size: 12.5px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-      margin-bottom: 14px;
-    }
+        .slide-scope-badge {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            padding: 8px 14px;
+            text-align: right;
+        }
 
-    .anom-highlight {
-      background: rgba(15, 23, 42, 0.7);
-      border: 1px solid var(--border-bright);
-      border-radius: 6px;
-      padding: 10px 12px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 700;
-    }
+        .slide-scope-badge .lbl {
+            font-size: 0.64rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
 
-    /* 4 Plan Cards */
-    .plan-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
+        .slide-scope-badge .val {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--tableau-blue);
+        }
 
-    .plan-card {
-      background: var(--bg-card-elevated);
-      border: 1px solid var(--border-dim);
-      border-radius: 8px;
-      padding: 18px 20px;
-      border-left: 4px solid var(--accent-amber);
-    }
+        /* =========================================================
+           TABLEAU BANs (BIG ASS NUMBERS) & WORKSHEETS
+           ========================================================= */
+        .kpi-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
 
-    .plan-card.c1 { border-left-color: #6366F1; }
-    .plan-card.c2 { border-left-color: var(--accent-red); }
-    .plan-card.c3 { border-left-color: var(--accent-amber); }
-    .plan-card.c4 { border-left-color: var(--accent-emerald); }
+        .kpi-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
 
-    .plan-card h3 {
-      font-family: var(--font-display);
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .kpi-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
 
-    .plan-card p {
-      font-size: 12px;
-      color: var(--text-secondary);
-      line-height: 1.45;
-      margin-bottom: 10px;
-    }
+        .tb-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-top: 3px solid var(--tableau-blue);
+            border-radius: 6px;
+            padding: 16px 18px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
 
-    .plan-impact {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 700;
-      color: #34D399;
-      background: rgba(16, 185, 129, 0.08);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 6px 10px;
-      border-radius: 4px;
-      display: inline-block;
-    }
+        .tb-card:hover {
+            box-shadow: var(--shadow-elevated);
+        }
 
-    /* Table */
-    .exec-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-      margin-top: 6px;
-    }
+        .tb-card.b-red { border-top-color: var(--tableau-red); }
+        .tb-card.b-orange { border-top-color: var(--tableau-orange); }
+        .tb-card.b-green { border-top-color: var(--tableau-green); }
+        .tb-card.b-teal { border-top-color: var(--tableau-teal); }
+        .tb-card.b-purple { border-top-color: var(--tableau-purple); }
 
-    .exec-table th {
-      background: var(--bg-card-elevated);
-      color: var(--text-secondary);
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 10px 14px;
-      border-bottom: 2px solid var(--border-bright);
-      text-align: left;
-    }
+        .ban-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
 
-    .exec-table td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border-dim);
-      font-family: var(--font-sans);
-    }
+        .ban-label {
+            font-size: 0.71rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
 
-    .exec-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
-    }
+        .ban-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
 
-    .total-row td {
-      background: rgba(16, 185, 129, 0.08);
-      font-weight: 700;
-      border-top: 2px solid var(--accent-emerald);
-      color: #34D399;
-      font-size: 13.5px;
-    }
+        .tag-red { background: rgba(225, 87, 89, 0.14); color: var(--accent-red); }
+        .tag-orange { background: rgba(242, 142, 43, 0.15); color: var(--accent-orange); }
+        .tag-green { background: rgba(89, 161, 79, 0.14); color: var(--accent-green); }
+        .tag-blue { background: rgba(78, 121, 167, 0.14); color: var(--accent-blue); }
+        .tag-purple { background: rgba(176, 122, 161, 0.15); color: var(--accent-purple); }
 
-    /* PRINT LAYOUT */
-    @media print {
-      body {
-        background: #fff !important;
-        color: #000 !important;
-      }
-      .top-header, .no-print {
-        display: none !important;
-      }
-      .slide-viewport {
-        padding: 0 !important;
-        display: block !important;
-      }
-      .slide {
-        display: flex !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-height: auto !important;
-        page-break-after: always !important;
-        background: #fff !important;
-        color: #000 !important;
-        border: 1px solid #ccc !important;
-        box-shadow: none !important;
-        margin-bottom: 30px !important;
-        padding: 24px !important;
-      }
-      .slide-header, .slide-footer {
-        border-color: #ddd !important;
-        color: #666 !important;
-      }
-      .slide-header h2 { color: #000 !important; }
-      .kpi-card, .anom-box, .plan-card, .cover-meta-card {
-        background: #f8fafc !important;
-        border: 1px solid #cbd5e1 !important;
-        color: #000 !important;
-      }
-      .kpi-card .k-value, .anom-title, .plan-card h3, .cover-title {
-        color: #000 !important;
-      }
-      .exec-table th { background: #e2e8f0 !important; color: #000 !important; }
-      .exec-table td { color: #000 !important; border-bottom: 1px solid #e2e8f0 !important; }
-      .plan-impact, .total-row td { color: #065f46 !important; background: #ecfdf5 !important; }
-    }
-  </style>
+        .ban-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.65rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin: 2px 0 8px 0;
+        }
+
+        .ban-value.c-red { color: var(--accent-red); }
+        .ban-value.c-orange { color: var(--accent-orange); }
+        .ban-value.c-green { color: var(--accent-green); }
+        .ban-value.c-blue { color: var(--accent-blue); }
+        .ban-value.c-purple { color: var(--accent-purple); }
+
+        .ban-sub {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .ban-progress {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-storybar);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .ban-progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        /* =========================================================
+           WORKSHEET PANELS & HORIZONTAL BAR CHARTS
+           ========================================================= */
+        .worksheet-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-primary);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .worksheet-title span.meta {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: none;
+            color: var(--text-muted);
+        }
+
+        .tb-bar-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tb-bar-row {
+            display: grid;
+            grid-template-columns: 165px 1fr 115px;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.79rem;
+        }
+
+        .tb-bar-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .tb-bar-track {
+            width: 100%;
+            height: 18px;
+            background: var(--bg-storybar);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .tb-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.6s ease;
+        }
+
+        .tb-bar-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-align: right;
+            color: var(--text-primary);
+        }
+
+        /* =========================================================
+           COVER SLIDE (SLIDE 1)
+           ========================================================= */
+        .cover-hero {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-top: 5px solid var(--tableau-blue);
+            border-radius: 8px;
+            padding: 36px 40px;
+            box-shadow: var(--shadow-elevated);
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .cover-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            background: rgba(78, 121, 167, 0.12);
+            color: var(--tableau-blue);
+            border: 1px solid rgba(78, 121, 167, 0.3);
+            border-radius: 4px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 16px;
+        }
+
+        .cover-title {
+            font-size: 2.3rem;
+            font-weight: 800;
+            line-height: 1.12;
+            letter-spacing: -0.03em;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+        }
+
+        .cover-title span {
+            color: var(--tableau-blue);
+        }
+
+        .cover-lead {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .cover-Island-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .island-pill {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-strong);
+            border-radius: 5px;
+            padding: 8px 12px;
+            display: flex;
+            flex-direction: column;
+            min-width: 125px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .island-pill:hover, .island-pill.active {
+            border-color: var(--tableau-blue);
+            background: rgba(78, 121, 167, 0.08);
+        }
+
+        .island-pill .i-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .island-pill .i-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-top: 2px;
+        }
+
+        .cover-summary-panel {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .cover-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed var(--border-subtle);
+        }
+
+        .cover-stat-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* =========================================================
+           ACTION PLAN & TABLEAU DATA TABLE
+           ========================================================= */
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-left: 4px solid var(--tableau-blue);
+            border-radius: 6px;
+            padding: 12px 16px;
+            display: grid;
+            grid-template-columns: 36px 1fr 230px;
+            gap: 14px;
+            align-items: center;
+            box-shadow: var(--shadow-card);
+        }
+
+        .action-num {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            background: rgba(78, 121, 167, 0.14);
+            color: var(--tableau-blue);
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-body h4 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .action-body p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .action-impact {
+            background: var(--bg-card-alt);
+            border: 1px solid var(--border-strong);
+            border-radius: 5px;
+            padding: 8px 12px;
+            text-align: right;
+        }
+
+        .action-impact .lbl {
+            font-size: 0.63rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .action-impact .val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--accent-green);
+        }
+
+        .tb-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .tb-table th {
+            background: var(--bg-storybar);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 2px solid var(--border-strong);
+        }
+
+        .tb-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+        }
+
+        .tb-table tr:hover td {
+            background: var(--bg-hover);
+        }
+
+        .tb-table tr.total-row td {
+            background: rgba(89, 161, 79, 0.1);
+            font-weight: 800;
+            border-top: 2px solid var(--tableau-green);
+            border-bottom: none;
+            font-size: 0.9rem;
+        }
+
+        /* =========================================================
+           TABLEAU PUBLIC FOOTER STRIP
+           ========================================================= */
+        .tableau-footer {
+            background: var(--bg-topbar);
+            border-top: 1px solid var(--border-subtle);
+            padding: 8px 24px;
+            font-size: 0.73rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .tf-left, .tf-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        @media (max-width: 1150px) {
+            .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .kpi-grid-3 { grid-template-columns: 1fr; }
+            .kpi-grid-2 { grid-template-columns: 1fr; }
+            .cover-hero { grid-template-columns: 1fr; padding: 24px; }
+            .action-row { grid-template-columns: 36px 1fr; }
+            .action-impact { grid-column: 1 / -1; text-align: left; }
+        }
+
+        /* Modo de preparação para Impressão / Exportação PDF */
+        body.printing-all-slides,
+        body.printing-all-slides .slides-viewport {
+            display: block !important;
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+        }
+        body.printing-all-slides .slide {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            animation: none !important;
+            transform: none !important;
+            margin-bottom: 24px !important;
+            page-break-after: always !important;
+            break-after: page !important;
+        }
+        body.printing-all-slides .slide:last-of-type {
+            page-break-after: auto !important;
+            break-after: auto !important;
+            margin-bottom: 0 !important;
+        }
+
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
+        @media print {
+            :root,
+            html,
+            html[data-theme="dark"],
+            body {
+                --bg-canvas: #FFFFFF !important;
+                --bg-topbar: #FFFFFF !important;
+                --bg-storybar: #F1F5F9 !important;
+                --bg-card: #FFFFFF !important;
+                --bg-card-alt: #F8FAFC !important;
+                --text-primary: #0F172A !important;
+                --text-secondary: #334155 !important;
+                --text-muted: #475569 !important;
+                --border-subtle: #CBD5E1 !important;
+                --border-strong: #94A3B8 !important;
+                --accent-blue: #2B5C8F !important;
+                --accent-orange: #D97706 !important;
+                --accent-red: #DC2626 !important;
+                --accent-green: #15803D !important;
+                --accent-teal: #0F766E !important;
+                --accent-purple: #6D28D9 !important;
+                background: #FFFFFF !important;
+                color: #0F172A !important;
+                display: block !important;
+                height: auto !important;
+                min-height: 0 !important;
+                overflow: visible !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .tableau-topbar,
+            .tableau-storybar,
+            .tableau-footer {
+                display: none !important;
+            }
+
+            .slides-viewport {
+                display: block !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+
+            .slide,
+            .slide.active {
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                animation: none !important;
+                transform: none !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                margin: 0 !important;
+                padding: 4px 0 !important;
+            }
+
+            .slide:last-of-type {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+
+            .slide > * {
+                margin-bottom: 12px !important;
+            }
+
+            .slide > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .kpi-grid-4 {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 10px !important;
+            }
+
+            .kpi-grid-3 {
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 10px !important;
+            }
+
+            .kpi-grid-2 {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            .cover-hero {
+                grid-template-columns: 1.3fr 1fr !important;
+                padding: 22px 26px !important;
+                gap: 20px !important;
+                box-shadow: none !important;
+            }
+
+            .tb-card,
+            .slide-header-box,
+            .action-row {
+                box-shadow: none !important;
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- BARRA DE CONTROLE DA APRESENTAÇÃO -->
-  <header class="top-header no-print">
-    <div class="brand-group">
-      <div class="brand-icon">⚡</div>
-      <div class="brand-text">
-        <h1>EDEC • APRESENTAÇÃO EXECUTIVA À ADMINISTRAÇÃO</h1>
-        <p>Ilha de Santiago • Auditoria Comercial, Dívida &amp; Recuperação de Receita</p>
-      </div>
-    </div>
-
-    <div style="display:flex; align-items:center; gap:8px;">
-        <span class="slide-counter" id="live-sync-pill" style="color:#34D399; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:4px; padding:3px 10px; font-size:11px;">
-          🟢 SINCRONIZADO AO VIVO (SUPABASE)
-        </span>
-      </div>
-      <!-- SELETOR DE TEMA DARK / BRANCO -->
-      <div class="theme-switch-wrap" style="margin-right:8px;" title="Alternar entre Modo Escuro (Projeção) e Modo Branco (Corporativo / Impressão)">
-        <button id="theme-btn-dark" class="theme-toggle-btn active" onclick="setTemaApresentacao('dark')">
-          <span>🌙</span> <span>Dark</span>
-        </button>
-        <button id="theme-btn-light" class="theme-toggle-btn" onclick="setTemaApresentacao('light')">
-          <span>☀️</span> <span>Branco</span>
-        </button>
-      </div>
-
-      <div class="nav-controls">
-      <button class="btn" onclick="mudarSlide(-1)" id="btn-prev" title="Slide Anterior (Seta Esquerda)">◀ Anterior</button>
-      <span class="slide-counter" id="slide-num">1 / 6</span>
-      <button class="btn btn-amber" onclick="mudarSlide(1)" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próximo ▶</button>
-      <div style="width:1px; height:22px; background:var(--border-dim); margin:0 4px;"></div>
-      <button class="btn" onclick="alternarTelaCheia()" title="Tela Inteira (F11)">🖥️ Ecrã Inteiro</button>
-      <button class="btn" onclick="window.print()" title="Imprimir Relatório em Papel / PDF">🖨️ Imprimir / PDF</button>
-      <a href="painel_santiago.html" class="btn" style="text-decoration:none;">📊 Abrir Painel SCADA</a>
-    </div>
-  </header>
-
-  <!-- ÁREA DE SLIDES -->
-  <main class="slide-viewport">
-
-    <!-- SLIDE 1: CAPA EXECUTIVA -->
-    <section class="slide active" id="slide-1">
-      <div class="slide-header">
-        <div>
-          <div class="tag">EDEC • EMPRESA DE DISTRIBUIÇÃO DE ELETRICIDADE DE CABO VERDE</div>
-          <h2>Concessionária de Santiago • Reunião de Conselho de Administração</h2>
+    <!-- =========================================================
+         TABLEAU PUBLIC TOPBAR
+         ========================================================= -->
+    <header class="tableau-topbar">
+        <div class="tb-brand">
+            <div class="tb-logo-cross" title="Tableau Executive Story">
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="tb-title-group">
+                <div class="tb-workbook-label">
+                    <span>TABLEAU STORY EXECUTIVA</span>
+                    <span>•</span>
+                    <span>CONSELHO DE ADMINISTRAÇÃO EDEC</span>
+                </div>
+                <div class="tb-workbook-title">Diagnóstico de Dívida, Concentração Pareto & Plano Diretor de Recuperação (Região Sul)</div>
+            </div>
         </div>
-        <div class="slide-meta">
-          DOCUMENTO CONFIDENCIAL<br>OUTUBRO 2026
+
+        <div class="tb-controls">
+            <div class="tb-sync-pill" id="liveSyncBadge" title="Conectado ao motor RPC get_resumo_santiago">
+                <span>●</span>
+                <span id="liveSyncText">Sincronizando Supabase...</span>
+            </div>
+
+            <div class="tb-filter-group" title="Filtrar toda a apresentação por Ilha em tempo real">
+                <label for="selectIlhaCA">Âmbito:</label>
+                <select id="selectIlhaCA" class="tb-select" onchange="mudarAmbitoIlha(this.value)">
+                    <option value="">Região Sul (4 Ilhas)</option>
+                    <option value="SANTIAGO">Ilha de Santiago</option>
+                    <option value="FOGO">Ilha do Fogo</option>
+                    <option value="MAIO">Ilha do Maio</option>
+                    <option value="BRAVA">Ilha da Brava</option>
+                </select>
+            </div>
+
+            <button class="tb-btn" onclick="alternarTemaCA()" id="btnThemeToggle" title="Alternar modo Claro / Escuro">
+                <span id="themeIcon">🌙</span>
+                <span id="themeLabel">Modo Escuro</span>
+            </button>
+
+            <button class="tb-btn" onclick="imprimirApresentacaoCA()" title="Exportar ou Imprimir todos os slides em PDF">
+                🖨️ PDF
+            </button>
+
+            <button class="tb-btn" onclick="toggleFullScreen()" title="Ecrã Inteiro (Tecla F)">
+                ⛶ Ecrã Inteiro
+            </button>
+
+            <a href="painel_santiago.html" class="tb-btn tb-btn-primary" title="Voltar ao Painel Operacional SCADA">
+                📊 Abrir Painel SCADA
+            </a>
         </div>
-      </div>
+    </header>
 
-      <div class="slide-body">
-        <div class="cover-container">
-          <div class="cover-emblem">⚡</div>
-          <h1 class="cover-title">
-            Diagnóstico Comercial Estratégico &amp;<br>
-            <span style="color:#FBBF24;">Plano Diretor de Recuperação de Receita</span>
-          </h1>
-          <p class="cover-subtitle">
-            Auditoria analítica a <strong id="live-s1-contratos">78.006 contratos</strong> da Ilha de Santiago: estancamento da dívida crítica de <strong id="live-s1-divida">6,16 Bilhões ECV</strong>, combate às perdas comerciais e plano de liquidez de <strong id="live-s1-meta" style="color:#34D399;">+1,19 Bilhão ECV</strong> a 12 meses.
-          </p>
-
-          <div class="cover-meta-grid">
-            <div class="cover-meta-card">
-              <div class="label">Público-Alvo</div>
-              <div class="val">Conselho de Administração</div>
-            </div>
-            <div class="cover-meta-card">
-              <div class="label">Elaboração</div>
-              <div class="val">Direção Comercial &amp; Receita</div>
-            </div>
-            <div class="cover-meta-card">
-              <div class="label">Meta de Impacto 12M</div>
-              <div class="val" style="color:#34D399;" id="live-s1-impacto">+1.190.500.000 ECV</div>
-            </div>
-          </div>
+    <!-- =========================================================
+         TABLEAU STORY POINTS NAVIGATION BAR
+         ========================================================= -->
+    <nav class="tableau-storybar">
+        <div class="story-points-list" id="storyPointsBar">
+            <button class="story-point-tab active" onclick="goToSlide(0)">
+                <span class="story-point-num">1</span> Capa & Escopo Regional
+            </button>
+            <button class="story-point-tab" onclick="goToSlide(1)">
+                <span class="story-point-num">2</span> Raio-X & 8 KPIs Críticos
+            </button>
+            <button class="story-point-tab" onclick="goToSlide(2)">
+                <span class="story-point-num">3</span> Concentração Pareto & Água AdS
+            </button>
+            <button class="story-point-tab" onclick="goToSlide(3)">
+                <span class="story-point-num">4</span> 4 Vulnerabilidades Estruturais
+            </button>
+            <button class="story-point-tab" onclick="goToSlide(4)">
+                <span class="story-point-num">5</span> Plano de Choque (5 Eixos)
+            </button>
+            <button class="story-point-tab" onclick="goToSlide(5)">
+                <span class="story-point-num">6</span> Retorno Financeiro (12M)
+            </button>
+            <button class="story-point-tab" onclick="goToSlide(6)">
+                <span class="story-point-num">7</span> Deliberações em Ata CA
+            </button>
         </div>
-      </div>
 
-      <div class="slide-footer">
-        <span>EDEC S.A. • Projeto Santiago</span>
-        <span>Apresentação Executiva • Slide 1 de 6</span>
-      </div>
-    </section>
-
-
-    <!-- SLIDE 2: O RAIO-X GLOBAL DE SANTIAGO -->
-    <section class="slide" id="slide-2">
-      <div class="slide-header">
-        <div>
-          <div class="tag">DIAGNÓSTICO COMERCIAL &amp; BASE TELEMÉTRICA</div>
-          <h2>O Raio-X da Concessionária: Indicadores Centrais</h2>
+        <div class="story-nav-arrows">
+            <button class="tb-btn" onclick="changeSlide(-1)" title="Slide Anterior (Seta Esquerda)">◀ Anterior</button>
+            <span class="story-counter mono" id="slideCounter">1 / 7</span>
+            <button class="tb-btn tb-btn-primary" onclick="changeSlide(1)" title="Próximo Slide (Seta Direita / Espaço)">Próximo ▶</button>
         </div>
-        <div class="slide-meta">
-          78.006 CONTRATOS<br>BASE SETEMBRO/OUTUBRO 2026
+    </nav>
+
+    <!-- =========================================================
+         SLIDES VIEWPORT
+         ========================================================= -->
+    <main class="slides-viewport">
+
+        <!-- =====================================================
+             SLIDE 1: CAPA EXECUTIVA & ESCOPO REGIÃO SUL
+             ===================================================== -->
+        <section class="slide active">
+            <div class="cover-hero">
+                <div>
+                    <div class="cover-badge">
+                        <span>🏛️ DOCUMENTO DE DELIBERAÇÃO EXECUTIVA — CA EDEC</span>
+                    </div>
+                    <h1 class="cover-title">
+                        Diagnóstico de Dívida, Concentração Pareto & <span>Plano Diretor de Recuperação</span>
+                    </h1>
+                    <p class="cover-lead">
+                        Análise consolidada ao vivo da carteira comercial da <strong>Região Sul (<span id="ca-scope-label-inline">4 Ilhas: Santiago, Fogo, Maio e Brava</span>)</strong>, integrando a segregação estrutural entre <strong>Eletricidade e Água (AdS)</strong>, a concentração <strong>Pareto 80/20 dos Top Devedores</strong>, o passivo do <strong>Setor Público</strong> e o combate às <strong>Perdas Não Técnicas (CF1 & Desvios)</strong>.
+                    </p>
+
+                    <div class="cover-Island-pills" id="islandBreakdownPills">
+                        <div class="island-pill active" onclick="selecionarIlhaRapida('')">
+                            <span class="i-name">🌍 Região Sul (Total)</span>
+                            <span class="i-val" id="pill-total-val">8,60 B ECV</span>
+                        </div>
+                        <div class="island-pill" onclick="selecionarIlhaRapida('SANTIAGO')">
+                            <span class="i-name">🏝️ Santiago (89,6%)</span>
+                            <span class="i-val" id="pill-santiago-val">7,70 B ECV</span>
+                        </div>
+                        <div class="island-pill" onclick="selecionarIlhaRapida('FOGO')">
+                            <span class="i-name">🌋 Fogo (7,1%)</span>
+                            <span class="i-val" id="pill-fogo-val">612,0 M ECV</span>
+                        </div>
+                        <div class="island-pill" onclick="selecionarIlhaRapida('MAIO')">
+                            <span class="i-name">🏖️ Maio (1,8%)</span>
+                            <span class="i-val" id="pill-maio-val">158,1 M ECV</span>
+                        </div>
+                        <div class="island-pill" onclick="selecionarIlhaRapida('BRAVA')">
+                            <span class="i-name">🌺 Brava (1,5%)</span>
+                            <span class="i-val" id="pill-brava-val">125,9 M ECV</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="tb-btn tb-btn-primary" style="padding:10px 18px; font-size:0.84rem;" onclick="goToSlide(1)">
+                            Iniciar Apresentação Executiva ▶
+                        </button>
+                        <button class="tb-btn" style="padding:10px 16px; font-size:0.84rem;" onclick="goToSlide(2)">
+                            🎯 Ver Concentração Top Devedores (Pareto)
+                        </button>
+                        <button class="tb-btn" style="padding:10px 16px; font-size:0.84rem;" onclick="goToSlide(5)">
+                            💰 Ver Impacto Financeiro (+1,83 B ECV)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cover-summary-panel">
+                    <div style="font-size:0.74rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--tableau-blue);">
+                        📌 SÍNTESE EXECUTIVA EM TEMPO REAL (<span id="ca-cover-scope">REGIÃO SUL</span>)
+                    </div>
+
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.84rem; color:var(--text-secondary);">Universo de Devedores Ativos (Dívida &gt; 0)</span>
+                        <strong class="mono" style="font-size:1.05rem; color:var(--text-primary);" id="ca-capa-contratos">95.511 contas</strong>
+                    </div>
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.84rem; color:var(--text-secondary);">Stock Total de Dívida Acumulada</span>
+                        <strong class="mono" style="font-size:1.15rem; color:var(--accent-red);" id="ca-capa-divida">8,60 B ECV</strong>
+                    </div>
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.84rem; color:var(--text-secondary);">Concentração Pareto (&gt; 250k ECV)</span>
+                        <strong class="mono" style="font-size:1.02rem; color:var(--accent-orange);" id="ca-capa-pareto">6,67 B ECV (77,6%)</strong>
+                    </div>
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.84rem; color:var(--text-secondary);">Passivo do Setor Público (Estado/Autarquias/EP)</span>
+                        <strong class="mono" style="font-size:1.02rem; color:var(--accent-blue);" id="ca-capa-publico">2,61 B ECV (30,4%)</strong>
+                    </div>
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.84rem; color:var(--text-secondary);">Faturação Especial Água (AdS — 2 contratos)</span>
+                        <strong class="mono" style="font-size:1.02rem; color:var(--accent-purple);" id="ca-capa-ads">1,54 B ECV (17,9%)</strong>
+                    </div>
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.84rem; color:var(--text-secondary);">Meta de Recuperação Direta (Horizonte 12 Meses)</span>
+                        <strong class="mono" style="font-size:1.15rem; color:var(--accent-green);" id="ca-capa-meta">+ 1,83 B ECV</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SLIDE 2: RAIO-X GLOBAL & 8 BANs TABLEAU
+             ===================================================== -->
+        <section class="slide">
+            <div class="slide-header-box">
+                <div>
+                    <div class="slide-kicker">STORY POINT 02 • FOTOGRAFIA EXECUTIVA DA CARTEIRA</div>
+                    <h2 class="slide-title">Raio-X Consolidado: Os 8 Indicadores-Chave de Desempenho (BANs)</h2>
+                    <p class="slide-subtitle">Indicadores extraídos em tempo real da base comercial unificada, destacando a estagnação de pagamento e a concentração extrema.</p>
+                </div>
+                <div class="slide-scope-badge">
+                    <div class="lbl">ÂMBITO ATIVO</div>
+                    <div class="val" id="scope-badge-s2">Região Sul (4 Ilhas)</div>
+                </div>
+            </div>
+
+            <div class="kpi-grid-4">
+                <!-- KPI 1 -->
+                <div class="tb-card b-red">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">1. Dívida Total Acumulada</span>
+                            <span class="ban-tag tag-red" id="ca-k1-faturas">2,39M faturas</span>
+                        </div>
+                        <div class="ban-value c-red" id="ca-k1-divida">8,60 B ECV</div>
+                        <div class="ban-sub">Distribuída por <strong id="ca-k1-clientes">95.511</strong> clientes com saldo devedor (Ticket médio: <strong id="ca-k1-ticket">89.997 ECV</strong>).</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" style="width:100%; background:var(--tableau-red);"></div></div>
+                </div>
+
+                <!-- KPI 2 -->
+                <div class="tb-card b-orange">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">2. Dívida Crítica Estagnada (Cob=0)</span>
+                            <span class="ban-tag tag-orange" id="ca-k2-pct">79,1% do Total</span>
+                        </div>
+                        <div class="ban-value c-orange" id="ca-k2-sempag">6,80 B ECV</div>
+                        <div class="ban-sub">Concentrada em <strong id="ca-k2-cli-sempag">32.599</strong> devedores que <strong>não efetuaram qualquer pagamento</strong> em 2026.</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k2-bar" style="width:79.1%; background:var(--tableau-orange);"></div></div>
+                </div>
+
+                <!-- KPI 3 -->
+                <div class="tb-card b-green">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">3. Cobrança Realizada 2026</span>
+                            <span class="ban-tag tag-green" id="ca-k3-taxa">22,8% Eficácia</span>
+                        </div>
+                        <div class="ban-value c-green" id="ca-k3-cobranca">2,54 B ECV</div>
+                        <div class="ban-sub">Arrecadada junto a <strong id="ca-k3-pagadores">62.912</strong> clientes em amortização ativa (<strong id="ca-k3-pct-pag">65,9%</strong> dos devedores).</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k3-bar" style="width:22.8%; background:var(--tableau-green);"></div></div>
+                </div>
+
+                <!-- KPI 4: NOVO - CONCENTRAÇÃO TOP DEVEDORES PARETO -->
+                <div class="tb-card">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">4. Concentração Top Devedores</span>
+                            <span class="ban-tag tag-blue" id="ca-k4-pct">77,6% da Dívida</span>
+                        </div>
+                        <div class="ban-value c-blue" id="ca-k4-val">6,67 B ECV</div>
+                        <div class="ban-sub">Apenas <strong id="ca-k4-qtd">5.136</strong> contas (&gt;250k ECV, <strong id="ca-k4-pct-cli">5,4%</strong> da base) concentram quase 4/5 de toda a dívida.</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k4-bar" style="width:77.6%; background:var(--tableau-blue);"></div></div>
+                </div>
+
+                <!-- KPI 5: NOVO - SETOR PÚBLICO -->
+                <div class="tb-card b-teal">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">5. Passivo do Setor Público</span>
+                            <span class="ban-tag tag-blue" id="ca-k5-pct">30,4% da Dívida</span>
+                        </div>
+                        <div class="ban-value" style="color:var(--accent-teal);" id="ca-k5-val">2,61 B ECV</div>
+                        <div class="ban-sub">Retido em <strong id="ca-k5-qtd">1.856</strong> contratos de Autarquias, Administração Central e Empresas Públicas.</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k5-bar" style="width:30.4%; background:var(--tableau-teal);"></div></div>
+                </div>
+
+                <!-- KPI 6: NOVO - IMPACTO ÁGUA AdS vs ELETRICIDADE -->
+                <div class="tb-card b-purple">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">6. Faturação Água (AdS) vs Energia</span>
+                            <span class="ban-tag tag-purple" id="ca-k6-pct">17,9% Água AdS</span>
+                        </div>
+                        <div class="ban-value c-purple" id="ca-k6-val">1,54 B ECV</div>
+                        <div class="ban-sub">Apenas <strong id="ca-k6-qtd">2</strong> contratos especiais de Água (AdS) c/ <strong>0 ECV cobrado</strong> vs <strong id="ca-k6-el">7,05 B ECV</strong> em Eletricidade.</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k6-bar" style="width:17.9%; background:var(--tableau-purple);"></div></div>
+                </div>
+
+                <!-- KPI 7: PNT & FRAUDE CF1 -->
+                <div class="tb-card b-red">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">7. Anomalias de Consumo & CF1</span>
+                            <span class="ban-tag tag-red" id="ca-k7-cf1">5.681 Autos CF1</span>
+                        </div>
+                        <div class="ban-value c-red" id="ca-k7-desvio">21.612</div>
+                        <div class="ban-sub">Contratos com alerta <code>Desv_Fat</code>; <strong id="ca-k7-div-cf1">108,6 M ECV</strong> em dívida CF1 (<strong id="ca-k7-mp">692</strong> processos no MP).</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" style="width:68%; background:var(--tableau-red);"></div></div>
+                </div>
+
+                <!-- KPI 8: OBSOLESCÊNCIA DE MEDIÇÃO -->
+                <div class="tb-card b-orange">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">8. Medição Obsoleta (&gt;20 Anos)</span>
+                            <span class="ban-tag tag-orange" id="ca-k8-risco">17.933 Risco Alto</span>
+                        </div>
+                        <div class="ban-value c-orange" id="ca-k8-antigos">15.018</div>
+                        <div class="ban-sub">Contadores com mais de 20 anos de fabrico + <strong id="ca-k8-semleit">13.238</strong> clientes sem leitura há &gt;5 meses.</div>
+                    </div>
+                    <div class="ban-progress"><div class="ban-progress-fill" style="width:55%; background:var(--tableau-orange);"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SLIDE 3: CONCENTRAÇÃO PARETO, SETOR E GEOGRAFIA (TABLEAU CHARTS)
+             ===================================================== -->
+        <section class="slide">
+            <div class="slide-header-box">
+                <div>
+                    <div class="slide-kicker">STORY POINT 03 • SEGMENTAÇÃO ESTRUTURAL TABLEAU</div>
+                    <h2 class="slide-title">Análise de Concentração Pareto (80/20), Segregação de Produto & Top Concelhos</h2>
+                    <p class="slide-subtitle">Onde está concentrado o dinheiro: 5,4% dos clientes detêm 77,6% da dívida; Setor Público + Água AdS + Grandes Privados representam 78,6% do stock.</p>
+                </div>
+                <div class="slide-scope-badge">
+                    <div class="lbl">PARETO &gt; 1M ECV</div>
+                    <div class="val" id="ca-s3-milionarios">754 Contas = 4,76 B ECV (55,3%)</div>
+                </div>
+            </div>
+
+            <div class="kpi-grid-2">
+                <!-- WORKSHEET A: DECOMPOSIÇÃO ESTRUTURAL DA DÍVIDA -->
+                <div class="tb-card">
+                    <div>
+                        <div class="worksheet-title">
+                            <span>📊 Decomposição Estrutural por Segmento Macro</span>
+                            <span class="meta">Peso % sobre o Stock Total</span>
+                        </div>
+                        <div class="tb-bar-list">
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label" title="Estado Central, Câmaras Municipais e Empresas Públicas">🏛️ Setor Público (1.856)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-pub" style="width:30.4%; background:var(--tableau-blue);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-pub">2,61 B (30,4%)</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label" title="Clientes Privados e Comerciais com dívida individual > 250.000 ECV">🏢 Grandes Privados &gt;250k</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-priv" style="width:30.2%; background:var(--tableau-orange);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-priv">2,60 B (30,2%)</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label" title="Carteira Massiva Doméstica e PME com dívida < 250.000 ECV">🏠 Carteira Massiva &lt;250k</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-massa" style="width:21.4%; background:var(--tableau-green);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-massa">1,84 B (21,4%)</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label" title="2 Contratos Especiais Águas de Santiago (AdS) sem amortização">💧 Água AdS (2 Contratos)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-ads" style="width:17.9%; background:var(--tableau-purple);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-ads">1,54 B (17,9%)</span>
+                            </div>
+                        </div>
+
+                        <div class="worksheet-title" style="margin-top:20px;">
+                            <span>⚡ Segregação por Produto Comercial</span>
+                            <span class="meta">Eletricidade vs Água</span>
+                        </div>
+                        <div class="tb-bar-list">
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">⚡ Eletricidade (EB/EM/EE)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-el" style="width:82.1%; background:var(--tableau-teal);"></div></div>
+                                <span class="tb-bar-val" id="val-prod-el">7,05 B (82,1%)</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">🚰 Água AdS (Produto AG)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-ag" style="width:17.9%; background:var(--tableau-red);"></div></div>
+                                <span class="tb-bar-val" id="val-prod-ag">1,54 B (17,9%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WORKSHEET B: DISTRIBUIÇÃO GEOGRÁFICA & TOP PTs -->
+                <div class="tb-card b-orange">
+                    <div>
+                        <div class="worksheet-title">
+                            <span>📍 Top Concelhos por Volume de Dívida</span>
+                            <span class="meta" id="meta-top-concelhos">Região Sul Consolidada</span>
+                        </div>
+                        <div class="tb-bar-list" id="chartTopConcelhosCA">
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">1. PRAIA</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:69.5%; background:var(--tableau-red);"></div></div>
+                                <span class="tb-bar-val">5,97 B ECV</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">2. SANTA CATARINA</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:18.0%; background:var(--tableau-orange);"></div></div>
+                                <span class="tb-bar-val">535,1 M ECV</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">3. SÃO FILIPE (FOGO)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:16.5%; background:var(--tableau-blue);"></div></div>
+                                <span class="tb-bar-val">478,9 M ECV</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">4. SANTA CRUZ</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:15.8%; background:var(--tableau-blue);"></div></div>
+                                <span class="tb-bar-val">462,9 M ECV</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">5. TARRAFAL</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:11.0%; background:var(--tableau-teal);"></div></div>
+                                <span class="tb-bar-val">263,4 M ECV</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">6. SÃO MIGUEL</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:8.5%; background:var(--tableau-teal);"></div></div>
+                                <span class="tb-bar-val">181,6 M ECV</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:16px; padding:12px; background:var(--bg-card-alt); border:1px solid var(--border-subtle); border-radius:6px; font-size:0.79rem; color:var(--text-secondary);">
+                            🎯 <strong>Insight Operacional para Piquetes (Roteamento por PT):</strong> Os 10 Postos de Transformação (PTs) mais críticos na Praia (<em>PT 526 Achada Grande Trás, PT 622 Estação Água, PT 181 Fazenda, PT 96 Zona Industrial Tira Chapéu</em>) concentram mais de <strong>3,35 B ECV</strong>, permitindo corte cirúrgico com deslocação mínima.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SLIDE 4: AS 4 GRANDES VULNERABILIDADES ESTRUTURAIS
+             ===================================================== -->
+        <section class="slide">
+            <div class="slide-header-box">
+                <div>
+                    <div class="slide-kicker">STORY POINT 04 • DIAGNÓSTICO DE CAUSA-RAIZ</div>
+                    <h2 class="slide-title">As 4 Grandes Vulnerabilidades Comerciais Identificadas</h2>
+                    <p class="slide-subtitle">Fatores críticos que explicam o congelamento de 79,1% da carteira e a perda contínua de caixa na Região Sul.</p>
+                </div>
+                <div class="slide-scope-badge">
+                    <div class="lbl">RISCO CRÍTICO + ALTO</div>
+                    <div class="val" id="ca-s4-risco">17.933 Instalações</div>
+                </div>
+            </div>
+
+            <div class="kpi-grid-2">
+                <!-- V1 -->
+                <div class="tb-card b-red">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">VULNERABILIDADE 01 • PASSIVO INSTITUCIONAL & ÁGUA AdS</span>
+                            <span class="ban-tag tag-red">48,3% do Stock Total</span>
+                        </div>
+                        <h3 style="font-size:1.05rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
+                            Bloqueio de Liquidez no Setor Público (2,61 B) e Águas de Santiago (1,54 B)
+                        </h3>
+                        <p class="ban-sub" style="margin-bottom:10px;">
+                            Quase metade da dívida total da Região Sul (<strong id="v1-soma-pub-ads">4,15 B ECV</strong>) reside em entidades públicas (Câmaras Municipais, Estado Central, Empresas Públicas) e nos 2 contratos especiais de Água (AdS). Estes saldos distorcem os indicadores comerciais e exigem <strong>protocolo governamental de encontro de contas e compensação cruzada</strong>, fora da alçada dos piquetes convencionais.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- V2 -->
+                <div class="tb-card b-orange">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">VULNERABILIDADE 02 • HIPERCONCENTRAÇÃO PARETO PRIVADA</span>
+                            <span class="ban-tag tag-orange">77,6% em 5,4% dos Clientes</span>
+                        </div>
+                        <h3 style="font-size:1.05rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
+                            Inadimplência Crónica em Grandes Contas Privadas (&gt; 250k ECV)
+                        </h3>
+                        <p class="ban-sub" style="margin-bottom:10px;">
+                            Excluindo o Estado e a AdS, existem <strong>2,60 B ECV</strong> retidos em grandes devedores privados e comerciais com dívidas superiores a 250.000 ECV (incluindo <strong>754 contas milionárias &gt; 1M ECV</strong>). A ausência de cortes blindados em Média Tensão e grandes consumidores de Baixa Tensão permite que clientes de alta capacidade contributiva acumulem mais de 24 faturas vencidas.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- V3 -->
+                <div class="tb-card b-purple">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">VULNERABILIDADE 03 • PERDAS NÃO TÉCNICAS & IMPUNIDADE CF1</span>
+                            <span class="ban-tag tag-purple">21.612 Desvios + 5.681 CF1</span>
+                        </div>
+                        <h3 style="font-size:1.05rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
+                            Religações Clandestinas, Queda Abrupta de Consumo e Reincidência
+                        </h3>
+                        <p class="ban-sub" style="margin-bottom:10px;">
+                            O cruzamento entre dívida elevada e <code>Desv_Fat</code> identificou <strong>21.612 instalações</strong> cujo consumo faturado caiu abruptamente (forte indício de ligação direta/bypass pós-corte). Na base de Fraude CF1, existem <strong>5.681 clientes</strong> com <strong>108,6 M ECV</strong> por cobrar, <strong>803 reincidentes crónicos</strong> e <strong>3.605 processos</strong> que aguardam instrução para o Ministério Público.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- V4 -->
+                <div class="tb-card">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">VULNERABILIDADE 04 • OBSOLESCÊNCIA TÉCNICA E CEGUEIRA DE LEITURA</span>
+                            <span class="ban-tag tag-blue">15.018 Contadores &gt; 20 Anos</span>
+                        </div>
+                        <h3 style="font-size:1.05rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
+                            Sub-registo Mecânico e Faturação por Estimativa Prolongada
+                        </h3>
+                        <p class="ban-sub" style="margin-bottom:10px;">
+                            Mais de <strong>15.018 contadores</strong> ultrapassaram 20 anos de serviço (degradação metrológica severa a favor do infrator) e <strong>13.238 contratos</strong> encontram-se sem leitura real há mais de 5 meses, gerando conflitos comerciais na faturação acumulada e travando a cobrança voluntária.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SLIDE 5: PLANO DE CHOQUE — 5 EIXOS ESTRATÉGICOS
+             ===================================================== -->
+        <section class="slide">
+            <div class="slide-header-box">
+                <div>
+                    <div class="slide-kicker">STORY POINT 05 • PLANO DIRETOR DE INTERVENÇÃO</div>
+                    <h2 class="slide-title">Plano de Choque Operacional: 5 Eixos Estratégicos Mensurados</h2>
+                    <p class="slide-subtitle">Ações cirúrgicas orientadas por dados (Data-Driven Operations) utilizando o Painel SCADA e Roteamento por PT.</p>
+                </div>
+                <div class="slide-scope-badge">
+                    <div class="lbl">HORIZONTE DE EXECUÇÃO</div>
+                    <div class="val">12 Meses (Metas Trimestrais)</div>
+                </div>
+            </div>
+
+            <div class="action-list">
+                <!-- EIXO 1 -->
+                <div class="action-row" style="border-left-color:var(--tableau-blue);">
+                    <div class="action-num">1</div>
+                    <div class="action-body">
+                        <h4>Mesa de Encontro de Contas: Setor Público (2,61 B) & Protocolo AdS Água (1,54 B)</h4>
+                        <p>Negociação institucional ao nível do CA e Ministério das Finanças para compensação de dívida de Autarquias/Estado (conversão de 30% do passivo) e regularização contabilística/financeira dos 2 contratos especiais AdS.</p>
+                    </div>
+                    <div class="action-impact">
+                        <div class="lbl">IMPACTO DIRETO ESTIMADO</div>
+                        <div class="val" id="eixo1-val">+ 783,7 M ECV</div>
+                    </div>
+                </div>
+
+                <!-- EIXO 2 -->
+                <div class="action-row" style="border-left-color:var(--tableau-orange);">
+                    <div class="action-num" style="background:rgba(242,142,43,0.15); color:var(--accent-orange);">2</div>
+                    <div class="action-body">
+                        <h4>Piquetes Diários de Corte em Cluster por PT — Grandes Devedores Privados (&gt;250k ECV)</h4>
+                        <p>Despacho diário de listas de corte georreferenciadas por Posto de Transformação (5.136 contas Pareto) com exigência de entrada mínima de 30% e plano de amortização automática bloqueado no sistema.</p>
+                    </div>
+                    <div class="action-impact">
+                        <div class="lbl">RECUPERAÇÃO 25% PRIVADOS</div>
+                        <div class="val" id="eixo2-val">+ 649,8 M ECV</div>
+                    </div>
+                </div>
+
+                <!-- EIXO 3 -->
+                <div class="action-row" style="border-left-color:var(--tableau-red);">
+                    <div class="action-num" style="background:rgba(225,87,89,0.15); color:var(--accent-red);">3</div>
+                    <div class="action-body">
+                        <h4>Operação Blindagem P1 (15.000 Inspeções) & Execução Jurídica CF1 no Ministério Público</h4>
+                        <p>Inspeção prioritária aos 9.968 alvos de Risco Crítico (Score P1 + <code>Desv_Fat</code>) com blindagem antifraude em altura/armário e aceleração dos 3.605 processos CF1 pendentes de envio ao MP (recuperação de 40% da dívida CF1).</p>
+                    </div>
+                    <div class="action-impact">
+                        <div class="lbl">FATURAÇÃO + COBRANÇA CF1</div>
+                        <div class="val" id="eixo3-val">+ 313,4 M ECV</div>
+                    </div>
+                </div>
+
+                <!-- EIXO 4 -->
+                <div class="action-row" style="border-left-color:var(--tableau-teal);">
+                    <div class="action-num" style="background:rgba(118,183,178,0.18); color:var(--accent-teal);">4</div>
+                    <div class="action-body">
+                        <h4>Substituição de 5.000 Contadores Obsoletos (&gt;20 Anos) por Telemedição / Pré-Pago</h4>
+                        <p>Troca prioritária em clientes com histórico de fraude/dívida por contadores inteligentes ou pré-pagos com retenção automática de 20% a 30% de cada recarga para abater a dívida antiga.</p>
+                    </div>
+                    <div class="action-impact">
+                        <div class="lbl">ACRÉSCIMO METROLÓGICO (12M)</div>
+                        <div class="val" id="eixo4-val">+ 90,0 M ECV</div>
+                    </div>
+                </div>
+
+                <!-- EIXO 5 -->
+                <div class="action-row" style="border-left-color:var(--tableau-green);">
+                    <div class="action-num" style="background:rgba(89,161,79,0.15); color:var(--accent-green);">5</div>
+                    <div class="action-body">
+                        <h4>Campanha Digital de Acordos Flexíveis para a Carteira Massiva em Amortização (62.912 Clientes)</h4>
+                        <p>Notificação via SMS/WhatsApp e Balcão Digital para clientes que já demonstram vontade de pagar (Cob 2026 &gt; 0), oferecendo isenção de juros de mora mediante liquidação ou débito direto.</p>
+                    </div>
+                    <div class="action-impact">
+                        <div class="lbl">INCREMENTO DE EFICÁCIA</div>
+                        <div class="val">Sustentação Cash-In</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SLIDE 6: QUADRO DE IMPACTO FINANCEIRO 12 MESES
+             ===================================================== -->
+        <section class="slide">
+            <div class="slide-header-box">
+                <div>
+                    <div class="slide-kicker">STORY POINT 06 • SIMULAÇÃO FINANCEIRA AO VIVO</div>
+                    <h2 class="slide-title">Quadro Consolidado de Retorno Financeiro Estimado (Horizonte 12 Meses)</h2>
+                    <p class="slide-subtitle">Projeção conservadora calculada dinamicamente sobre os saldos reais da base de dados para o âmbito selecionado.</p>
+                </div>
+                <div class="slide-scope-badge">
+                    <div class="lbl">IMPACTO TOTAL 12M</div>
+                    <div class="val" style="color:var(--accent-green);" id="ca-t-total-header">+ 1,83 B ECV</div>
+                </div>
+            </div>
+
+            <div class="tb-card" style="padding:0; overflow:hidden;">
+                <table class="tb-table">
+                    <thead>
+                        <tr>
+                            <th>Eixo de Intervenção Estratégica</th>
+                            <th>Universo Alvo (Base Real)</th>
+                            <th>Premissa Conservadora de Execução</th>
+                            <th style="text-align:right;">Retorno Estimado (12M)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Encontro de Contas Setor Público (Estado, Câmaras & EP)</strong></td>
+                            <td class="mono" id="ca-t1-base">2,61 B ECV (1.856 contas)</td>
+                            <td>Compensação / securitização de 30% do passivo público vencido</td>
+                            <td class="mono" style="text-align:right; font-weight:700; color:var(--accent-blue);" id="ca-t1-impacto">+ 783,7 M ECV</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Corte Cirúrgico por PT & Acordos em Grandes Devedores Privados (&gt;250k)</strong></td>
+                            <td class="mono" id="ca-t2-base">2,60 B ECV (Privados Pareto)</td>
+                            <td>Taxa de recuperação líquida de 25% via corte e entrada de 30%</td>
+                            <td class="mono" style="text-align:right; font-weight:700; color:var(--accent-orange);" id="ca-t2-impacto">+ 649,8 M ECV</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Operação Blindagem P1 (Recuperação de Perdas Comerciais / Bypass)</strong></td>
+                            <td class="mono" id="ca-t3-base">15.000 de 21.612 desvios</td>
+                            <td>45% eficácia na conversão × +3.333 ECV/mês faturados × 12m</td>
+                            <td class="mono" style="text-align:right; font-weight:700; color:var(--accent-green);" id="ca-t3-impacto">+ 270,0 M ECV</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Execução Jurídica de Autos de Fraude CF1 (MP + Acordos)</strong></td>
+                            <td class="mono" id="ca-t4-base">108,6 M ECV (5.681 CILs)</td>
+                            <td>Recuperação de 40% da dívida de fraude autuada sob coação judicial</td>
+                            <td class="mono" style="text-align:right; font-weight:700; color:var(--accent-red);" id="ca-t4-impacto">+ 43,4 M ECV</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5. Substituição de Contadores Obsoletos (&gt;20 Anos) c/ Pré-Pago</strong></td>
+                            <td class="mono" id="ca-t5-base">5.000 de 15.018 contadores</td>
+                            <td>Eliminação de sub-registo (+1.500 ECV/mês × 5.000 × 12m)</td>
+                            <td class="mono" style="text-align:right; font-weight:700; color:var(--accent-teal);" id="ca-t5-impacto">+ 90,0 M ECV</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3"><strong>IMPACTO FINANCEIRO DIRETO CONSOLIDADO (CAIXA + FATURAÇÃO RECUPERADA EM 12 MESES)</strong></td>
+                            <td class="mono" style="text-align:right; color:var(--accent-green); font-size:1.1rem;" id="ca-t-total">+ 1,83 B ECV</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="tb-card b-green">
+                <div class="worksheet-title" style="margin-bottom:8px;">
+                    <span>📈 Evolução Projetada da Taxa Global de Eficácia de Cobrança</span>
+                    <span class="meta">Comparativo Baseline 2026 vs Meta Pós-Plano de Choque</span>
+                </div>
+                <div class="tb-bar-list">
+                    <div class="tb-bar-row">
+                        <span class="tb-bar-label">Baseline Atual 2026</span>
+                        <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-efic-atual" style="width:22.8%; background:var(--tableau-orange);"></div></div>
+                        <span class="tb-bar-val" id="val-efic-atual">22,8% (2,54 B)</span>
+                    </div>
+                    <div class="tb-bar-row">
+                        <span class="tb-bar-label">Meta Pós-Plano (+12M)</span>
+                        <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-efic-meta" style="width:39.3%; background:var(--tableau-green);"></div></div>
+                        <span class="tb-bar-val" id="val-efic-meta">39,3% (4,38 B)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================
+             SLIDE 7: DELIBERAÇÕES PROPOSTAS AO CONSELHO DE ADMINISTRAÇÃO
+             ===================================================== -->
+        <section class="slide">
+            <div class="slide-header-box">
+                <div>
+                    <div class="slide-kicker">STORY POINT 07 • DECISÃO E GOVERNANÇA EXECUTIVA</div>
+                    <h2 class="slide-title">Deliberações Propostas ao Conselho de Administração para Aprovação em Ata</h2>
+                    <p class="slide-subtitle">Medidas imediatas para desbloquear os 5 eixos operacionais e instituir monitorização semanal no Painel SCADA.</p>
+                </div>
+                <div class="slide-scope-badge">
+                    <div class="lbl">GOVERNANÇA</div>
+                    <div class="val">Controlo Semanal CA</div>
+                </div>
+            </div>
+
+            <div class="kpi-grid-3">
+                <div class="tb-card">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">DELIBERAÇÃO 01</span>
+                            <span class="ban-tag tag-blue">Institucional & AdS</span>
+                        </div>
+                        <h3 style="font-size:0.98rem; font-weight:800; margin-bottom:8px;">Mandato para Encontro de Contas Público e Dossier AdS</h3>
+                        <p class="ban-sub">
+                            Aprovar a constituição imediata da comissão executiva junto ao Ministério das Finanças, ANMCV e Águas de Santiago (AdS) para conciliação e abatimento cruzado dos <strong>2,61 B ECV</strong> do Setor Público e tratamento autónomo dos <strong>1,54 B ECV</strong> da AdS.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="tb-card b-orange">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">DELIBERAÇÃO 02</span>
+                            <span class="ban-tag tag-orange">Operações Pareto PT</span>
+                        </div>
+                        <h3 style="font-size:0.98rem; font-weight:800; margin-bottom:8px;">Diretiva de Corte Blindado por PT (&gt; 250k ECV)</h3>
+                        <p class="ban-sub">
+                            Autorizar o despacho semanal obrigatório pelo Painel SCADA das listas de corte georreferenciadas por Posto de Transformação (5.136 contas Pareto), vedando religações sem liquidação mínima de <strong>30% da dívida</strong> e termo de confissão.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="tb-card b-red">
+                    <div>
+                        <div class="ban-header">
+                            <span class="ban-label">DELIBERAÇÃO 03</span>
+                            <span class="ban-tag tag-red">Combate à Fraude & Medição</span>
+                        </div>
+                        <h3 style="font-size:0.98rem; font-weight:800; margin-bottom:8px;">Task-Force Jurídica CF1 & Lote de 5.000 Contadores</h3>
+                        <p class="ban-sub">
+                            Determinar o envio prioritário dos <strong>3.605 autos CF1 pendentes</strong> para o Ministério Público (priorizando os 803 reincidentes) e aprovar a alocação de <strong>5.000 contadores inteligentes/pré-pagos</strong> para substituição do parque &gt;20 anos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tb-card b-green" style="display:flex; flex-direction:row; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+                <div>
+                    <div style="font-size:0.72rem; font-weight:800; text-transform:uppercase; color:var(--accent-green); letter-spacing:0.06em;">
+                        🚀 ACESSO DIRETO ÀS FERRAMENTAS OPERACIONAIS JÁ IMPLEMENTADAS
+                    </div>
+                    <div style="font-size:0.95rem; font-weight:700; color:var(--text-primary); margin-top:4px;">
+                        O Painel Operacional SCADA já dispõe das listas nominais de clientes, simulador de Cash-In e roteamento por PT prontos para execução.
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <a href="painel_santiago.html" class="tb-btn tb-btn-primary" style="padding:10px 16px;">
+                        📊 Abrir Painel SCADA (Visão Geral & Dívida)
+                    </a>
+                    <button class="tb-btn" onclick="imprimirApresentacaoCA()" style="padding:10px 16px;">
+                        🖨️ Imprimir Dossier para Ata do CA
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =========================================================
+         TABLEAU PUBLIC FOOTER STRIP
+         ========================================================= -->
+    <footer class="tableau-footer">
+        <div class="tf-left">
+            <span><strong>Tableau Public Executive Story</strong> • EDEC Região Sul (Santiago, Fogo, Maio, Brava)</span>
+            <span>•</span>
+            <span id="footerSourceStatus">Fonte: Supabase RPC <code>public.get_resumo_santiago</code> (Tempo Real)</span>
         </div>
-      </div>
-
-      <div class="slide-body">
-        <div class="kpi-grid-6">
-          <div class="kpi-card amber">
-            <div class="k-label">Dívida Total Carteira</div>
-            <div class="k-value" style="color:#FBBF24;" id="live-s2-divida">6,16 B ECV</div>
-            <div class="k-desc"><span id="live-s2-divida-sub"><strong>2.228.498 faturas em mora</strong> em 78.006 contratos</span></div>
-          </div>
-
-          <div class="kpi-card red">
-            <div class="k-label">Inadimplência Crítica Estagnada</div>
-            <div class="k-value" style="color:#F87171;" id="live-s2-critica">4,62 B ECV</div>
-            <div class="k-desc"><span id="live-s2-critica-sub"><strong>75,0% da dívida</strong> em 29.832 clientes sem amortizar 2026</span></div>
-          </div>
-
-          <div class="kpi-card emerald">
-            <div class="k-label">Arrecadação 2026 (COB_J)</div>
-            <div class="k-value" style="color:#34D399;" id="live-s2-cobrado">2,19 B ECV</div>
-            <div class="k-desc"><span id="live-s2-cobrado-sub">Cobrado em 2026 através de <strong>48.174 pagadores</strong> (Taxa: <strong>26,3%</strong>)</span></div>
-          </div>
-
-          <div class="kpi-card purple">
-            <div class="k-label">Concentração Setor Público</div>
-            <div class="k-value" style="color:#C084FC;" id="live-s2-gov">1,45 B ECV</div>
-            <div class="k-desc">Apenas <strong>1.073 contratos de Estado e Câmaras</strong> detêm 23,6% de toda a dívida da ilha.</div>
-          </div>
-
-          <div class="kpi-card red">
-            <div class="k-label">Perdas Não Técnicas (Bypass)</div>
-            <div class="k-value" style="color:#EF4444;" id="live-s2-pnt">876 M ECV/ano</div>
-            <div class="k-desc"><span id="live-s2-pnt-sub"><strong>19.363 contratos</strong> c/ desvio (~2.808 MWh/mês desviados)</span></div>
-          </div>
-
-          <div class="kpi-card cyan">
-            <div class="k-label">Parque de Medição Antigo</div>
-            <div class="k-value" style="color:var(--accent-cyan);" id="live-s2-antigos">12.672 Med.</div>
-            <div class="k-desc">Contadores mecânicos <strong>com mais de 20 anos</strong> provocando submedição de 15% a 30%.</div>
-          </div>
+        <div class="tf-right">
+            <span>Navegação: Setas ◀ ▶ do teclado | Tecla <strong>F</strong> Ecrã Inteiro</span>
         </div>
-      </div>
+    </footer>
 
-      <div class="slide-footer">
-        <span>Fonte: Base Integrada EDEC Santiago (edec-app)</span>
-        <span>Apresentação Executiva • Slide 2 de 6</span>
-      </div>
-    </section>
+    <!-- =========================================================
+         JAVASCRIPT ENGINE: SLIDES, THEME, & LIVE SUPABASE SYNC
+         ========================================================= -->
+    <script>
+        const SUPABASE_URL = 'https://esbbohmkgbcrpegqvagk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDEzODUsImV4cCI6MjA5MTAxNzM4NX0.024-923234-234234';
+        const REAL_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDEzODUsImV4cCI6MjA5MTAxNzM4NX0.h141r122X3X6g_I3V22iQ3I74A75J3chK4Qp2P5I5nU';
 
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const storyTabs = document.querySelectorAll('.story-point-tab');
+        const totalSlides = slides.length;
 
-    <!-- SLIDE 3: AS 3 GRANDES HEMORRAGIAS COMERCIAIS -->
-    <section class="slide" id="slide-3">
-      <div class="slide-header">
-        <div>
-          <div class="tag">ANÁLISE DE VULNERABILIDADES CRÍTICAS</div>
-          <h2>As 3 Grandes Hemorragias Comerciais de Santiago</h2>
-        </div>
-        <div class="slide-meta">
-          DIAGNÓSTICO ESTRATÉGICO<br>EDEC 2026
-        </div>
-      </div>
-
-      <div class="slide-body">
-        <div class="anom-grid">
-          <!-- Hemorragia 1 -->
-          <div class="anom-box" style="border-top: 3px solid #818CF8;">
-            <div>
-              <span class="anom-tag" style="background:#1E1B4B; color:#C7D2FE;">🏛️ INSTITUCIONAL</span>
-              <div class="anom-title">1. Concentração no Setor Público</div>
-              <div class="anom-desc">
-                Câmaras Municipais e órgãos do Estado acumulam <strong>1.449.848.202 ECV</strong> em apenas 1.073 contratos:
-                <br><br>
-                • <strong>Autarquias (Câmaras):</strong> 593 contratos devem <strong>1,11 Bilhão ECV</strong> (iluminação pública e serviços camarários).<br>
-                • <strong>Estado Central:</strong> 480 contratos devem <strong>337,6 Milhões ECV</strong>.
-              </div>
-            </div>
-            <div class="anom-highlight" style="color:#818CF8;">
-              Solução: Encontro de Contas Fiscal/Municipal
-            </div>
-          </div>
-
-          <!-- Hemorragia 2 -->
-          <div class="anom-box" style="border-top: 3px solid var(--accent-amber);">
-            <div>
-              <span class="anom-tag" style="background:rgba(245,158,11,0.15); color:#FBBF24;">📍 TERRITORIAL</span>
-              <div class="anom-title">2. Hiperconcentração na Praia</div>
-              <div class="anom-desc">
-                O Concelho da Praia responde sozinho por <strong>4,43 Bilhões ECV (72% da dívida total de Santiago)</strong> e 19.384 devedores estagnados.
-                <br><br>
-                Os 3 maiores focos geográficos:<br>
-                • <strong>PT Tirachapéu:</strong> 113,4 M ECV (896 clientes)<br>
-                • <strong>PT Vila Nova:</strong> 89,8 M ECV (743 clientes)<br>
-                • <strong>PT Achadinha Cima:</strong> 89,3 M ECV (885 clientes)
-              </div>
-            </div>
-            <div class="anom-highlight" style="color:#FBBF24;">
-              Solução: Piquetes de Corte em Cluster por PT
-            </div>
-          </div>
-
-          <!-- Hemorragia 3 -->
-          <div class="anom-box" style="border-top: 3px solid var(--accent-red);">
-            <div>
-              <span class="anom-tag" style="background:rgba(239,68,68,0.15); color:#F87171;">⚡ ENERGÉTICA</span>
-              <div class="anom-title">3. O Risco das Perdas Não Técnicas</div>
-              <div class="anom-desc">
-                Combinação de fraude física, desvio e obsolescência de medição:
-                <br><br>
-                • <strong>19.363 Contratos com Bypass:</strong> Consumo ativo zerou (`Desv_Fat`) drenando <strong>~73M ECV/mês</strong>.<br>
-                • <strong>5.606 Contratos com Fraude CF1:</strong> 108,2M ECV em autos faturados e 3.605 processos pendentes de envio ao MP.
-              </div>
-            </div>
-            <div class="anom-highlight" style="color:#F87171;">
-              Solução: Vistoria Forense P1 &amp; Blindagem
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-footer">
-        <span>EDEC S.A. • Proteção de Receita</span>
-        <span>Apresentação Executiva • Slide 3 de 6</span>
-      </div>
-    </section>
-
-
-    <!-- SLIDE 4: O PLANO DE CHOQUE (4 MEDIDAS) -->
-    <section class="slide" id="slide-4">
-      <div class="slide-header">
-        <div>
-          <div class="tag">PLANO OPERACIONAL DE 12 MESES</div>
-          <h2>Plano de Choque: 4 Medidas Estratégicas Mensuradas</h2>
-        </div>
-        <div class="slide-meta">
-          METAS QUANTIFICADAS<br>EXERCÍCIO 2026/2027
-        </div>
-      </div>
-
-      <div class="slide-body">
-        <div class="plan-grid">
-          <!-- Medida 1 -->
-          <div class="plan-card c1">
-            <h3>
-              <span>1. Encontro de Contas Institucional</span>
-              <span class="tag" style="color:#818CF8; font-size:10px;">ESTADO &amp; AUTARQUIAS</span>
-            </h3>
-            <p>
-              Criação de protocolo bilateral com as Câmaras Municipais e Ministério das Finanças para compensação direta entre dívidas de energia elétrica e créditos fiscais/taxas municipais (IUP, saneamento).
-            </p>
-            <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">
-              Meta: Conciliação de 35% do saldo público de 1,45 Bilhão de ECV.
-            </div>
-            <div class="plan-impact">
-              +507.500.000 ECV REGULARIZADOS NO BALANÇO
-            </div>
-          </div>
-
-          <!-- Medida 2 -->
-          <div class="plan-card c2">
-            <h3>
-              <span>2. Piquete Cluster por PT (Grandes Contas)</span>
-              <span class="tag" style="color:#F87171; font-size:10px;">GRANDES PRIVADOS</span>
-            </h3>
-            <p>
-              Operações diárias de corte e negociação concentradas nos maiores Postos de Transformação da Praia (Tirachapéu, Vila Nova, Achadinha) usando a folha de serviço oficial emitida pelo sistema.
-            </p>
-            <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">
-              Meta: Recuperação de 15% da base de 2,50 Bilhões ECV em dívidas > 250k ECV.
-            </div>
-            <div class="plan-impact">
-              +375.000.000 ECV DE ENTRADA DIRETA EM CAIXA
-            </div>
-          </div>
-
-          <!-- Medida 3 -->
-          <div class="plan-card c3">
-            <h3>
-              <span>3. Operação Blindagem &amp; Combate ao Bypass</span>
-              <span class="tag" style="color:#FBBF24; font-size:10px;">FRAUDE &amp; DESVIO</span>
-            </h3>
-            <p>
-              Vistoria técnica urgente com brigadas policiais nos 3.000 maiores clientes classificados como P1 (consumo zerado com comércio aberto) e cobrança judicial dos 3.605 autos parados no MP.
-            </p>
-            <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">
-              Meta: Recuperar 30% da energia desviada e faturamento de autos de fraude.
-            </div>
-            <div class="plan-impact">
-              +262.800.000 ECV/ANO EM RECEITA RECORRENTE
-            </div>
-          </div>
-
-          <!-- Medida 4 -->
-          <div class="plan-card c4">
-            <h3>
-              <span>4. Troca de 5.000 Medidores por Pré-Pago</span>
-              <span class="tag" style="color:#34D399; font-size:10px;">SUBMEDIÇÃO</span>
-            </h3>
-            <p>
-              Substituição programada de contadores eletromecânicos (>20 anos) por pré-pago com amortização automática (20% de retenção na recarga para abater passivo antigo).
-            </p>
-            <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:8px;">
-              Meta: Eliminar 20% de submedição mecânica e estancar nova inadimplência.
-            </div>
-            <div class="plan-impact">
-              +45.200.000 ECV/ANO DE ENERGIA REGISTRADA
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-footer">
-        <span>EDEC S.A. • Engenharia &amp; Operações</span>
-        <span>Apresentação Executiva • Slide 4 de 6</span>
-      </div>
-    </section>
-
-
-    <!-- SLIDE 5: QUADRO DE IMPACTO FINANCEIRO CONSOLIDADO -->
-    <section class="slide" id="slide-5">
-      <div class="slide-header">
-        <div>
-          <div class="tag">FLUXO FINANCEIRO &amp; RETORNO CONTABILIZADO</div>
-          <h2>Impacto no Caixa e Balanço: Projeção a 12 Meses</h2>
-        </div>
-        <div class="slide-meta">
-          FLUXO CONSOLIDADO<br>+99,2M ECV / MÊS
-        </div>
-      </div>
-
-      <div class="slide-body">
-        <table class="exec-table">
-          <thead>
-            <tr>
-              <th>Eixo Operacional</th>
-              <th>Público-Alvo / Saldo sob Risco</th>
-              <th>Mecanismo de Execução</th>
-              <th style="text-align:right;">Impacto 12 Meses (ECV)</th>
-              <th style="text-align:right;">Impacto Mensal Médio</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>1. Estado &amp; Autarquias</strong></td>
-              <td>1.449.848.202 ECV (1.073 contratos)</td>
-              <td>Encontro de Contas Fiscal/Orçamental</td>
-              <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#818CF8;" id="live-t-gov">+507.500.000 ECV</td>
-              <td style="text-align:right; font-family:var(--font-mono);">~42,3 M ECV/mês</td>
-            </tr>
-            <tr>
-              <td><strong>2. Grandes Devedores Privados</strong></td>
-              <td>2.500.000.000 ECV (&gt;250k ECV)</td>
-              <td>Piquete de Corte Cluster por PT</td>
-              <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#FBBF24;" id="live-t-grandes">+375.000.000 ECV</td>
-              <td style="text-align:right; font-family:var(--font-mono);">~31,3 M ECV/mês</td>
-            </tr>
-            <tr>
-              <td><strong>3. Combate ao Bypass (P1)</strong></td>
-              <td>876.000.000 ECV/ano (19.363 CILs)</td>
-              <td>Vistoria Forense &amp; Execução MP</td>
-              <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#F87171;" id="live-t-pnt">+262.800.000 ECV</td>
-              <td style="text-align:right; font-family:var(--font-mono);">~21,9 M ECV/mês</td>
-            </tr>
-            <tr>
-              <td><strong>4. Parque Medição Obsoleto</strong></td>
-              <td>12.672 Contadores (&gt; 20 anos)</td>
-              <td>Troca por Pré-Pago c/ Retenção</td>
-              <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:var(--accent-cyan);" id="live-t-antigos">+45.200.000 ECV</td>
-              <td style="text-align:right; font-family:var(--font-mono);">~3,8 M ECV/mês</td>
-            </tr>
-            <tr class="total-row">
-              <td><strong>TOTAL GERAL CONSOLIDADO</strong></td>
-              <td><strong>PLANO DE CHOQUE INTEGRADO</strong></td>
-              <td><strong>EXECUÇÃO IMEDIATA</strong></td>
-              <td style="text-align:right; font-family:var(--font-mono); font-size:16px;" id="live-t-total">+1.190.500.000 ECV</td>
-              <td style="text-align:right; font-family:var(--font-mono); font-size:16px;" id="live-t-mensal">~99.200.000 ECV/mês</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Gráfico de Comparação Visual -->
-        <div style="margin-top:20px; background:var(--bg-card-elevated); border:1px solid var(--border-bright); border-radius:6px; padding:14px 18px;">
-          <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11.5px; margin-bottom:8px;">
-            <span>Eficácia de Recuperação de Receita Global:</span>
-            <span id="live-t-taxa-texto">Atual: <strong>26,3%</strong> ➔ Meta pós-Plano: <strong style="color:#34D399;">38,5% (+12,2 p.p.)</strong></span>
-          </div>
-          <div style="height:12px; background:#1E293B; border-radius:6px; overflow:hidden; display:flex;">
-            <div style="width:26.3%; background:#F59E0B;" title="Arrecadação Atual: 26,3%"></div>
-            <div style="width:12.2%; background:#10B981;" title="Ganho Projetado: +12,2%"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="slide-footer">
-        <span>EDEC S.A. • Direção Comercial &amp; Financeira</span>
-        <span>Apresentação Executiva • Slide 5 de 6</span>
-      </div>
-    </section>
-
-
-    <!-- SLIDE 6: DELIBERAÇÕES RECOMENDADAS PARA A ADMINISTRAÇÃO -->
-    <section class="slide" id="slide-6">
-      <div class="slide-header">
-        <div>
-          <div class="tag">PLANO DE AÇÃO IMEDIATO</div>
-          <h2>Deliberações Propostas ao Conselho de Administração</h2>
-        </div>
-        <div class="slide-meta">
-          DECISÕES ESTRATÉGICAS<br>PARA APROVAÇÃO EM ATA
-        </div>
-      </div>
-
-      <div class="slide-body">
-        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:16px;">
-          
-          <div style="background:var(--bg-card-elevated); border:1px solid var(--border-dim); border-radius:8px; padding:18px; border-left:4px solid #6366F1;">
-            <div style="font-family:var(--font-mono); font-size:11px; color:#818CF8; font-weight:700; margin-bottom:4px;">DELIBERAÇÃO 1 • PROTOCOLO GOVERNAMENTAL</div>
-            <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
-              Comissão Paritária de Encontro de Contas
-            </div>
-            <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
-              Mandatar a Direção Geral para formalizar com a ANMCV e Ministério das Finanças a primeira tranche de compensação contábil de <strong>500 Milhões de ECV</strong> no 1º trimestre de 2027.
-            </p>
-          </div>
-
-          <div style="background:var(--bg-card-elevated); border:1px solid var(--border-dim); border-radius:8px; padding:18px; border-left:4px solid var(--accent-amber);">
-            <div style="font-family:var(--font-mono); font-size:11px; color:var(--accent-amber); font-weight:700; margin-bottom:4px;">DELIBERAÇÃO 2 • HOMOLOGAÇÃO DE PROCEDIMENTO</div>
-            <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
-              Adoção Obrigatória da Folha de Piquete por PT
-            </div>
-            <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
-              Homologar a Ordem de Serviço Cluster por Transformador como documento operacional diário das equipas técnicas, iniciando nos PTs <strong>Tirachapéu, Vila Nova e Achadinha de Cima</strong>.
-            </p>
-          </div>
-
-          <div style="background:var(--bg-card-elevated); border:1px solid var(--border-dim); border-radius:8px; padding:18px; border-left:4px solid var(--accent-red);">
-            <div style="font-family:var(--font-mono); font-size:11px; color:var(--accent-red); font-weight:700; margin-bottom:4px;">DELIBERAÇÃO 3 • COOPERAÇÃO INSTITUCIONAL</div>
-            <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
-              Brigadas Mistas com a Polícia Nacional
-            </div>
-            <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
-              Firmar protocolo de segurança com o Comando da Polícia Nacional para fiscalização conjunta dos <strong>916 clientes reincidentes em fraude (P1)</strong> e execução dos 3.605 autos de fiscalização.
-            </p>
-          </div>
-
-          <div style="background:var(--bg-card-elevated); border:1px solid var(--border-dim); border-radius:8px; padding:18px; border-left:4px solid var(--accent-emerald);">
-            <div style="font-family:var(--font-mono); font-size:11px; color:var(--accent-emerald); font-weight:700; margin-bottom:4px;">DELIBERAÇÃO 4 • METAS DE GESTÃO</div>
-            <div style="font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--text-primary); margin-bottom:8px;">
-              Meta Comercial de ~100M ECV/mês
-            </div>
-            <p style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
-              Fixar formalmente no Plano de Atividades a meta de entrada líquida de <strong>~100 Milhões ECV/mês</strong>, monitorizada semanalmente através do painel de telemetria já instalado.
-            </p>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="slide-footer">
-        <span>EDEC S.A. • Conselho de Administração</span>
-        <span>Apresentação Executiva • Slide 6 de 6</span>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- JAVASCRIPT DE NAVEGAÇÃO ENTRE SLIDES -->
-  <script>
-    let slideAtual = 1;
-    const totalSlides = 6;
-
-    function setTemaApresentacao(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      try { localStorage.setItem('santiago_theme', theme); } catch(e) {}
-      const btnDark = document.getElementById('theme-btn-dark');
-      const btnLight = document.getElementById('theme-btn-light');
-      if (btnDark && btnLight) {
-        if (theme === 'light') {
-          btnLight.classList.add('active');
-          btnDark.classList.remove('active');
-        } else {
-          btnDark.classList.add('active');
-          btnLight.classList.remove('active');
+        function updateSlideUI() {
+            slides.forEach((s, idx) => {
+                s.classList.toggle('active', idx === currentSlide);
+            });
+            storyTabs.forEach((t, idx) => {
+                t.classList.toggle('active', idx === currentSlide);
+            });
+            const counter = document.getElementById('slideCounter');
+            if (counter) counter.textContent = (currentSlide + 1) + ' / ' + totalSlides;
         }
-      }
-    }
 
-    function atualizarSlide() {
-      document.querySelectorAll(".slide").forEach((s, idx) => {
-        s.classList.toggle("active", idx + 1 === slideAtual);
-      });
-      document.getElementById("slide-num").textContent = `${slideAtual} / ${totalSlides}`;
-      document.getElementById("btn-prev").disabled = slideAtual === 1;
-      document.getElementById("btn-next").disabled = slideAtual === totalSlides;
-    }
+        function prepararModoImpressao() {
+            document.body.classList.add('printing-all-slides');
+            slides.forEach(s => {
+                s.style.display = 'block';
+                s.style.opacity = '1';
+                s.style.visibility = 'visible';
+                s.style.animation = 'none';
+                s.style.transform = 'none';
+            });
+        }
 
-    function mudarSlide(direcao) {
-      slideAtual += direcao;
-      if (slideAtual < 1) slideAtual = 1;
-      if (slideAtual > totalSlides) slideAtual = totalSlides;
-      const curTema = document.documentElement.getAttribute('data-theme') || 'dark';
-    setTemaApresentacao(curTema);
-    atualizarSlide();
-    }
+        function restaurarModoApresentacao() {
+            document.body.classList.remove('printing-all-slides');
+            slides.forEach(s => {
+                s.style.display = '';
+                s.style.opacity = '';
+                s.style.visibility = '';
+                s.style.animation = '';
+                s.style.transform = '';
+            });
+            updateSlideUI();
+        }
 
-    function alternarTelaCheia() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-          alert(`Erro ao ativar tela inteira: ${err.message}`);
+        window.addEventListener('beforeprint', prepararModoImpressao);
+        window.addEventListener('afterprint', restaurarModoApresentacao);
+
+        function imprimirApresentacaoCA() {
+            prepararModoImpressao();
+            setTimeout(() => {
+                window.print();
+            }, 80);
+        }
+
+        function changeSlide(dir) {
+            currentSlide = (currentSlide + dir + totalSlides) % totalSlides;
+            updateSlideUI();
+        }
+
+        function goToSlide(idx) {
+            if (idx >= 0 && idx < totalSlides) {
+                currentSlide = idx;
+                updateSlideUI();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                changeSlide(-1);
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullScreen();
+            }
         });
-      } else {
-        document.exitFullscreen();
-      }
-    }
 
-    // Navegação por teclado (Setas Esquerda/Direita e Barra de Espaço)
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
-        e.preventDefault();
-        mudarSlide(1);
-      } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
-        e.preventDefault();
-        mudarSlide(-1);
-      } else if (e.key === "Home") {
-        e.preventDefault();
-        slideAtual = 1;
-        atualizarSlide();
-      } else if (e.key === "End") {
-        e.preventDefault();
-        slideAtual = totalSlides;
-        atualizarSlide();
-      }
-    });
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
 
-    // Iniciar no primeiro slide
-    atualizarSlide();
-  
-    // =========================================================================
-    // CONEXÃO DINÂMICA AO VIVO COM SUPABASE (PROJETO SANTIAGO)
-    // =========================================================================
-    const SUPABASE_URL = "https://esbbohmkgbcrpegqvagk.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MDQ3OTUsImV4cCI6MjA5OTA4MDc5NX0.85Ypz7LghhQ37Ur5YE2eLM4PFkMw2o3S8QtbhRSzBuU";
-    const HEADERS = {
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
-      "Content-Type": "application/json"
-    };
+        /* =========================================================
+           THEME TOGGLE (SYNCED WITH PAINEL_SANTIAGO.HTML)
+           ========================================================= */
+        function atualizarBotaoTema(theme) {
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+            if (theme === 'dark') {
+                if (icon) icon.textContent = '☀️';
+                if (label) label.textContent = 'Modo Claro';
+            } else {
+                if (icon) icon.textContent = '🌙';
+                if (label) label.textContent = 'Modo Escuro';
+            }
+        }
 
-    const fmtInt = (v) => Math.round(Number(v) || 0).toLocaleString("pt-PT");
-    const fmtECV = (v) => Math.round(Number(v) || 0).toLocaleString("pt-PT") + " ECV";
+        function alternarTemaCA() {
+            const atual = document.documentElement.getAttribute('data-theme') || 'light';
+            const novo = atual === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', novo);
+            localStorage.setItem('santiago_theme', novo);
+            atualizarBotaoTema(novo);
+        }
 
-    async function sincronizarDadosAoVivo() {
-      const pill = document.getElementById("live-sync-pill");
-      if (pill) pill.innerHTML = "⏳ A CONECTAR SUPABASE...";
+        atualizarBotaoTema(document.documentElement.getAttribute('data-theme') || 'light');
 
-      try {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_resumo_santiago`, {
-          method: "POST",
-          headers: HEADERS,
-          body: JSON.stringify({ p_divida: "gt0" })
+        /* =========================================================
+           FORMATTERS & LIVE SUPABASE DATA ENGINE
+           ========================================================= */
+        function fmtECV(val) {
+            const n = Number(val) || 0;
+            if (n >= 1e9) return (n / 1e9).toFixed(2).replace('.', ',') + ' B ECV';
+            if (n >= 1e6) return (n / 1e6).toFixed(1).replace('.', ',') + ' M ECV';
+            return n.toLocaleString('pt-PT') + ' ECV';
+        }
+
+        function fmtInt(val) {
+            return (Number(val) || 0).toLocaleString('pt-PT');
+        }
+
+        function setTxt(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        }
+
+        function selecionarIlhaRapida(ilha) {
+            const sel = document.getElementById('selectIlhaCA');
+            if (sel) sel.value = ilha;
+            document.querySelectorAll('.island-pill').forEach(p => p.classList.remove('active'));
+            mudarAmbitoIlha(ilha);
+        }
+
+        async function mudarAmbitoIlha(ilha) {
+            await sincronizarDadosAoVivo(ilha || null);
+        }
+
+        async function sincronizarDadosAoVivo(ilhaFiltro = null) {
+            const badge = document.getElementById('liveSyncBadge');
+            const badgeTxt = document.getElementById('liveSyncText');
+            try {
+                if (badgeTxt) badgeTxt.textContent = 'Atualizando dados...';
+                const client = window.supabase.createClient(SUPABASE_URL, REAL_KEY);
+
+                const rpcParams = { p_divida: 'gt0' };
+                if (ilhaFiltro) rpcParams.p_ilha = ilhaFiltro;
+
+                const { data: d, error } = await client.rpc('get_resumo_santiago', rpcParams);
+                if (error || !d) throw error || new Error('Sem resposta da RPC');
+
+                const nomeAmbito = ilhaFiltro ? ('Ilha: ' + ilhaFiltro) : 'Região Sul (4 Ilhas)';
+                setTxt('ca-scope-label-inline', ilhaFiltro ? ('Ilha de ' + ilhaFiltro) : '4 Ilhas: Santiago, Fogo, Maio e Brava');
+                setTxt('ca-cover-scope', nomeAmbito.toUpperCase());
+                setTxt('scope-badge-s2', nomeAmbito);
+                setTxt('meta-top-concelhos', nomeAmbito);
+
+                // Atualizar pills das ilhas quando em visão global
+                if (!ilhaFiltro && Array.isArray(d.por_ilha)) {
+                    setTxt('pill-total-val', fmtECV(d.total_divida));
+                    const mapIlha = {};
+                    d.por_ilha.forEach(r => { mapIlha[(r.ilha || '').toUpperCase()] = r.soma_divida || 0; });
+                    if (mapIlha['SANTIAGO']) setTxt('pill-santiago-val', fmtECV(mapIlha['SANTIAGO']));
+                    if (mapIlha['FOGO']) setTxt('pill-fogo-val', fmtECV(mapIlha['FOGO']));
+                    if (mapIlha['MAIO']) setTxt('pill-maio-val', fmtECV(mapIlha['MAIO']));
+                    if (mapIlha['BRAVA']) setTxt('pill-brava-val', fmtECV(mapIlha['BRAVA']));
+                }
+
+                const totCli = Number(d.total_contratos) || 0;
+                const totDiv = Number(d.total_divida) || 0;
+                const totFat = Number(d.total_faturas) || 0;
+                const divSemPag = Number(d.divida_sem_pagamento) || 0;
+                const cliSemPag = Number(d.sem_pagamento) || 0;
+                const cob2026 = Number(d.cob_total_2026) || 0;
+                const cliPag = Number(d.clientes_com_pagamento) || 0;
+
+                const qtd250k = Number(d.qtd_grandes_250k) || 0;
+                const div250k = Number(d.divida_grandes_250k) || 0;
+                const qtd1m = Number(d.qtd_milionarios_1m) || 0;
+                const div1m = Number(d.divida_milionarios_1m) || 0;
+
+                const divPub = Number(d.divida_setor_publico) || 0;
+                const qtdPub = Number(d.qtd_setor_publico) || 0;
+                const divPrivGrandes = Number(d.divida_grandes_priv) || 0;
+                const divMassa = Number(d.divida_massa) || 0;
+
+                // Segregação Eletricidade vs Água AdS
+                let divAgua = 0, qtdAgua = 0, divEletr = 0;
+                if (Array.isArray(d.por_produto)) {
+                    d.por_produto.forEach(p => {
+                        if ((p.prod || '').toUpperCase() === 'AG') {
+                            divAgua += Number(p.soma_divida) || 0;
+                            qtdAgua += Number(p.cnt) || 0;
+                        } else {
+                            divEletr += Number(p.soma_divida) || 0;
+                        }
+                    });
+                }
+
+                const pctSemPag = totDiv > 0 ? ((divSemPag / totDiv) * 100) : 0;
+                const taxaRec = (totDiv + cob2026) > 0 ? ((cob2026 / (totDiv + cob2026)) * 100) : 0;
+                const pctCliPag = totCli > 0 ? ((cliPag / totCli) * 100) : 0;
+                const pctPareto = totDiv > 0 ? ((div250k / totDiv) * 100) : 0;
+                const pctCliPareto = totCli > 0 ? ((qtd250k / totCli) * 100) : 0;
+                const pct1m = totDiv > 0 ? ((div1m / totDiv) * 100) : 0;
+                const pctPub = totDiv > 0 ? ((divPub / totDiv) * 100) : 0;
+                const pctPriv = totDiv > 0 ? ((divPrivGrandes / totDiv) * 100) : 0;
+                const pctMassa = totDiv > 0 ? ((divMassa / totDiv) * 100) : 0;
+                const pctAgua = totDiv > 0 ? ((divAgua / totDiv) * 100) : 0;
+                const pctEletr = totDiv > 0 ? ((divEletr / totDiv) * 100) : 0;
+
+                // SLIDE 1 & 2 UPDATES
+                setTxt('ca-capa-contratos', fmtInt(totCli) + ' contas');
+                setTxt('ca-capa-divida', fmtECV(totDiv));
+                setTxt('ca-capa-pareto', fmtECV(div250k) + ' (' + pctPareto.toFixed(1).replace('.', ',') + '%)');
+                setTxt('ca-capa-publico', fmtECV(divPub) + ' (' + pctPub.toFixed(1).replace('.', ',') + '%)');
+                setTxt('ca-capa-ads', fmtECV(divAgua) + ' (' + pctAgua.toFixed(1).replace('.', ',') + '%)');
+
+                setTxt('ca-k1-divida', fmtECV(totDiv));
+                setTxt('ca-k1-clientes', fmtInt(totCli));
+                setTxt('ca-k1-faturas', (totFat >= 1e6 ? (totFat / 1e6).toFixed(2).replace('.', ',') + 'M' : fmtInt(totFat)) + ' faturas');
+                setTxt('ca-k1-ticket', fmtInt(Math.round(Number(d.media_divida) || 0)) + ' ECV');
+
+                setTxt('ca-k2-sempag', fmtECV(divSemPag));
+                setTxt('ca-k2-pct', pctSemPag.toFixed(1).replace('.', ',') + '% do Total');
+                setTxt('ca-k2-cli-sempag', fmtInt(cliSemPag));
+                const k2Bar = document.getElementById('ca-k2-bar');
+                if (k2Bar) k2Bar.style.width = Math.min(100, pctSemPag) + '%';
+
+                setTxt('ca-k3-cobranca', fmtECV(cob2026));
+                setTxt('ca-k3-taxa', taxaRec.toFixed(1).replace('.', ',') + '% Eficácia');
+                setTxt('ca-k3-pagadores', fmtInt(cliPag));
+                setTxt('ca-k3-pct-pag', pctCliPag.toFixed(1).replace('.', ',') + '%');
+                const k3Bar = document.getElementById('ca-k3-bar');
+                if (k3Bar) k3Bar.style.width = Math.min(100, taxaRec) + '%';
+
+                setTxt('ca-k4-val', fmtECV(div250k));
+                setTxt('ca-k4-pct', pctPareto.toFixed(1).replace('.', ',') + '% da Dívida');
+                setTxt('ca-k4-qtd', fmtInt(qtd250k));
+                setTxt('ca-k4-pct-cli', pctCliPareto.toFixed(1).replace('.', ',') + '%');
+                const k4Bar = document.getElementById('ca-k4-bar');
+                if (k4Bar) k4Bar.style.width = Math.min(100, pctPareto) + '%';
+
+                setTxt('ca-k5-val', fmtECV(divPub));
+                setTxt('ca-k5-pct', pctPub.toFixed(1).replace('.', ',') + '% da Dívida');
+                setTxt('ca-k5-qtd', fmtInt(qtdPub));
+                const k5Bar = document.getElementById('ca-k5-bar');
+                if (k5Bar) k5Bar.style.width = Math.min(100, pctPub) + '%';
+
+                setTxt('ca-k6-val', fmtECV(divAgua));
+                setTxt('ca-k6-pct', pctAgua.toFixed(1).replace('.', ',') + '% Água AdS');
+                setTxt('ca-k6-qtd', fmtInt(qtdAgua));
+                setTxt('ca-k6-el', fmtECV(divEletr));
+                const k6Bar = document.getElementById('ca-k6-bar');
+                if (k6Bar) k6Bar.style.width = Math.min(100, pctAgua) + '%';
+
+                const desvFat = Number(d.com_desvio_fat) || 0;
+                const cf1Qtd = Number(d.com_cf1) || 0;
+                const cf1Div = Number(d.cf1_divida_total) || 0;
+                const cf1Mp = Number(d.cf1_enviados_mp) || 0;
+                setTxt('ca-k7-desvio', fmtInt(desvFat));
+                setTxt('ca-k7-cf1', fmtInt(cf1Qtd) + ' Autos CF1');
+                setTxt('ca-k7-div-cf1', fmtECV(cf1Div));
+                setTxt('ca-k7-mp', fmtInt(cf1Mp));
+
+                const contAntigos = Number(d.contador_antigo) || 0;
+                const semLeit = Number(d.sem_leitura) || 0;
+                const riscoAlto = (Number(d.score_critico) || 0) + (Number(d.score_alto) || 0);
+                setTxt('ca-k8-antigos', fmtInt(contAntigos));
+                setTxt('ca-k8-semleit', fmtInt(semLeit));
+                setTxt('ca-k8-risco', fmtInt(riscoAlto) + ' Risco Alto');
+                setTxt('ca-s4-risco', fmtInt(riscoAlto) + ' Instalações');
+
+                // SLIDE 3 CHARTS
+                setTxt('ca-s3-milionarios', fmtInt(qtd1m) + ' Contas = ' + fmtECV(div1m) + ' (' + pct1m.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-seg-pub', fmtECV(divPub).replace(' ECV', '') + ' (' + pctPub.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-seg-priv', fmtECV(divPrivGrandes).replace(' ECV', '') + ' (' + pctPriv.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-seg-massa', fmtECV(divMassa).replace(' ECV', '') + ' (' + pctMassa.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-seg-ads', fmtECV(divAgua).replace(' ECV', '') + ' (' + pctAgua.toFixed(1).replace('.', ',') + '%)');
+
+                const bPub = document.getElementById('bar-seg-pub'); if (bPub) bPub.style.width = Math.min(100, pctPub) + '%';
+                const bPriv = document.getElementById('bar-seg-priv'); if (bPriv) bPriv.style.width = Math.min(100, pctPriv) + '%';
+                const bMassa = document.getElementById('bar-seg-massa'); if (bMassa) bMassa.style.width = Math.min(100, pctMassa) + '%';
+                const bAds = document.getElementById('bar-seg-ads'); if (bAds) bAds.style.width = Math.min(100, pctAgua) + '%';
+
+                setTxt('val-prod-el', fmtECV(divEletr).replace(' ECV', '') + ' (' + pctEletr.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-prod-ag', fmtECV(divAgua).replace(' ECV', '') + ' (' + pctAgua.toFixed(1).replace('.', ',') + '%)');
+                const bEl = document.getElementById('bar-prod-el'); if (bEl) bEl.style.width = Math.min(100, pctEletr) + '%';
+                const bAg = document.getElementById('bar-prod-ag'); if (bAg) bAg.style.width = Math.min(100, pctAgua) + '%';
+
+                setTxt('v1-soma-pub-ads', fmtECV(divPub + divAgua));
+
+                // Top Concelhos dinâmico
+                if (Array.isArray(d.por_concelho) && d.por_concelho.length > 0) {
+                    const topC = d.por_concelho.slice(0, 6);
+                    const maxC = Number(topC[0].soma_divida) || 1;
+                    const colors = ['var(--tableau-red)', 'var(--tableau-orange)', 'var(--tableau-blue)', 'var(--tableau-blue)', 'var(--tableau-teal)', 'var(--tableau-teal)'];
+                    const container = document.getElementById('chartTopConcelhosCA');
+                    if (container) {
+                        container.innerHTML = topC.map((c, idx) => {
+                            const val = Number(c.soma_divida) || 0;
+                            const w = Math.max(6, Math.round((val / maxC) * 100));
+                            return `
+                                <div class="tb-bar-row">
+                                    <span class="tb-bar-label">${idx + 1}. ${c.concelho || 'N/D'}</span>
+                                    <div class="tb-bar-track"><div class="tb-bar-fill" style="width:${w}%; background:${colors[idx] || 'var(--tableau-blue)'};"></div></div>
+                                    <span class="tb-bar-val">${fmtECV(val)}</span>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                }
+
+                // SLIDE 5 & 6: SIMULAÇÃO FINANCEIRA AO VIVO
+                const imp1 = Math.round(divPub * 0.30);
+                const imp2 = Math.round(divPrivGrandes * 0.25);
+                const alvoInsp = Math.min(15000, desvFat);
+                const imp3 = Math.round(alvoInsp * 0.45 * 3333.33 * 12);
+                const imp4 = Math.round(cf1Div * 0.40);
+                const alvoCont = Math.min(5000, contAntigos);
+                const imp5 = Math.round(alvoCont * 1500 * 12);
+                const impTotal = imp1 + imp2 + imp3 + imp4 + imp5;
+
+                setTxt('ca-capa-meta', '+ ' + fmtECV(impTotal));
+                setTxt('eixo1-val', '+ ' + fmtECV(imp1));
+                setTxt('eixo2-val', '+ ' + fmtECV(imp2));
+                setTxt('eixo3-val', '+ ' + fmtECV(imp3 + imp4));
+                setTxt('eixo4-val', '+ ' + fmtECV(imp5));
+
+                setTxt('ca-t1-base', fmtECV(divPub) + ' (' + fmtInt(qtdPub) + ' contas)');
+                setTxt('ca-t1-impacto', '+ ' + fmtECV(imp1));
+                setTxt('ca-t2-base', fmtECV(divPrivGrandes) + ' (Privados Pareto)');
+                setTxt('ca-t2-impacto', '+ ' + fmtECV(imp2));
+                setTxt('ca-t3-base', fmtInt(alvoInsp) + ' de ' + fmtInt(desvFat) + ' desvios');
+                setTxt('ca-t3-impacto', '+ ' + fmtECV(imp3));
+                setTxt('ca-t4-base', fmtECV(cf1Div) + ' (' + fmtInt(cf1Qtd) + ' CILs)');
+                setTxt('ca-t4-impacto', '+ ' + fmtECV(imp4));
+                setTxt('ca-t5-base', fmtInt(alvoCont) + ' de ' + fmtInt(contAntigos) + ' contadores');
+                setTxt('ca-t5-impacto', '+ ' + fmtECV(imp5));
+                setTxt('ca-t-total', '+ ' + fmtECV(impTotal));
+                setTxt('ca-t-total-header', '+ ' + fmtECV(impTotal));
+
+                const novaCob = cob2026 + impTotal;
+                const novaTaxa = (totDiv + cob2026) > 0 ? ((novaCob / (totDiv + cob2026)) * 100) : 0;
+                setTxt('val-efic-atual', taxaRec.toFixed(1).replace('.', ',') + '% (' + fmtECV(cob2026).replace(' ECV', '') + ')');
+                setTxt('val-efic-meta', novaTaxa.toFixed(1).replace('.', ',') + '% (' + fmtECV(novaCob).replace(' ECV', '') + ')');
+                const bEfAt = document.getElementById('bar-efic-atual'); if (bEfAt) bEfAt.style.width = Math.min(100, taxaRec) + '%';
+                const bEfMe = document.getElementById('bar-efic-meta'); if (bEfMe) bEfMe.style.width = Math.min(100, novaTaxa) + '%';
+
+                if (badgeTxt) badgeTxt.textContent = 'Supabase Live • ' + nomeAmbito;
+                if (badge) badge.style.borderColor = 'rgba(89, 161, 79, 0.45)';
+            } catch (err) {
+                console.warn('Fallback para dados consolidados offline:', err);
+                if (badgeTxt) badgeTxt.textContent = 'Snapshot Consolidado Ativo';
+            }
+        }
+
+        // Inicializar sincronização ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            sincronizarDadosAoVivo(null);
         });
-        const d = await r.json();
-
-        // 1. Variáveis Chave
-        const totDiv = d.total_divida || 6157513692;
-        const totCont = d.total_contratos || d.com_divida || 78006;
-        const totFat = d.total_faturas_divida || 2228498;
-        const semPagDiv = d.divida_sem_pagamento || 4616063305;
-        const qtdSemPag = d.devedor_sem_pagamento || 29832;
-        const cobTotal = d.cob_total_2026 || 2194115146;
-        const qtdAmort = d.com_cobranca_2026 || 48174;
-        const qtdDesvio = d.com_desvio_fat || 19363;
-        const medFat = d.media_med_fat || 145;
-        const contAntigos = d.contador_antigo || 12672;
-
-        const pctCritica = ((semPagDiv / totDiv) * 100).toFixed(1);
-        const taxaAtual = ((cobTotal / (cobTotal + totDiv)) * 100).toFixed(1);
-
-        // Perdas Não Técnicas Calculadas
-        const mwhDesvMes = Math.round((qtdDesvio * medFat) / 1000);
-        const perdaEcvAno = Math.round((qtdDesvio * medFat) * 26 * 12);
-
-        // Medidas do Plano de Choque
-        const impGov = Math.round(1449848202 * 0.35); // 35% de Estado e Câmaras
-        const impGrandes = Math.round(2500000000 * 0.15); // 15% de Grandes Devedores
-        const impPnt = Math.round(perdaEcvAno * 0.30); // 30% da energia desviada recuperada
-        const impAntigos = Math.round(5000 * (medFat * 0.20) * 26 * 12); // 5.000 contadores trocados
-        const totalImpacto = impGov + impGrandes + impPnt + impAntigos;
-        const impactoMensal = Math.round(totalImpacto / 12);
-
-        const novaTaxa = (((cobTotal + totalImpacto) / (cobTotal + totDiv)) * 100).toFixed(1);
-
-        // Atualizar Slide 1 (Capa)
-        const elS1Cont = document.getElementById("live-s1-contratos");
-        const elS1Div = document.getElementById("live-s1-divida");
-        const elS1Meta = document.getElementById("live-s1-meta");
-        const elS1Imp = document.getElementById("live-s1-impacto");
-        if (elS1Cont) elS1Cont.textContent = `${fmtInt(totCont)} contratos`;
-        if (elS1Div) elS1Div.textContent = `${(totDiv/1e9).toFixed(2)} Bilhões ECV`;
-        if (elS1Meta) elS1Meta.textContent = `+${(totalImpacto/1e9).toFixed(2)} Bilhão ECV`;
-        if (elS1Imp) elS1Imp.textContent = `+${fmtECV(totalImpacto)}`;
-
-        // Atualizar Slide 2 (KPIs Centrais)
-        const elS2Div = document.getElementById("live-s2-divida");
-        const elS2DivSub = document.getElementById("live-s2-divida-sub");
-        const elS2Crit = document.getElementById("live-s2-critica");
-        const elS2CritSub = document.getElementById("live-s2-critica-sub");
-        const elS2Cob = document.getElementById("live-s2-cobrado");
-        const elS2CobSub = document.getElementById("live-s2-cobrado-sub");
-        const elS2Pnt = document.getElementById("live-s2-pnt");
-        const elS2PntSub = document.getElementById("live-s2-pnt-sub");
-        const elS2Ant = document.getElementById("live-s2-antigos");
-
-        if (elS2Div) elS2Div.textContent = `${(totDiv/1e9).toFixed(2)} B ECV`;
-        if (elS2DivSub) elS2DivSub.innerHTML = `<strong>${fmtInt(totFat)} faturas em mora</strong> em ${fmtInt(totCont)} contratos`;
-        if (elS2Crit) elS2Crit.textContent = `${(semPagDiv/1e9).toFixed(2)} B ECV`;
-        if (elS2CritSub) elS2CritSub.innerHTML = `<strong>${pctCritica}% da dívida</strong> em ${fmtInt(qtdSemPag)} clientes sem amortizar 2026`;
-        if (elS2Cob) elS2Cob.textContent = `${(cobTotal/1e9).toFixed(2)} B ECV`;
-        if (elS2CobSub) elS2CobSub.innerHTML = `Cobrado em 2026 através de <strong>${fmtInt(qtdAmort)} pagadores</strong> (Taxa: <strong>${taxaAtual}%</strong>)`;
-        if (elS2Pnt) elS2Pnt.textContent = `${(perdaEcvAno/1e6).toFixed(0)} M ECV/ano`;
-        if (elS2PntSub) elS2PntSub.innerHTML = `<strong>${fmtInt(qtdDesvio)} contratos</strong> c/ desvio (~${fmtInt(mwhDesvMes)} MWh/mês desviados)`;
-        if (elS2Ant) elS2Ant.textContent = `${fmtInt(contAntigos)} Med.`;
-
-        // Atualizar Slide 5 (Tabela de Impacto)
-        const elTGov = document.getElementById("live-t-gov");
-        const elTGrandes = document.getElementById("live-t-grandes");
-        const elTPnt = document.getElementById("live-t-pnt");
-        const elTAntigos = document.getElementById("live-t-antigos");
-        const elTTotal = document.getElementById("live-t-total");
-        const elTMensal = document.getElementById("live-t-mensal");
-        const elTTaxa = document.getElementById("live-t-taxa-texto");
-
-        if (elTGov) elTGov.textContent = `+${fmtECV(impGov)}`;
-        if (elTGrandes) elTGrandes.textContent = `+${fmtECV(impGrandes)}`;
-        if (elTPnt) elTPnt.textContent = `+${fmtECV(impPnt)}`;
-        if (elTAntigos) elTAntigos.textContent = `+${fmtECV(impAntigos)}`;
-        if (elTTotal) elTTotal.textContent = `+${fmtECV(totalImpacto)}`;
-        if (elTMensal) elTMensal.textContent = `~${fmtECV(impactoMensal)}/mês`;
-        if (elTTaxa) elTTaxa.innerHTML = `Atual: <strong>${taxaAtual}%</strong> ➔ Meta pós-Plano: <strong style="color:#34D399;">${novaTaxa}% (+${(novaTaxa - taxaAtual).toFixed(1)} p.p.)</strong>`;
-
-        if (pill) {
-          pill.innerHTML = `🟢 AO VIVO: SUPABASE (${new Date().toLocaleTimeString('pt-PT').slice(0,5)})`;
-          pill.title = "Dados sincronizados diretamente da base da EDEC (contratos_santiago).";
-        }
-      } catch (err) {
-        console.warn("Aviso na sincronização ao vivo:", err);
-        if (pill) {
-          pill.innerHTML = "⚪ DADOS HISTÓRICOS (OFFLINE)";
-          pill.style.color = "var(--text-muted)";
-          pill.style.borderColor = "var(--border-dim)";
-        }
-      }
-    }
-
-    // Disparar sincronização ao vivo ao carregar a página
-    window.addEventListener("DOMContentLoaded", () => {
-      sincronizarDadosAoVivo();
-    });
-
-  </script>
+    </script>
 </body>
 </html>
