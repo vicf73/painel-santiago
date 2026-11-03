@@ -4,73 +4,111 @@
   <script>
     (function() {
       try {
-        var t = localStorage.getItem('santiago_theme') || 'dark';
+        var t = localStorage.getItem('santiago_theme') || 'light';
         document.documentElement.setAttribute('data-theme', t);
       } catch(e) {}
     })();
   </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EDEC • Centro de Comando e Telemetria Comercial — Santiago</title>
+  <title>EDEC • Painel Analítico Comercial Santiago — Padrão Tableau Public</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    :root, [data-theme="dark"] {
-      --bg-void: #070A0F;
-      --bg-panel: #0D131D;
-      --bg-panel-elevated: #131C2B;
-      --bg-input: #090E16;
-      --border-dim: #1E293B;
-      --border-bright: #334155;
-      --text-primary: #F1F5F9;
-      --text-secondary: #94A3B8;
-      --text-muted: #64748B;
-      --accent-amber: #F59E0B;
-      --accent-amber-glow: rgba(245, 158, 11, 0.14);
-      --accent-cyan: #06B6D4;
-      --accent-cyan-glow: rgba(6, 182, 212, 0.14);
-      --accent-red: #EF4444;
-      --accent-red-glow: rgba(239, 68, 68, 0.15);
-      --accent-emerald: #10B981;
-      --accent-purple: #A855F7;
-      --accent-purple-glow: rgba(168, 85, 247, 0.15);
-      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
-      --topbar-bg: rgba(13, 19, 29, 0.92);
-      --table-th-bg: #111927;
-      --table-hover: rgba(6, 182, 212, 0.08);
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-sans: 'IBM Plex Sans', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    [data-theme="light"] {
-      --bg-void: #F8FAFC;
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+    /* =========================================================================
+       TABLEAU PUBLIC DESIGN SYSTEM — THEME VARIABLES & FOUNDATION
+       ========================================================================= */
+    :root, [data-theme="light"] {
+      /* Tableau Public Canvas & Surfaces */
+      --bg-void: #F4F6F9;
       --bg-panel: #FFFFFF;
-      --bg-panel-elevated: #F1F5F9;
+      --bg-panel-elevated: #F8FAFC;
       --bg-input: #FFFFFF;
       --border-dim: #E2E8F0;
       --border-bright: #CBD5E1;
-      --text-primary: #0F172A;
+      --text-primary: #1E293B;
       --text-secondary: #475569;
       --text-muted: #64748B;
-      --accent-amber: #D97706;
-      --accent-amber-glow: rgba(217, 119, 6, 0.12);
-      --accent-cyan: #0284C7;
-      --accent-cyan-glow: rgba(2, 132, 199, 0.12);
-      --accent-red: #DC2626;
-      --accent-red-glow: rgba(220, 38, 38, 0.12);
-      --accent-emerald: #059669;
-      --accent-purple: #7C3AED;
-      --accent-purple-glow: rgba(124, 58, 237, 0.12);
-      --card-shadow: 0 2px 8px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
-      --topbar-bg: rgba(255, 255, 255, 0.95);
-      --table-th-bg: #F1F5F9;
-      --table-hover: #F0FDF4;
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-sans: 'IBM Plex Sans', sans-serif;
+
+      /* Tableau 10 Official Palette */
+      --tableau-blue: #4E79A7;
+      --tableau-orange: #F28E2B;
+      --tableau-red: #E15759;
+      --tableau-teal: #76B7B2;
+      --tableau-green: #59A14F;
+      --tableau-yellow: #EDC948;
+      --tableau-purple: #B07AA1;
+      --tableau-pink: #FF9DA7;
+      --tableau-brown: #9C755F;
+      --tableau-gray: #BAB0AC;
+
+      /* Mapped System Accents (Tableau 10) */
+      --accent-cyan: #4E79A7;         /* Tableau Blue: contratos, foco, abas */
+      --accent-cyan-glow: rgba(78, 121, 167, 0.12);
+      --accent-amber: #F28E2B;        /* Tableau Orange: dívida, atenção */
+      --accent-amber-glow: rgba(242, 142, 43, 0.12);
+      --accent-red: #E15759;          /* Tableau Red: risco crítico, fraudes */
+      --accent-red-glow: rgba(225, 87, 89, 0.12);
+      --accent-emerald: #59A14F;      /* Tableau Green: regularizados, OK */
+      --accent-emerald-glow: rgba(89, 161, 79, 0.12);
+      --accent-purple: #B07AA1;       /* Tableau Purple: jurídico CF1 */
+      --accent-purple-glow: rgba(176, 122, 161, 0.12);
+
+      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --topbar-bg: #FFFFFF;
+      --table-th-bg: #F8FAFC;
+      --table-hover: #F0F7FF;
+
+      --font-display: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      /* Tableau Dark Theme (Charcoal / Slate BI) */
+      --bg-void: #0F172A;
+      --bg-panel: #1E293B;
+      --bg-panel-elevated: #273549;
+      --bg-input: #0F172A;
+      --border-dim: #334155;
+      --border-bright: #475569;
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+
+      --tableau-blue: #60A5FA;
+      --tableau-orange: #FB923C;
+      --tableau-red: #F87171;
+      --tableau-teal: #2DD4BF;
+      --tableau-green: #4ADE80;
+      --tableau-yellow: #FACC15;
+      --tableau-purple: #C084FC;
+
+      --accent-cyan: #38BDF8;
+      --accent-cyan-glow: rgba(56, 189, 248, 0.15);
+      --accent-amber: #FB923C;
+      --accent-amber-glow: rgba(251, 146, 60, 0.15);
+      --accent-red: #F87171;
+      --accent-red-glow: rgba(248, 113, 113, 0.15);
+      --accent-emerald: #4ADE80;
+      --accent-emerald-glow: rgba(74, 222, 128, 0.15);
+      --accent-purple: #C084FC;
+      --accent-purple-glow: rgba(192, 132, 252, 0.15);
+
+      --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
+      --topbar-bg: #1E293B;
+      --table-th-bg: #182234;
+      --table-hover: rgba(56, 189, 248, 0.08);
+
+      --font-display: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
@@ -80,143 +118,6 @@
     ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-    /* REFINAMENTOS DE TEMA CLARO */
-    [data-theme="light"] body {
-      background-color: var(--bg-void);
-      background-image:
-        radial-gradient(circle at 12% 0%, rgba(2, 132, 199, 0.04), transparent 35%),
-        radial-gradient(circle at 88% 0%, rgba(217, 119, 6, 0.04), transparent 35%),
-        linear-gradient(rgba(203, 213, 225, 0.4) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(203, 213, 225, 0.4) 1px, transparent 1px);
-      color: var(--text-primary);
-    }
-    [data-theme="light"] .scada-topbar {
-      background: var(--topbar-bg);
-      border-bottom: 1px solid var(--border-dim);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-    }
-    [data-theme="light"] .panel-box,
-    [data-theme="light"] .kpi-card,
-    [data-theme="light"] .filter-box,
-    [data-theme="light"] .table-container,
-    [data-theme="light"] .action-card,
-    [data-theme="light"] .pnt-diagnostic-panel,
-    [data-theme="light"] .pt-router-box,
-    [data-theme="light"] .sim-card {
-      box-shadow: var(--card-shadow);
-      border: 1px solid var(--border-dim);
-    }
-    [data-theme="light"] table.scada-table thead th {
-      background: var(--table-th-bg);
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border-bright);
-    }
-    [data-theme="light"] table.scada-table tbody tr {
-      border-bottom: 1px solid var(--border-dim);
-    }
-    [data-theme="light"] table.scada-table tbody tr:hover {
-      background: var(--table-hover);
-    }
-    [data-theme="light"] .btn {
-      background: #FFFFFF;
-      border-color: var(--border-bright);
-      color: var(--text-primary);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    }
-    [data-theme="light"] .btn:hover {
-      background: #F8FAFC;
-      border-color: var(--accent-cyan);
-      color: var(--accent-cyan);
-    }
-    [data-theme="light"] .btn-amber {
-      background: linear-gradient(135deg, #F59E0B, #D97706);
-      color: #070A0F;
-      border-color: #FBBF24;
-    }
-    [data-theme="light"] .input-ctrl, [data-theme="light"] .select-ctrl {
-      background: #FFFFFF;
-      border-color: var(--border-bright);
-      color: var(--text-primary);
-    }
-    [data-theme="light"] .status-pill {
-      background: #FFFFFF;
-      border-color: var(--border-dim);
-      color: var(--text-secondary);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-    }
-    [data-theme="light"] .rank-item {
-      background: #FFFFFF;
-      border-color: var(--border-dim);
-    }
-    [data-theme="light"] .rank-item:hover, [data-theme="light"] .rank-item.active {
-      background: #FEF3C7;
-      border-color: var(--accent-amber);
-    }
-    [data-theme="light"] .rank-bar-track {
-      background: #E2E8F0;
-    }
-    [data-theme="light"] .dossier-drawer {
-      background: #FFFFFF;
-      box-shadow: -8px 0 30px rgba(15, 23, 42, 0.15);
-      border-left: 1px solid var(--border-dim);
-    }
-    [data-theme="light"] .drawer-header {
-      background: #F8FAFC;
-      border-bottom: 1px solid var(--border-dim);
-    }
-    [data-theme="light"] .dossier-section {
-      background: #F8FAFC;
-      border: 1px solid var(--border-dim);
-    }
-    [data-theme="light"] #modal-ordem-piquete > div {
-      background: #FFFFFF !important;
-      border: 1px solid var(--border-bright) !important;
-      color: #0F172A !important;
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2) !important;
-    }
-    [data-theme="light"] #santiago-map {
-      background: #E2E8F0;
-    }
-
-    /* THEME SWITCH CONTROL */
-    .theme-switch-wrap {
-      display: inline-flex;
-      align-items: center;
-      background: var(--bg-input);
-      border: 1px solid var(--border-dim);
-      border-radius: 20px;
-      padding: 2px;
-      gap: 2px;
-    }
-    .theme-toggle-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 16px;
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .theme-toggle-btn:hover {
-      color: var(--text-primary);
-    }
-    .theme-toggle-btn.active {
-      background: var(--accent-amber);
-      color: #070A0F;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    }
-    [data-theme="light"] .theme-toggle-btn.active {
-      background: #0F172A;
-      color: #FFFFFF;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -225,109 +126,131 @@
 
     body {
       background-color: var(--bg-void);
-      background-image:
-        radial-gradient(circle at 12% 0%, rgba(6, 182, 212, 0.08), transparent 35%),
-        radial-gradient(circle at 88% 0%, rgba(245, 158, 11, 0.07), transparent 35%),
-        linear-gradient(rgba(30, 41, 59, 0.18) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(30, 41, 59, 0.18) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
       color: var(--text-primary);
       font-family: var(--font-sans);
       font-size: 13.5px;
       line-height: 1.45;
       min-height: 100vh;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP SCADA BAR */
+    /* TOP TABLEAU PUBLIC TOOLBAR */
     .scada-topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 22px;
-      background: rgba(13, 19, 29, 0.92);
-      backdrop-filter: blur(12px);
+      padding: 10px 22px;
+      background: var(--topbar-bg);
       border-bottom: 1px solid var(--border-dim);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
       position: sticky;
       top: 0;
       z-index: 1000;
+      backdrop-filter: blur(8px);
     }
 
     .brand-cluster {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
 
+    /* Tableau 4-Color Cross Logo Emblem */
     .brand-emblem {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 6px;
-      background: linear-gradient(135deg, var(--accent-amber), #D97706);
+      background: #FFFFFF;
+      border: 1px solid var(--border-bright);
       display: grid;
       place-items: center;
-      color: #070A0F;
-      font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 16px;
-      box-shadow: 0 0 18px rgba(245, 158, 11, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
     }
+    [data-theme="dark"] .brand-emblem {
+      background: #0F172A;
+      border-color: #334155;
+    }
+
+    .tableau-cross-logo {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 2px;
+      align-items: center;
+      justify-items: center;
+    }
+    .t-mark { border-radius: 1px; }
+    .t-mark.t-c { width: 6px; height: 6px; background: #E15759; }
+    .t-mark.t-t { width: 5px; height: 5px; background: #4E79A7; }
+    .t-mark.t-b { width: 5px; height: 5px; background: #59A14F; }
+    .t-mark.t-l { width: 5px; height: 5px; background: #F28E2B; }
+    .t-mark.t-r { width: 5px; height: 5px; background: #76B7B2; }
 
     .brand-titles h1 {
       font-family: var(--font-display);
-      font-size: 17px;
+      font-size: 15.5px;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
       color: var(--text-primary);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .brand-tag {
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       font-size: 10.5px;
-      padding: 2px 7px;
-      border-radius: 3px;
-      background: var(--accent-amber-glow);
-      color: var(--accent-amber);
-      border: 1px solid rgba(245, 158, 11, 0.35);
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #EBF5FB;
+      color: #2B6CB0;
+      border: 1px solid #BEE3F8;
+      letter-spacing: 0.02em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+    }
+    [data-theme="dark"] .brand-tag {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38BDF8;
+      border-color: rgba(56, 189, 248, 0.3);
     }
 
     .brand-titles p {
       font-size: 11.5px;
-      color: var(--text-secondary);
-      font-family: var(--font-mono);
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      margin-top: 1px;
     }
 
     .telemetry-status {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .status-pill {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      background: var(--bg-input);
+      gap: 7px;
+      padding: 5px 11px;
+      background: var(--bg-panel-elevated);
       border: 1px solid var(--border-dim);
       border-radius: 4px;
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       font-size: 11.5px;
       color: var(--text-secondary);
     }
 
     .pulse-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: var(--accent-emerald);
-      box-shadow: 0 0 10px var(--accent-emerald);
+      box-shadow: 0 0 6px var(--accent-emerald);
       animation: pulse 2s infinite;
     }
 
@@ -336,43 +259,93 @@
       50% { opacity: 0.45; transform: scale(0.88); }
     }
 
+    /* TABLEAU BUTTONS */
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 7px 14px;
+      gap: 6px;
+      padding: 6px 13px;
       border-radius: 4px;
       font-family: var(--font-sans);
-      font-weight: 600;
-      font-size: 12.5px;
+      font-weight: 500;
+      font-size: 12px;
       cursor: pointer;
       transition: all 0.15s ease;
       border: 1px solid var(--border-bright);
-      background: var(--bg-panel-elevated);
+      background: #FFFFFF;
       color: var(--text-primary);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
-
+    [data-theme="dark"] .btn {
+      background: #1E293B;
+      border-color: #475569;
+    }
     .btn:hover {
       border-color: var(--accent-cyan);
-      color: #fff;
+      color: var(--accent-cyan);
+      background: #F8FAFC;
       transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    [data-theme="dark"] .btn:hover {
+      background: #334155;
+      color: #38BDF8;
     }
 
     .btn-amber {
-      background: linear-gradient(135deg, #F59E0B, #D97706);
-      color: #070A0F;
-      border-color: #FBBF24;
-      font-weight: 700;
+      background: var(--accent-amber);
+      color: #FFFFFF !important;
+      border-color: #D97706;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(242, 142, 43, 0.3);
     }
-
     .btn-amber:hover {
-      background: linear-gradient(135deg, #FBBF24, #F59E0B);
-      color: #070A0F;
-      border-color: #FDE68A;
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+      background: #D97706;
+      border-color: #B45309;
+      color: #FFFFFF !important;
+      box-shadow: 0 2px 6px rgba(242, 142, 43, 0.4);
     }
 
-    /* MAIN CONTAINER */
+    /* THEME SWITCH CONTROL */
+    .theme-switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bg-void);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .theme-toggle-btn:hover {
+      color: var(--text-primary);
+    }
+    .theme-toggle-btn.active {
+      background: var(--bg-panel);
+      color: var(--accent-cyan);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+    [data-theme="dark"] .theme-toggle-btn.active {
+      background: #334155;
+      color: #38BDF8;
+    }
+
+    /* WORKSPACE */
     .workspace {
       padding: 16px 22px 32px;
       max-width: 1920px;
@@ -382,24 +355,108 @@
       gap: 16px;
     }
 
-    /* KPI TELEMETRY STRIP (8 CARDS IN 4x2 OR AUTO GRID) */
+    /* TABLEAU WORKBOOK TABS (MODULE NAVIGATION) */
+    .module-nav {
+      background: #EBF0F5;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px 6px 0 0;
+      padding: 6px 8px 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #CBD5E1;
+    }
+    [data-theme="dark"] .module-nav {
+      background: #182234;
+      border-color: #334155;
+      border-bottom-color: #334155;
+    }
+    .module-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .mod-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 5px 5px 0 0;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 13px;
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid transparent;
+      border-bottom: none;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      white-space: nowrap;
+      margin-bottom: -2px;
+    }
+    .mod-tab-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.6);
+    }
+    [data-theme="dark"] .mod-tab-btn:hover {
+      background: rgba(51, 65, 85, 0.5);
+    }
+    .mod-tab-btn.active {
+      color: #0F172A;
+      background: var(--bg-panel);
+      border: 1px solid #CBD5E1;
+      border-top: 3.5px solid #4E79A7;
+      border-bottom: 2px solid var(--bg-panel);
+      font-weight: 600;
+      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.03);
+      z-index: 2;
+    }
+    [data-theme="dark"] .mod-tab-btn.active {
+      color: #F8FAFC;
+      background: #1E293B;
+      border-color: #334155;
+      border-top: 3.5px solid #60A5FA;
+      border-bottom-color: #1E293B;
+    }
+    .mod-pill-soon {
+      font-family: var(--font-sans);
+      font-size: 9.5px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #E2E8F0;
+      color: #64748B;
+      text-transform: uppercase;
+    }
+    [data-theme="dark"] .mod-pill-soon {
+      background: #334155;
+      color: #94A3B8;
+    }
+
+    /* KPI TELEMETRY STRIP (TABLEAU BANS) */
     .kpi-strip {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
-
     .kpi-card {
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
-      border-top: 2px solid var(--border-bright);
+      border-top: 3.5px solid var(--accent-cyan);
       border-radius: 6px;
-      padding: 12px 15px;
+      padding: 12px 16px;
+      box-shadow: var(--card-shadow);
       position: relative;
       overflow: hidden;
-      transition: border-color 0.2s;
+      transition: all 0.2s ease;
     }
-
+    .kpi-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-1px);
+    }
     .kpi-card.amber { border-top-color: var(--accent-amber); }
     .kpi-card.cyan { border-top-color: var(--accent-cyan); }
     .kpi-card.red { border-top-color: var(--accent-red); }
@@ -407,105 +464,99 @@
     .kpi-card.purple { border-top-color: var(--accent-purple); }
 
     .kpi-label {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .kpi-value {
-      font-family: var(--font-mono);
-      font-size: 20px;
+      font-family: var(--font-sans);
+      font-size: 23px;
       font-weight: 700;
+      letter-spacing: -0.02em;
       color: var(--text-primary);
-      letter-spacing: -0.03em;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-
-    .kpi-card.amber .kpi-value { color: #FBBF24; }
-    .kpi-card.red .kpi-value { color: #F87171; }
-    .kpi-card.cyan .kpi-value { color: #22D3EE; }
-    .kpi-card.emerald .kpi-value { color: #34D399; }
-    .kpi-card.purple .kpi-value { color: #C084FC; }
+    .kpi-card.cyan .kpi-value { color: var(--accent-cyan); }
+    .kpi-card.amber .kpi-value { color: var(--accent-amber); }
+    .kpi-card.red .kpi-value { color: var(--accent-red); }
+    .kpi-card.emerald .kpi-value { color: var(--accent-emerald); }
+    .kpi-card.purple .kpi-value { color: var(--accent-purple); }
 
     .kpi-sub {
       margin-top: 4px;
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--text-muted);
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* COMMAND FILTER BAR */
+    /* COMMAND FILTER BAR (TABLEAU FILTER SHELF) */
     .command-bar {
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
-      padding: 14px 16px;
+      padding: 14px 18px;
+      box-shadow: var(--card-shadow);
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-
     .filter-row-top {
       display: grid;
       grid-template-columns: 1.8fr repeat(6, 1fr) auto;
       gap: 10px;
       align-items: end;
     }
-
     .filter-row-bottom {
       display: grid;
       grid-template-columns: repeat(6, 1fr) 1.8fr auto;
       gap: 10px;
       align-items: end;
-      padding-top: 8px;
-      border-top: 1px dashed rgba(51, 65, 85, 0.5);
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-dim);
     }
-
     .field-group {
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-
     .field-group label {
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       font-size: 10.5px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.03em;
       color: var(--text-secondary);
     }
-
     .input-ctrl, .select-ctrl {
       width: 100%;
-      padding: 7px 10px;
+      padding: 6px 10px;
       background: var(--bg-input);
-      border: 1px solid var(--border-dim);
+      border: 1px solid var(--border-bright);
       border-radius: 4px;
       color: var(--text-primary);
       font-family: var(--font-sans);
       font-size: 12.5px;
       outline: none;
-      transition: border-color 0.15s;
+      transition: all 0.15s ease;
     }
-
     .input-ctrl.mono {
       font-family: var(--font-mono);
     }
-
     .input-ctrl:focus, .select-ctrl:focus {
       border-color: var(--accent-cyan);
-      box-shadow: 0 0 0 2px var(--accent-cyan-glow);
+      box-shadow: 0 0 0 3px var(--accent-cyan-glow);
     }
 
     /* MIDDLE ANALYTICS & MAP GRID */
@@ -514,16 +565,15 @@
       grid-template-columns: 1.6fr 1fr 1fr;
       gap: 14px;
     }
-
     .panel-box {
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
+      box-shadow: var(--card-shadow);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-
     .panel-header {
       padding: 10px 14px;
       background: var(--bg-panel-elevated);
@@ -532,33 +582,38 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .panel-title {
       font-family: var(--font-display);
-      font-size: 13.5px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 600;
       color: var(--text-primary);
       display: flex;
       align-items: center;
       gap: 8px;
     }
-
     .panel-badge {
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       font-size: 11px;
+      font-weight: 600;
       padding: 2px 8px;
-      border-radius: 3px;
-      background: var(--bg-input);
-      color: var(--accent-cyan);
-      border: 1px solid var(--border-dim);
+      border-radius: 4px;
+      background: #EBF5FB;
+      color: #2B6CB0;
+      border: 1px solid #BEE3F8;
     }
-
+    [data-theme="dark"] .panel-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38BDF8;
+      border-color: rgba(56, 189, 248, 0.3);
+    }
     #santiago-map {
       width: 100%;
       height: 315px;
-      background: #05080d;
+      background: #E2E8F0;
     }
-
+    [data-theme="dark"] #santiago-map {
+      background: #0F172A;
+    }
     .ranking-list {
       padding: 10px 12px;
       display: flex;
@@ -567,131 +622,157 @@
       max-height: 315px;
       overflow-y: auto;
     }
-
     .rank-item {
       padding: 8px 10px;
-      background: var(--bg-input);
+      background: var(--bg-panel-elevated);
       border: 1px solid var(--border-dim);
       border-radius: 4px;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
     }
-
     .rank-item:hover, .rank-item.active {
-      border-color: var(--accent-amber);
-      background: rgba(245, 158, 11, 0.06);
+      border-color: var(--accent-cyan);
+      background: #EBF5FB;
     }
-
+    [data-theme="dark"] .rank-item:hover, [data-theme="dark"] .rank-item.active {
+      background: #273549;
+      border-color: #60A5FA;
+    }
     .rank-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-weight: 600;
-      font-size: 12.5px;
+      font-size: 12px;
       margin-bottom: 4px;
     }
-
     .rank-metrics {
       display: flex;
       justify-content: space-between;
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       font-size: 11px;
       color: var(--text-secondary);
       margin-bottom: 5px;
       flex-wrap: wrap;
       gap: 4px;
     }
-
     .rank-bar-track {
-      height: 4px;
-      background: #1E293B;
-      border-radius: 2px;
+      height: 5px;
+      background: #E2E8F0;
+      border-radius: 3px;
       overflow: hidden;
     }
-
+    [data-theme="dark"] .rank-bar-track {
+      background: #334155;
+    }
     .rank-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-amber));
+      background: var(--accent-cyan);
+      border-radius: 3px;
     }
 
-    /* DATA TABLE */
+    /* DATA TABLE (TABLEAU WORKSHEET VIEW) */
     .table-container {
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
+      box-shadow: var(--card-shadow);
       overflow: hidden;
     }
-
     .table-scroll {
       overflow-x: auto;
       max-height: 600px;
       overflow-y: auto;
     }
-
     table.scada-table {
       width: 100%;
       border-collapse: collapse;
       text-align: left;
       font-size: 12.5px;
     }
-
     table.scada-table thead th {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: #111927;
+      background: var(--table-th-bg);
       color: var(--text-secondary);
-      font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 10px 10px;
-      border-bottom: 1px solid var(--border-bright);
+      letter-spacing: 0.03em;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--border-bright);
       white-space: nowrap;
     }
-
     table.scada-table tbody tr {
-      border-bottom: 1px solid rgba(30, 41, 59, 0.65);
+      border-bottom: 1px solid var(--border-dim);
       cursor: pointer;
-      transition: background 0.12s;
+      transition: background 0.12s ease;
+      background: var(--bg-panel);
     }
-
+    table.scada-table tbody tr:nth-child(even) {
+      background: var(--bg-panel-elevated);
+    }
     table.scada-table tbody tr:hover {
-      background: rgba(6, 182, 212, 0.08);
+      background: var(--table-hover) !important;
     }
-
     table.scada-table td {
-      padding: 8px 10px;
+      padding: 8px 12px;
       white-space: nowrap;
       max-width: 230px;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--text-primary);
     }
-
     .mono-cell {
       font-family: var(--font-mono);
       font-size: 12px;
     }
-
     .num-right {
       text-align: right;
       font-family: var(--font-mono);
     }
 
+    /* TABLEAU PASTEL STATUS BADGES */
     .badge {
       display: inline-block;
-      padding: 2px 7px;
-      border-radius: 3px;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--font-sans);
+      font-size: 11px;
       font-weight: 600;
     }
-
-    .badge-ok { background: rgba(16, 185, 129, 0.14); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .badge-warn { background: var(--accent-amber-glow); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.35); }
-    .badge-danger { background: var(--accent-red-glow); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.35); }
-    .badge-info { background: var(--accent-cyan-glow); color: #22D3EE; border: 1px solid rgba(6, 182, 212, 0.35); }
-    .badge-purple { background: var(--accent-purple-glow); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.35); }
+    .badge-ok {
+      background: #DEF7EC;
+      color: #03543F;
+      border: 1px solid #84E1BC;
+    }
+    .badge-warn {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+    .badge-danger {
+      background: #FDE8E8;
+      color: #9B1C1C;
+      border: 1px solid #F8B4B4;
+    }
+    .badge-info {
+      background: #E1EFFE;
+      color: #1E429F;
+      border: 1px solid #A4CAFE;
+    }
+    .badge-purple {
+      background: #EDEBFE;
+      color: #5521B5;
+      border: 1px solid #CABFFD;
+    }
+    [data-theme="dark"] .badge-ok { background: rgba(74, 222, 128, 0.15); color: #4ADE80; border: 1px solid rgba(74, 222, 128, 0.3); }
+    [data-theme="dark"] .badge-warn { background: rgba(251, 146, 60, 0.15); color: #FB923C; border: 1px solid rgba(251, 146, 60, 0.3); }
+    [data-theme="dark"] .badge-danger { background: rgba(248, 113, 113, 0.15); color: #F87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+    [data-theme="dark"] .badge-info { background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); }
+    [data-theme="dark"] .badge-purple { background: rgba(192, 132, 252, 0.15); color: #C084FC; border: 1px solid rgba(192, 132, 252, 0.3); }
 
     .pagination-bar {
       padding: 10px 16px;
@@ -700,17 +781,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       font-size: 12px;
+      color: var(--text-secondary);
     }
 
-    
     /* PNT DIAGNOSTIC PANEL (MODULO 1) */
     .pnt-diag-box {
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
-      padding: 14px 16px;
+      box-shadow: var(--card-shadow);
+      padding: 14px 18px;
       margin-bottom: 16px;
     }
     .pnt-cards-grid {
@@ -720,39 +802,40 @@
       margin-top: 12px;
     }
     .pnt-pattern-card {
-      background: var(--bg-input);
+      background: var(--bg-panel);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
       padding: 12px 14px;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.18s ease;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
     .pnt-pattern-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--card-shadow-hover);
     }
     .pnt-pattern-card.active {
-      box-shadow: 0 0 0 2px var(--accent-amber), 0 8px 24px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 0 0 2px var(--accent-cyan), 0 4px 12px rgba(78, 121, 167, 0.15);
+      background: #F8FAFC;
     }
-    .pnt-pattern-card.pattern-bypass { border-left: 4px solid #EF4444; }
-    .pnt-pattern-card.pattern-bypass:hover { border-color: #EF4444; }
-    .pnt-pattern-card.pattern-meter { border-left: 4px solid #F59E0B; }
-    .pnt-pattern-card.pattern-meter:hover { border-color: #F59E0B; }
-    .pnt-pattern-card.pattern-blind { border-left: 4px solid #6366F1; }
-    .pnt-pattern-card.pattern-blind:hover { border-color: #6366F1; }
-    .pnt-pattern-card.pattern-cf1 { border-left: 4px solid #A855F7; }
-    .pnt-pattern-card.pattern-cf1:hover { border-color: #A855F7; }
+    [data-theme="dark"] .pnt-pattern-card.active {
+      background: #273549;
+    }
+    .pnt-pattern-card.pattern-bypass { border-left: 4px solid #E15759; }
+    .pnt-pattern-card.pattern-meter { border-left: 4px solid #F28E2B; }
+    .pnt-pattern-card.pattern-blind { border-left: 4px solid #4E79A7; }
+    .pnt-pattern-card.pattern-cf1 { border-left: 4px solid #B07AA1; }
 
     .pnt-tag {
-      font-family: var(--font-mono);
+      font-family: var(--font-sans);
       font-size: 10px;
       font-weight: 700;
       padding: 2px 6px;
       border-radius: 3px;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.03em;
     }
     .pnt-title {
       font-family: var(--font-display);
@@ -763,7 +846,7 @@
       margin-bottom: 4px;
     }
     .pnt-desc {
-      font-size: 11px;
+      font-size: 11.5px;
       color: var(--text-secondary);
       line-height: 1.4;
       margin-bottom: 10px;
@@ -773,14 +856,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-family: var(--font-sans);
+      font-size: 11px;
       border-top: 1px dashed var(--border-dim);
       padding-top: 8px;
     }
     .pnt-btn-action {
       font-weight: 600;
-      color: var(--accent-amber);
+      color: var(--accent-cyan);
     }
     @media (max-width: 1100px) {
       .pnt-cards-grid { grid-template-columns: repeat(2, 1fr); }
@@ -792,7 +875,7 @@
     /* ACTION MATRIX CARDS (MODULO 3) */
     .action-matrix-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 12px;
       margin-bottom: 18px;
     }
@@ -800,27 +883,61 @@
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
+      box-shadow: var(--card-shadow);
       padding: 13px 15px;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.18s ease;
       position: relative;
       overflow: hidden;
     }
     .action-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--card-shadow-hover);
     }
     .action-card.active {
-      box-shadow: 0 0 0 2px var(--accent-amber), 0 8px 24px rgba(245, 158, 11, 0.25);
+      box-shadow: 0 0 0 2px var(--accent-cyan), 0 6px 16px rgba(78, 121, 167, 0.15);
+      background: #F8FAFC;
     }
-    .action-card.action-cut { border-left: 4px solid #EF4444; }
-    .action-card.action-cut:hover { border-color: #EF4444; }
-    .action-card.action-fraud { border-left: 4px solid #F59E0B; }
-    .action-card.action-fraud:hover { border-color: #F59E0B; }
-    .action-card.action-gov { border-left: 4px solid #6366F1; }
-    .action-card.action-gov:hover { border-color: #6366F1; }
-    .action-card.action-deal { border-left: 4px solid #10B981; }
-    .action-card.action-deal:hover { border-color: #10B981; }
+    [data-theme="dark"] .action-card.active {
+      background: #273549;
+    }
+    .action-card.action-cut { border-left: 4px solid #E15759; }
+    .action-card.action-fraud { border-left: 4px solid #F28E2B; }
+    .action-card.action-gov { border-left: 4px solid #4E79A7; }
+    .action-card.action-deal { border-left: 4px solid #59A14F; }
+    .action-card.action-water { border-left: 4px solid #76B7B2; }
+
+    .btn-prod-pill {
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-bright);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+    [data-theme="dark"] .btn-prod-pill {
+      background: #1E293B;
+    }
+    .btn-prod-pill:hover {
+      color: var(--text-primary);
+      border-color: var(--accent-cyan);
+    }
+    .btn-prod-pill.active {
+      background: var(--accent-cyan);
+      color: #FFFFFF;
+      font-weight: 600;
+      border-color: var(--accent-cyan);
+    }
+    .btn-prod-pill.active-water {
+      background: #76B7B2 !important;
+      color: #FFFFFF !important;
+      font-weight: 600 !important;
+      border-color: #76B7B2 !important;
+    }
 
     @media (max-width: 1024px) {
       .action-matrix-grid { grid-template-columns: repeat(2, 1fr); }
@@ -829,12 +946,12 @@
       .action-matrix-grid { grid-template-columns: 1fr; }
     }
 
-    
     /* SIMULADOR & ROTEIRIZADOR DE PIQUETE (MODULO 3) */
-    .sim-panel-box {
+    .sim-panel-box, .pt-cluster-box {
       background: var(--bg-panel);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
+      box-shadow: var(--card-shadow);
       padding: 16px 18px;
       margin-bottom: 18px;
     }
@@ -864,28 +981,24 @@
       width: 100%;
       height: 6px;
       border-radius: 3px;
-      background: #1E293B;
+      background: #E2E8F0;
       outline: none;
       -webkit-appearance: none;
       accent-color: var(--accent-amber);
       cursor: pointer;
     }
+    [data-theme="dark"] .sim-range-input {
+      background: #334155;
+    }
     .sim-kpi-result {
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid var(--border-bright);
+      background: var(--bg-panel-elevated);
+      border: 1px solid var(--border-dim);
       border-radius: 6px;
       padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       gap: 12px;
-    }
-    .pt-cluster-box {
-      background: var(--bg-panel);
-      border: 1px solid var(--border-dim);
-      border-radius: 6px;
-      padding: 16px 18px;
-      margin-bottom: 18px;
     }
     .pt-summary-bar {
       display: grid;
@@ -895,17 +1008,17 @@
       margin-bottom: 14px;
     }
     .pt-summary-card {
-      background: var(--bg-input);
+      background: var(--bg-panel-elevated);
       border: 1px solid var(--border-dim);
       border-radius: 4px;
       padding: 10px 12px;
     }
     .pt-summary-card .pt-lbl {
-      font-family: var(--font-mono);
-      font-size: 10px;
+      font-family: var(--font-sans);
+      font-size: 10.5px;
+      font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
     .pt-summary-card .pt-val {
       font-family: var(--font-mono);
@@ -918,6 +1031,7 @@
       .sim-slider-row { grid-template-columns: 1fr; }
       .pt-summary-bar { grid-template-columns: repeat(2, 1fr); }
     }
+
     @media print {
       body * {
         visibility: hidden !important;
@@ -959,17 +1073,15 @@
     .drawer-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(4, 7, 12, 0.72);
-      backdrop-filter: blur(4px);
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(3px);
       z-index: 2000;
       display: none;
       justify-content: flex-end;
     }
-
     .drawer-backdrop.open {
       display: flex;
     }
-
     .dossier-drawer {
       width: 600px;
       max-width: 95vw;
@@ -978,24 +1090,21 @@
       border-left: 1px solid var(--border-bright);
       display: flex;
       flex-direction: column;
-      box-shadow: -16px 0 40px rgba(0, 0, 0, 0.7);
+      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
       animation: slideIn 0.2s ease-out;
     }
-
     @keyframes slideIn {
       from { transform: translateX(100%); }
       to { transform: translateX(0); }
     }
-
     .drawer-header {
       padding: 16px 20px;
       background: var(--bg-panel-elevated);
-      border-bottom: 1px solid var(--border-bright);
+      border-bottom: 1px solid var(--border-dim);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
     }
-
     .drawer-body {
       padding: 18px 20px;
       overflow-y: auto;
@@ -1003,38 +1112,34 @@
       flex-direction: column;
       gap: 16px;
     }
-
     .dossier-section {
-      background: var(--bg-input);
+      background: var(--bg-panel-elevated);
       border: 1px solid var(--border-dim);
       border-radius: 6px;
       padding: 12px 14px;
     }
-
     .dossier-section h4 {
-      font-family: var(--font-mono);
-      font-size: 11px;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
       text-transform: uppercase;
-      color: var(--accent-amber);
-      letter-spacing: 0.06em;
+      color: var(--accent-cyan);
+      letter-spacing: 0.04em;
       margin-bottom: 10px;
       border-bottom: 1px solid var(--border-dim);
       padding-bottom: 5px;
     }
-
     .dossier-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px 14px;
     }
-
     .kv-item .k {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-family: var(--font-sans);
+      font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
     }
-
     .kv-item .v {
       font-family: var(--font-mono);
       font-size: 13px;
@@ -1042,6 +1147,111 @@
       color: var(--text-primary);
       margin-top: 2px;
       word-break: break-word;
+    }
+
+    /* TABLEAU PUBLIC SIGNATURE / FOOTER STRIP */
+    .tableau-footer-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 9px 16px;
+      margin-top: 14px;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      box-shadow: var(--card-shadow);
+    }
+    .tableau-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tableau-badge-mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+      color: #4E79A7;
+    }
+    .tableau-footer-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tableau-footer-btn {
+      padding: 4px 10px;
+      border-radius: 4px;
+      border: 1px solid var(--border-bright);
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    [data-theme="dark"] .tableau-footer-btn {
+      background: #1E293B;
+      border-color: #475569;
+    }
+    .tableau-footer-btn:hover {
+      color: #4E79A7;
+      border-color: #4E79A7;
+      background: #F8FAFC;
+    }
+    [data-theme="dark"] .tableau-footer-btn:hover {
+      background: #334155;
+      color: #60A5FA;
+    }
+
+    /* INLINE OVERRIDES PARA HARMONIA COM TEMA CLARO TABLEAU */
+    [data-theme="light"] div[style*="background:rgba(15,23,42"],
+    [data-theme="light"] div[style*="background:rgba(15, 23, 42"] {
+      background: #F8FAFC !important;
+      border-color: #CBD5E1 !important;
+    }
+    [data-theme="light"] div[style*="background:#0F172A"],
+    [data-theme="light"] div[style*="background: #0F172A"] {
+      background: #FFFFFF !important;
+      border-color: #CBD5E1 !important;
+      color: #1E293B !important;
+    }
+    [data-theme="light"] div[style*="background:#1E293B"],
+    [data-theme="light"] tr[style*="background:#1E293B"] {
+      background: #F8FAFC !important;
+      color: #1E293B !important;
+    }
+    [data-theme="light"] span.badge[style*="background:#1E1B4B"] {
+      background: #EEF2FF !important;
+      color: #4338CA !important;
+      border: 1px solid #C7D2FE !important;
+    }
+    [data-theme="light"] span.badge[style*="background:#131C2B"] {
+      background: #F1F5F9 !important;
+      color: #334155 !important;
+      border: 1px solid #CBD5E1 !important;
+    }
+    [data-theme="light"] span.badge[style*="background:#083344"] {
+      background: #E0F2FE !important;
+      color: #0369A1 !important;
+      border: 1px solid #7DD3FC !important;
+    }
+    [data-theme="light"] span.badge[style*="background:#450A0A"] {
+      background: #FEE2E2 !important;
+      color: #991B1B !important;
+      border: 1px solid #FCA5A5 !important;
+    }
+    [data-theme="light"] span.badge[style*="background:#451A03"] {
+      background: #FEF3C7 !important;
+      color: #92400E !important;
+      border: 1px solid #FCD34D !important;
+    }
+    [data-theme="light"] span.badge[style*="background:#1E293B"] {
+      background: #F1F5F9 !important;
+      color: #475569 !important;
+      border: 1px solid #CBD5E1 !important;
     }
 
     @media (max-width: 1440px) {
@@ -1101,74 +1311,6 @@
       }
     }
 
-    /* MODULE NAVIGATION TABS */
-    .module-nav {
-      background: var(--bg-panel);
-      border: 1px solid var(--border-dim);
-      border-radius: 6px;
-      padding: 6px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .module-tabs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .mod-tab-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: 4px;
-      font-family: var(--font-sans);
-      font-weight: 600;
-      font-size: 12.5px;
-      color: var(--text-secondary);
-      background: transparent;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .mod-tab-btn:hover {
-      color: var(--text-primary);
-      background: var(--bg-panel-elevated);
-      border-color: var(--border-dim);
-    }
-
-    .mod-tab-btn.active {
-      color: #070A0F;
-      background: linear-gradient(135deg, var(--accent-amber), #D97706);
-      border-color: #FBBF24;
-      font-weight: 700;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.28);
-    }
-
-    .mod-pill-soon {
-      font-family: var(--font-mono);
-      font-size: 9.5px;
-      padding: 1px 5px;
-      border-radius: 3px;
-      background: rgba(148, 163, 184, 0.14);
-      color: var(--text-secondary);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      text-transform: uppercase;
-    }
-
-    .mod-tab-btn.active .mod-pill-soon {
-      background: rgba(7, 10, 15, 0.2);
-      color: #070A0F;
-      border-color: rgba(7, 10, 15, 0.35);
-    }
-
     .module-pane {
       display: flex;
       flex-direction: column;
@@ -1198,10 +1340,178 @@
       height: 56px;
       border-radius: 12px;
       background: var(--accent-amber-glow);
-      border: 1px solid rgba(245, 158, 11, 0.4);
+      border: 1px solid rgba(242, 142, 43, 0.4);
       display: grid;
       place-items: center;
       font-size: 26px;
+    }
+
+    /* 3D TILT EFFECT & MICROINTERACTIONS */
+    .kpi-card, .pnt-pattern-card, .action-card {
+      transition: transform 0.12s ease-out, box-shadow 0.15s ease-out;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .rank-bar-fill {
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* MÓDULO 2: 3D TOPOGRAPHIC & PT ENERGY BALANCE */
+    .geo3d-container {
+      display: grid;
+      grid-template-columns: 1.7fr 1fr;
+      gap: 14px;
+    }
+    .canvas-3d-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-3d-viewport {
+      width: 100%;
+      height: 540px;
+      position: relative;
+      background: #090E17;
+      cursor: grab;
+    }
+    .canvas-3d-viewport:active {
+      cursor: grabbing;
+    }
+    .hud-3d-overlay {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .hud-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      font-size: 11px;
+      color: #E2E8F0;
+      font-family: var(--font-sans);
+    }
+    .hud-legend {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 8px 12px;
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: #CBD5E1;
+    }
+    .hud-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hud-legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+    .hud-controls-right {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      z-index: 10;
+      display: flex;
+      gap: 6px;
+    }
+    .btn-hud-action {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-hud-action:hover {
+      background: var(--accent-cyan);
+      color: #FFFFFF;
+      border-color: var(--accent-cyan);
+    }
+
+    /* PT 3D DETAIL SIDEBAR */
+    .pt-detail-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .pt-card-balance {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      box-shadow: var(--card-shadow);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pt-balance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--border-dim);
+      padding-bottom: 10px;
+    }
+    .pt-energy-flow-box {
+      background: var(--bg-panel-elevated);
+      border: 1px solid var(--border-dim);
+      border-radius: 6px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .flow-bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .flow-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+    }
+    .flow-bar-track {
+      height: 8px;
+      border-radius: 4px;
+      background: #E2E8F0;
+      overflow: hidden;
+    }
+    [data-theme="dark"] .flow-bar-track { background: #334155; }
+    .flow-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 1200px) {
+      .geo3d-container { grid-template-columns: 1fr; }
+      .canvas-3d-viewport { height: 420px; }
     }
   </style>
 </head>
@@ -1210,24 +1520,30 @@
   <!-- TOP SCADA TELEMETRY HEADER -->
   <header class="scada-topbar">
     <div class="brand-cluster">
-      <div class="brand-emblem">⚡</div>
+      <div class="brand-emblem" title="Tableau Public Analytics Standard">
+        <div class="tableau-cross-logo">
+          <div></div><div class="t-mark t-t"></div><div></div>
+          <div class="t-mark t-l"></div><div class="t-mark t-c"></div><div class="t-mark t-r"></div>
+          <div></div><div class="t-mark t-b"></div><div></div>
+        </div>
+      </div>
       <div class="brand-titles">
         <h1>
           EDEC • TELEMETRIA COMERCIAL, FRAUDE CF1 &amp; COBRANÇA
-          <span class="brand-tag">PROJETO SANTIAGO</span>
+          <span class="brand-tag">SANTIAGO • FOGO • MAIO • BRAVA</span>
         </h1>
         <p>Base Consolidada Multiusuário • Contratos, Dívida, Autos CF1/Jurídico, Cobrança 2026 (COB_J), Faturação T3 &amp; PTs</p>
       </div>
     </div>
 
     <div class="telemetry-status">
-      <!-- SELETOR DE TEMA DARK / BRANCO -->
-      <div class="theme-switch-wrap" title="Alternar entre Modo Escuro (SCADA) e Modo Branco (Corporativo)">
-        <button id="theme-btn-dark" class="theme-toggle-btn active" onclick="setTema('dark')">
-          <span>🌙</span> <span>Dark</span>
+      <!-- SELETOR DE TEMA TABLEAU PUBLIC / DARK -->
+      <div class="theme-switch-wrap" title="Alternar entre Padrão Tableau Public e Modo Dark">
+        <button id="theme-btn-light" class="theme-toggle-btn active" onclick="setTema('light')">
+          <span>📊</span> <span>Tableau</span>
         </button>
-        <button id="theme-btn-light" class="theme-toggle-btn" onclick="setTema('light')">
-          <span>☀️</span> <span>Branco</span>
+        <button id="theme-btn-dark" class="theme-toggle-btn" onclick="setTema('dark')">
+          <span>🌙</span> <span>Dark</span>
         </button>
       </div>
       <div class="status-pill">
@@ -1267,8 +1583,8 @@
 
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod2" onclick="selecionarModulo('mod2')">
-          🗺️ 2. Mapa GIS &amp; Balanço PT
-          <span class="mod-pill-soon">Em Atualização</span>
+          🌐 2. Mapa GIS 3D &amp; Balanço PT
+          <span class="mod-pill-soon" style="background:#EBF5FB; color:#2B6CB0; border-color:#BEE3F8; font-weight:700;">3D Interativo</span>
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod5" onclick="selecionarModulo('mod5')">
           ⚖️ 5. Jurídico CF1 &amp; Cobrança
@@ -1286,7 +1602,7 @@
     <!-- 1. KPI COMMAND STRIP (8 CARDS) -->
     <section class="kpi-strip">
       <div class="kpi-card cyan">
-        <div class="kpi-label"><span>CONTRATOS SANTIAGO</span><span>CIL ÚNICO</span></div>
+        <div class="kpi-label"><span id="lbl-kpi-contratos-titulo">CONTRATOS SUL</span><span id="lbl-kpi-contratos-subtipo">REGIÃO SUL</span></div>
         <div class="kpi-value" id="kpi-contratos">--</div>
         <div class="kpi-sub" id="kpi-contratos-sub">Carregando base...</div>
       </div>
@@ -1478,6 +1794,17 @@
         </div>
 
         <div class="field-group">
+          <label>Ilha (EDEC)</label>
+          <select id="f-ilha" class="select-ctrl" onchange="aoMudarIlha(this.value)">
+            <option value="">Todas as Ilhas (4 Ilhas)</option>
+            <option value="Santiago">Santiago</option>
+            <option value="Fogo">Fogo</option>
+            <option value="Maio">Maio</option>
+            <option value="Brava">Brava</option>
+          </select>
+        </div>
+
+        <div class="field-group">
           <label>Unidade Comercial (DESC_UNI)</label>
           <select id="f-uni" class="select-ctrl" onchange="aplicarFiltros(1)">
             <option value="">Todas as Unidades</option>
@@ -1521,6 +1848,18 @@
           <label>Grupo de Cliente (GRUP_TP_CLI)</label>
           <select id="f-grupo" class="select-ctrl" onchange="aplicarFiltros(1)">
             <option value="">Todos os Grupos</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>Produto / Setor</label>
+          <select id="f-produto" class="select-ctrl" onchange="aplicarFiltros(1)">
+            <option value="">Todos os Produtos (Energia + Água)</option>
+            <option value="__ELETRICIDADE__">⚡ Eletricidade (EB, EE, EM)</option>
+            <option value="AG">💧 Água (AdS - Águas de Santiago)</option>
+            <option value="EB">EB • Baixa Tensão Normal</option>
+            <option value="EE">EE • Especial / BTE</option>
+            <option value="EM">EM • Média Tensão</option>
           </select>
         </div>
 
@@ -1614,7 +1953,7 @@
       <div class="panel-box">
         <div class="panel-header">
           <div class="panel-title">
-            🌍 Mapa Georreferenciado de Risco de Perdas (Santiago)
+            <span id="lbl-titulo-mapa">🌍 Mapa Georreferenciado de Risco de Perdas (Região Sul)</span>
           </div>
           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
             <span class="panel-badge" id="map-count-badge">Carregando mapa...</span>
@@ -1633,7 +1972,7 @@
       <!-- BREAKDOWN BY UNIDADE COMERCIAL -->
       <div class="panel-box">
         <div class="panel-header">
-          <div class="panel-title">🏢 Unidades Comerciais de Santiago</div>
+          <div class="panel-title" id="lbl-titulo-unidades">🏢 Unidades Comerciais (Região Sul)</div>
           <span class="panel-badge">Clique para filtrar</span>
         </div>
         <div class="ranking-list" id="lista-unidades"></div>
@@ -1736,51 +2075,112 @@
       <!-- Faixa de KPIs Executivos de Dívida (8 Cards em Grid 4x2) -->
       <section class="kpi-strip" style="margin-bottom:18px;">
         <div class="kpi-card amber">
-          <div class="kpi-label"><span>DÍVIDA TOTAL CARTEIRA</span><span>SANTIAGO (ECV)</span></div>
-          <div class="kpi-value" id="kpi-div-total">--</div>
-          <div class="kpi-sub" id="kpi-div-total-sub">Carregando carteira devedora...</div>
+          <div class="kpi-label"><span>DÍVIDA TOTAL CARTEIRA</span><span id="lbl-kpi-div-subtipo">REGIÃO SUL (ECV)</span></div>
+          <div class="kpi-value" id="kpi-div-total">8.595.747.001 ECV</div>
+          <div class="kpi-sub" id="kpi-div-total-sub">95.511 devedores (2.393.452 faturas)</div>
         </div>
 
         <div class="kpi-card red">
           <div class="kpi-label"><span>INADIMPLÊNCIA CRÍTICA</span><span>SEM AMORTIZAÇÃO</span></div>
-          <div class="kpi-value" id="kpi-div-critica">--</div>
-          <div class="kpi-sub" id="kpi-div-critica-sub">-- clientes estagnados em 2026</div>
+          <div class="kpi-value" id="kpi-div-critica">6.796.466.283 ECV</div>
+          <div class="kpi-sub" id="kpi-div-critica-sub">32.599 clientes (79.1% estagnada)</div>
         </div>
 
         <div class="kpi-card emerald">
           <div class="kpi-label"><span>COBRANÇA REALIZADA 2026</span><span>ARRECADADO COB_J</span></div>
-          <div class="kpi-value" id="kpi-div-arrecadado">--</div>
-          <div class="kpi-sub" id="kpi-div-arrecadado-sub">-- clientes pagando com saldo</div>
+          <div class="kpi-value" id="kpi-div-arrecadado">2.541.070.380 ECV</div>
+          <div class="kpi-sub" id="kpi-div-arrecadado-sub">62.912 pagadores (2026)</div>
         </div>
 
         <div class="kpi-card cyan">
           <div class="kpi-label"><span>TAXA DE RECUPERAÇÃO</span><span>EFICÁCIA 2026</span></div>
-          <div class="kpi-value" id="kpi-div-taxa-recup">--</div>
-          <div class="kpi-sub" id="kpi-div-taxa-recup-sub">Arrecadado vs. Total Carteira</div>
+          <div class="kpi-value" id="kpi-div-taxa-recup">22.8%</div>
+          <div class="kpi-sub" id="kpi-div-taxa-recup-sub">Cobrança 2026 vs Carteira Total</div>
         </div>
 
         <div class="kpi-card purple">
           <div class="kpi-label"><span>TICKET MÉDIO DEVEDOR</span><span>EXPOSIÇÃO / CLIENTE</span></div>
-          <div class="kpi-value" id="kpi-div-ticket-medio">--</div>
-          <div class="kpi-sub" id="kpi-div-ticket-medio-sub">Média: -- faturas / cliente</div>
+          <div class="kpi-value" id="kpi-div-ticket-medio">89.997 ECV</div>
+          <div class="kpi-sub" id="kpi-div-ticket-medio-sub">Média: 25.1 fat./cliente</div>
         </div>
 
-        <div class="kpi-card amber">
+        <div class="kpi-card amber" style="cursor:pointer;" onclick="document.getElementById('div-faixa').value='250k'; aplicarFiltrosDivida(1);" title="Clique para filtrar os Grandes Devedores (&gt; 250.000 ECV)">
           <div class="kpi-label"><span>CONCENTRAÇÃO TOP DEVEDORES</span><span>PARETO 80/20</span></div>
-          <div class="kpi-value" id="kpi-div-grandes">--</div>
-          <div class="kpi-sub" id="kpi-div-grandes-sub">Grandes Contas (>250k ECV)</div>
+          <div class="kpi-value" id="kpi-div-grandes">6.670.746.683 ECV</div>
+          <div class="kpi-sub" id="kpi-div-grandes-sub">5.136 contas &gt;250k (77.6% da dívida) • 754 &gt;1M</div>
         </div>
 
-        <div class="kpi-card red">
+        <div class="kpi-card red" style="cursor:pointer;" onclick="ativarAcaoGestao('fraude_cf1')" title="Clique para filtrar Devedores com Auto de Fraude CF1">
           <div class="kpi-label"><span>DEVEDORES C/ AUTO CF1</span><span>FRAUDE + DÍVIDA</span></div>
-          <div class="kpi-value" id="kpi-div-cf1">--</div>
-          <div class="kpi-sub" id="kpi-div-cf1-sub">-- no Ministério Público</div>
+          <div class="kpi-value" id="kpi-div-cf1">5.681 clientes</div>
+          <div class="kpi-sub" id="kpi-div-cf1-sub">Dív. CF1: 108.580.309 ECV • MP: 692</div>
         </div>
 
         <div class="kpi-card cyan">
           <div class="kpi-label"><span>CARTEIRA EM RISCO</span><span>CRÍTICO + ALTO</span></div>
-          <div class="kpi-value" id="kpi-div-risco">--</div>
-          <div class="kpi-sub" id="kpi-div-risco-sub">Score Médio de Risco: --/100</div>
+          <div class="kpi-value" id="kpi-div-risco">17.933 clientes</div>
+          <div class="kpi-sub" id="kpi-div-risco-sub">9.968 Crít. / 7.965 Alto • Sc: 18.7/100</div>
+        </div>
+      </section>
+
+      <!-- SEGREGAÇÃO POR PRODUTO & DESTAQUE ESTRATÉGICO ADS (ÁGUA VS ENERGIA) -->
+      <section style="background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:14px 18px; margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">⚡💧</span>
+            <span style="font-family:var(--font-display); font-size:13.5px; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.04em;">
+              Segmentação da Carteira por Produto &amp; Impacto AdS
+            </span>
+            <span class="badge" style="background:rgba(6,182,212,0.18); color:#22D3EE; border:1px solid #06B6D4; font-size:10px; font-weight:700;">ÁGUA &amp; ELETRICIDADE</span>
+          </div>
+          <!-- Botões de Filtro Rápido de Produto -->
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn-prod-pill active" id="btn-prod-todos" onclick="selecionarProdutoDivida('')">
+              🌐 Todos os Produtos (<span id="pill-tot-div">8.595.747.001 ECV</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-prod-elet" onclick="selecionarProdutoDivida('__ELETRICIDADE__')">
+              ⚡ Eletricidade EB/EE/EM (<span id="pill-elet-div">7.053.511.151 ECV</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-prod-agua" onclick="selecionarProdutoDivida('AG')">
+              💧 Água AdS Especial (<span id="pill-agua-div">1.542.235.850 ECV</span>)
+            </button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+          <!-- Card Eletricidade -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-bright); border-radius:6px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="selecionarProdutoDivida('__ELETRICIDADE__')" title="Clique para filtrar apenas Eletricidade (EB, EE, EM)">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#FBBF24; font-weight:700;">
+                <span>⚡ ELETRICIDADE (EB, EE, EM)</span>
+                <span class="badge badge-warn" style="font-size:9.5px;" id="prod-pct-elet">82.1% da Dívida</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:18px; font-weight:800; color:var(--text-primary); margin:4px 0;" id="prod-val-elet">
+                7.053.511.151 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary);" id="prod-det-elet">
+                95.509 devedores (2.393.410 fat.) • 2.541.070.380 ECV cobrado em 2026
+              </div>
+            </div>
+            <div style="font-size:16px; color:var(--text-muted); font-family:var(--font-mono);">➔</div>
+          </div>
+
+          <!-- Card Água AdS Especial -->
+          <div style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.4); border-radius:6px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="selecionarProdutoDivida('AG')" title="Clique para isolar Águas de Santiago (AdS)">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#22D3EE; font-weight:700;">
+                <span>💧 ÁGUA (AdS - ÁGUAS DE SANTIAGO)</span>
+                <span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-size:9.5px;" id="prod-pct-agua">17.9% da Dívida</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:18px; font-weight:800; color:#38BDF8; margin:4px 0;" id="prod-val-agua">
+                1.542.235.850 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary);" id="prod-det-agua">
+                2 contratos especiais (42 faturas) • 0 ECV cobrado (100% estagnada)
+              </div>
+            </div>
+            <div style="font-size:16px; color:#22D3EE; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
         </div>
       </section>
 
@@ -1856,6 +2256,21 @@
               <span>Filtrar em Amortização</span> ➔
             </div>
           </div>
+
+          <!-- Ação 5: Protocolo Especial AdS (Água) -->
+          <div class="action-card action-water" id="card-act-ads" onclick="ativarAcaoGestao('ads_especial')">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:#22D3EE; text-transform:uppercase; letter-spacing:0.05em;">💧 Ação 5: Protocolo AdS</span>
+              <span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border-color:#06B6D4; font-size:9.5px; padding:1px 6px;">1.54B ECV • ÁGUA</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Águas de Santiago (AdS)</div>
+            <div style="font-size:11px; color:var(--text-secondary); line-height:1.4; margin-bottom:8px;">
+              2 grandes contas do produto Água com 1.542 Milhões ECV estagnados (42 fat.). Exige conciliação executiva e encontro de contas estatal.
+            </div>
+            <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#22D3EE; font-weight:600;">
+              <span>Isolar Contratos AdS</span> ➔
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1889,11 +2304,11 @@
             <div style="margin-bottom:12px;">
               <div class="sim-slider-label">
                 <span>🔥 Grandes Devedores Privados (&gt;250k ECV):</span>
-                <span id="lbl-sim-grandes">15% (375.0 M ECV)</span>
+                <span id="lbl-sim-grandes">15% (389.9 M ECV)</span>
               </div>
               <input type="range" min="0" max="50" value="15" step="1" id="slider-sim-grandes" class="sim-range-input" oninput="atualizarSimulador()">
               <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
-                <span>0% (0 ECV)</span><span>Base: ~2.50 Bilhões ECV</span><span>50% (1.25 B ECV)</span>
+                <span>0% (0 ECV)</span><span id="base-lbl-grandes">Base: 2.60 Bilhões ECV</span><span id="max-lbl-grandes">50% (1.30 B ECV)</span>
               </div>
             </div>
 
@@ -1901,11 +2316,11 @@
             <div style="margin-bottom:12px;">
               <div class="sim-slider-label">
                 <span>🏛️ Protocolo Estado &amp; Autarquias (Setor Público):</span>
-                <span id="lbl-sim-gov" style="color:#818CF8;">25% (362.5 M ECV)</span>
+                <span id="lbl-sim-gov" style="color:#818CF8;">25% (648.9 M ECV)</span>
               </div>
               <input type="range" min="0" max="50" value="25" step="1" id="slider-sim-gov" class="sim-range-input" style="accent-color:#818CF8;" oninput="atualizarSimulador()">
               <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
-                <span>0% (0 ECV)</span><span>Base: ~1.45 Bilhão ECV</span><span>50% (725.0 M ECV)</span>
+                <span>0% (0 ECV)</span><span id="base-lbl-gov">Base: 2.60 Bilhões ECV</span><span id="max-lbl-gov">50% (1.30 B ECV)</span>
               </div>
             </div>
 
@@ -1913,11 +2328,11 @@
             <div style="margin-bottom:12px;">
               <div class="sim-slider-label">
                 <span>🏠 Cobrança em Massa &amp; Pré-Pago (Doméstico/PME):</span>
-                <span id="lbl-sim-massa" style="color:#34D399;">7% (147.0 M ECV)</span>
+                <span id="lbl-sim-massa" style="color:#34D399;">7% (128.9 M ECV)</span>
               </div>
               <input type="range" min="0" max="30" value="7" step="1" id="slider-sim-massa" class="sim-range-input" style="accent-color:#34D399;" oninput="atualizarSimulador()">
               <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
-                <span>0% (0 ECV)</span><span>Base: ~2.10 Bilhões ECV</span><span>30% (630.0 M ECV)</span>
+                <span>0% (0 ECV)</span><span id="base-lbl-massa">Base: 1.84 Bilhão ECV</span><span id="max-lbl-massa">30% (552.6 M ECV)</span>
               </div>
             </div>
 
@@ -1925,11 +2340,11 @@
             <div>
               <div class="sim-slider-label">
                 <span>⚡ Regularização de Fraudes CF1 (Autos Faturados):</span>
-                <span id="lbl-sim-cf1" style="color:#C084FC;">30% (32.5 M ECV)</span>
+                <span id="lbl-sim-cf1" style="color:#C084FC;">30% (32.6 M ECV)</span>
               </div>
               <input type="range" min="0" max="100" value="30" step="5" id="slider-sim-cf1" class="sim-range-input" style="accent-color:#C084FC;" oninput="atualizarSimulador()">
               <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">
-                <span>0% (0 ECV)</span><span>Base: ~108.2 Milhões ECV</span><span>100% (108.2 M ECV)</span>
+                <span>0% (0 ECV)</span><span id="base-lbl-cf1">Base: 108.6 Milhões ECV</span><span id="max-lbl-cf1">100% (108.6 M ECV)</span>
               </div>
             </div>
           </div>
@@ -1941,7 +2356,7 @@
                 INJEÇÃO ADICIONAL DE CAIXA (CASH-IN)
               </div>
               <div style="font-family:var(--font-mono); font-size:26px; font-weight:800; color:#34D399; margin-top:2px;" id="sim-res-total">
-                +917.000.000 ECV
+                +1.200.295.676 ECV
               </div>
               <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted); margin-top:2px;" id="sim-res-sub">
                 Projeção líquida de entrada direta no caixa da distribuidora
@@ -1951,12 +2366,12 @@
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px dashed var(--border-bright); padding-top:10px;">
               <div>
                 <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">NOVA TAXA RECUPERAÇÃO</div>
-                <div style="font-family:var(--font-mono); font-size:17px; font-weight:700; color:#FBBF24;" id="sim-res-taxa">37.2%</div>
-                <div style="font-size:10px; color:var(--text-secondary);">Atual: ~26.3%</div>
+                <div style="font-family:var(--font-mono); font-size:17px; font-weight:700; color:#FBBF24;" id="sim-res-taxa">33.6%</div>
+                <div style="font-size:10px; color:var(--text-secondary);" id="sim-res-taxa-atual">Atual: 22.8%</div>
               </div>
               <div>
                 <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">META MENSAL (12M)</div>
-                <div style="font-family:var(--font-mono); font-size:17px; font-weight:700; color:var(--accent-cyan);" id="sim-res-mensal">76.4M ECV/mês</div>
+                <div style="font-family:var(--font-mono); font-size:17px; font-weight:700; color:var(--accent-cyan);" id="sim-res-mensal">100.0M ECV/mês</div>
                 <div style="font-size:10px; color:var(--text-secondary);">Fluxo mensalizado</div>
               </div>
             </div>
@@ -2067,7 +2482,7 @@
               <span class="icon">📍</span>
               Concentração &amp; Eficácia por Concelho (Unidades)
             </div>
-            <span class="panel-badge" id="badge-concelhos-total">Ilha de Santiago</span>
+            <span class="panel-badge" id="badge-concelhos-total">Região Sul (4 Ilhas)</span>
           </div>
           <div class="ranking-list" id="lista-unidades-divida" style="max-height: 250px;">
             <div style="text-align:center; padding:24px; color:var(--text-muted);">Carregando distribuição por concelho...</div>
@@ -2084,7 +2499,7 @@
             <span class="panel-badge" style="color:var(--accent-amber);" id="badge-pts-criticos">Foco Operacional</span>
           </div>
           <div class="ranking-list" id="lista-pts-divida" style="max-height: 250px;">
-            <div style="text-align:center; padding:24px; color:var(--text-muted);">Carregando PTs críticos de Santiago...</div>
+            <div style="text-align:center; padding:24px; color:var(--text-muted);">Carregando PTs críticos da Região Sul...</div>
           </div>
         </div>
       </section>
@@ -2112,17 +2527,33 @@
             </div>
           </div>
 
+          <!-- Ilha (EDEC) -->
+          <div class="field-group">
+            <label>Ilha (EDEC)</label>
+            <select id="div-ilha" class="select-ctrl" onchange="aoMudarIlhaDivida(this.value)">
+              <option value="">Todas as Ilhas (4 Ilhas)</option>
+              <option value="Santiago">Santiago</option>
+              <option value="Fogo">Fogo</option>
+              <option value="Maio">Maio</option>
+              <option value="Brava">Brava</option>
+            </select>
+          </div>
+
           <!-- Unidade Comercial / Concelho -->
           <div class="field-group">
             <label>Unidade Comercial (Concelho)</label>
             <select id="div-uni" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
               <option value="">Todas as Unidades</option>
-              <option value="Praia">Praia</option>
-              <option value="Santa Catarina">Santa Catarina</option>
-              <option value="Santa Cruz">Santa Cruz</option>
-              <option value="Tarrafal">Tarrafal</option>
-              <option value="Calheta S. Miguel">Calheta S. Miguel</option>
-              <option value="São Domingos">São Domingos</option>
+              <option value="Praia">Praia (Santiago)</option>
+              <option value="Santa Catarina">Santa Catarina (Santiago)</option>
+              <option value="Santa Cruz">Santa Cruz (Santiago)</option>
+              <option value="Tarrafal">Tarrafal (Santiago)</option>
+              <option value="Calheta S. Miguel">Calheta S. Miguel (Santiago)</option>
+              <option value="São Domingos">São Domingos (Santiago)</option>
+              <option value="São Filipe">São Filipe (Fogo)</option>
+              <option value="Mosteiros">Mosteiros (Fogo)</option>
+              <option value="Maio">Maio</option>
+              <option value="Brava">Brava</option>
             </select>
           </div>
 
@@ -2137,6 +2568,7 @@
             <label>Tipo de Cliente</label>
             <select id="div-grupo" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
               <option value="">Todos os Tipos</option>
+              <option value="__SETOR_PUBLICO__">🏛️ Setor Público (Estado + Autarquias + Emp. Pública)</option>
               <option value="Doméstico">Doméstico</option>
               <option value="Empresa Privada">Empresa Privada</option>
               <option value="Autarquia">Autarquia</option>
@@ -2149,7 +2581,9 @@
           <div class="field-group">
             <label>Produto / Nível Tensão</label>
             <select id="div-produto" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
-              <option value="">Todos os Produtos</option>
+              <option value="">Todos os Produtos (Energia + Água)</option>
+              <option value="__ELETRICIDADE__">⚡ Eletricidade (EB, EE, EM)</option>
+              <option value="AG">💧 Água (AdS - Águas de Santiago)</option>
               <option value="EB">EB - Baixa Tensão Normal</option>
               <option value="EE">EE - Especial / BTE</option>
               <option value="EM">EM - Média Tensão</option>
@@ -2246,7 +2680,7 @@
               </tr>
             </thead>
             <tbody id="tabela-divida-corpo">
-              <tr><td colspan="14" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando esteira de devedores de Santiago...</td></tr>
+              <tr><td colspan="14" style="text-align:center; padding:32px; color:var(--text-secondary);">Carregando esteira de devedores da Região Sul...</td></tr>
             </tbody>
           </table>
         </div>
@@ -2258,6 +2692,182 @@
       </section>
     </div>
 
+
+        <!-- MÓDULO 2: CENTRO GEOESPACIAL DE BALANÇO DE PTS & TOPOGRAFIA 3D (ATIVO) -->
+    <div id="modulo-mod2" class="module-pane hidden">
+      <!-- Header do Módulo 2 -->
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:12px 18px; box-shadow:var(--card-shadow);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:38px; height:38px; border-radius:6px; background:#EBF5FB; border:1px solid #BEE3F8; display:grid; place-items:center; font-size:20px; color:#4E79A7;">
+            🌐
+          </div>
+          <div>
+            <h2 style="font-family:var(--font-display); font-size:15.5px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+              Centro Geoespacial de Balanço de PTs &amp; Topografia 3D
+              <span class="brand-tag" style="background:#EBF5FB; color:#2B6CB0; border-color:#BEE3F8;">WebGL / Three.js 3D</span>
+            </h2>
+            <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+              Modelagem tridimensional da Ilha de Santiago • Extrusão de perdas nos Postos de Transformação (PTs) &amp; Balanço Energético Injetada vs Faturada
+            </p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn" onclick="resetarCamera3D()" title="Restaurar orientação original da câmera 3D">
+            ↺ Centrar Câmera 3D
+          </button>
+          <button class="btn btn-amber" onclick="selecionarModulo('mod1')" title="Ver contratos associados na Triagem">
+            📊 Ir para Triagem de Contratos
+          </button>
+        </div>
+      </div>
+
+      <!-- Grid Principal do Módulo 2 -->
+      <div class="geo3d-container">
+        <!-- Viewport 3D -->
+        <div class="canvas-3d-box">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>🌐</span> Relevo Topográfico 3D da Ilha de Santiago &amp; Beacons de Perda de PT
+            </div>
+            <div class="panel-badge">
+              Ilha de Santiago • 54 km x 28 km
+            </div>
+          </div>
+          <div class="canvas-3d-viewport" id="canvas-3d-viewport">
+            <div class="hud-3d-overlay">
+              <div class="hud-pill">
+                <span>🖱️</span> <span>Girar: Clique esquerdo + Arrastar</span>
+              </div>
+              <div class="hud-pill">
+                <span>🔍</span> <span>Zoom: Roda do mouse</span>
+              </div>
+              <div class="hud-pill">
+                <span>🎯</span> <span>Clique em qualquer pino 3D para inspecionar</span>
+              </div>
+            </div>
+
+            <div class="hud-controls-right">
+              <button class="btn-hud-action" onclick="alternarAutoRotacao()" id="btn-auto-rot">
+                ⏸ Pausar Giro
+              </button>
+              <button class="btn-hud-action" onclick="resetarCamera3D()">
+                ↺ Vista Superior
+              </button>
+            </div>
+
+            <div class="hud-legend">
+              <span style="font-weight:600; color:#F8FAFC;">Severidade da Perda:</span>
+              <div class="hud-legend-item">
+                <div class="hud-legend-color" style="background:#59A14F;"></div>
+                <span>Normal (&lt; 15%)</span>
+              </div>
+              <div class="hud-legend-item">
+                <div class="hud-legend-color" style="background:#F28E2B;"></div>
+                <span>Alerta (15% - 30%)</span>
+              </div>
+              <div class="hud-legend-item">
+                <div class="hud-legend-color" style="background:#E15759;"></div>
+                <span>Crítico CF1 (&gt; 30%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar de Detalhe e Balanço do PT -->
+        <div class="pt-detail-sidebar">
+          <div class="pt-card-balance">
+            <div class="pt-balance-header">
+              <div>
+                <span class="badge" id="pt-sel-badge" style="background:#FDE8E8; color:#9B1C1C; border:1px solid #F8B4B4;">🚨 PERDA CRÍTICA</span>
+                <h3 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); margin-top:4px;" id="pt-sel-codigo">
+                  PT-015 • Fazenda / Sucupira
+                </h3>
+                <div style="font-size:11.5px; color:var(--text-muted);" id="pt-sel-local">
+                  Concelho da Praia • Zona Comercial &amp; Mercado
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:10.5px; color:var(--text-muted); text-transform:uppercase;">Taxa de Perda</div>
+                <div style="font-size:22px; font-weight:700; color:#E15759;" id="pt-sel-taxa">38.2%</div>
+              </div>
+            </div>
+
+            <!-- Balanço de Energia (Sankey / Bar Breakdown) -->
+            <div class="pt-energy-flow-box">
+              <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">
+                Balanço Energético Mensal do Transformador
+              </div>
+
+              <!-- Injetada -->
+              <div class="flow-bar-row">
+                <div class="flow-bar-labels">
+                  <span style="font-weight:600; color:var(--text-primary);">⚡ Energia Total Injetada:</span>
+                  <span style="font-family:var(--font-mono); font-weight:700;" id="pt-sel-injetada">142,5 MWh</span>
+                </div>
+                <div class="flow-bar-track">
+                  <div class="flow-bar-fill" style="width:100%; background:#4E79A7;"></div>
+                </div>
+              </div>
+
+              <!-- Faturada Regular -->
+              <div class="flow-bar-row">
+                <div class="flow-bar-labels">
+                  <span style="color:#59A14F; font-weight:600;">📗 Faturada aos Clientes (61.8%):</span>
+                  <span style="font-family:var(--font-mono); color:#59A14F; font-weight:700;" id="pt-sel-faturada">88,1 MWh</span>
+                </div>
+                <div class="flow-bar-track">
+                  <div class="flow-bar-fill" style="width:61.8%; background:#59A14F;" id="pt-bar-faturada"></div>
+                </div>
+              </div>
+
+              <!-- Perda Comercial / Desvio -->
+              <div class="flow-bar-row">
+                <div class="flow-bar-labels">
+                  <span style="color:#E15759; font-weight:600;">🚨 Perda Não Técnica / Desvio CF1 (38.2%):</span>
+                  <span style="font-family:var(--font-mono); color:#E15759; font-weight:700;" id="pt-sel-perda">54,4 MWh</span>
+                </div>
+                <div class="flow-bar-track">
+                  <div class="flow-bar-fill" style="width:38.2%; background:#E15759;" id="pt-bar-perda"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Indicadores do PT -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:10px 12px;">
+                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Prejuízo Estimado</div>
+                <div style="font-family:var(--font-mono); font-size:16px; font-weight:700; color:#E15759; margin-top:2px;" id="pt-sel-prejuizo">
+                  ~1.414.400 ECV/mês
+                </div>
+                <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;">Tarifa Média Comercial</div>
+              </div>
+              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:10px 12px;">
+                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Dívida Acumulada</div>
+                <div style="font-family:var(--font-mono); font-size:16px; font-weight:700; color:#F28E2B; margin-top:2px;" id="pt-sel-divida">
+                  34.218.450 ECV
+                </div>
+                <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;" id="pt-sel-clientes">418 clientes ligados</div>
+              </div>
+            </div>
+
+            <!-- Ação Rápida de Filtro -->
+            <button class="btn btn-amber" style="width:100%; justify-content:center; padding:9px 14px; font-size:12.5px;" onclick="filtrarPTNaTriagem()" id="btn-filtrar-pt-triagem">
+              🔍 Filtrar Clientes deste PT na Triagem
+            </button>
+          </div>
+
+          <!-- Top 5 PTs Críticos -->
+          <div class="panel-box" style="padding:14px 16px;">
+            <div class="panel-title" style="margin-bottom:10px;">
+              <span>🏆</span> Top Postos de Transformação Mais Críticos da Ilha
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;" id="ranking-pts-3d-list">
+              <!-- Preenchido via script -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div id="modulo-em-atualizacao" class="module-pane hidden">
       <div class="under-update-box">
@@ -2275,6 +2885,38 @@
       </div>
     </div>
 
+      <!-- TABLEAU PUBLIC STATUS & ACTION TOOLBAR -->
+    <footer class="tableau-footer-strip">
+      <div class="tableau-footer-left">
+        <span class="tableau-badge-mark">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin-right:4px;">
+            <rect x="7" y="1" width="2" height="14" fill="#4E79A7" rx="0.5"/>
+            <rect x="1" y="7" width="14" height="2" fill="#F28E2B" rx="0.5"/>
+            <rect x="4" y="4" width="2" height="8" fill="#E15759" rx="0.5"/>
+            <rect x="10" y="4" width="2" height="8" fill="#59A14F" rx="0.5"/>
+          </svg>
+          Tableau Public™ Standard
+        </span>
+        <span>•</span>
+        <span>EDEC Painel Analítico Comercial — Santiago</span>
+        <span>•</span>
+        <span>Sincronização em Tempo Real</span>
+      </div>
+      <div class="tableau-footer-right">
+        <button class="tableau-footer-btn" onclick="resetarTodosFiltros()" title="Reverter todos os filtros ativos">
+          ↺ Reverter Filtros
+        </button>
+        <button class="tableau-footer-btn" onclick="exportarCSVFiltrado()" title="Exportar dados do filtro ativo">
+          ⬇ Baixar Dados
+        </button>
+        <button class="tableau-footer-btn" onclick="window.print()" title="Imprimir ou gerar PDF">
+          🖨️ Imprimir
+        </button>
+        <button class="tableau-footer-btn" onclick="alternarTelaCheia()" title="Alternar tela cheia">
+          ⛶ Tela Cheia
+        </button>
+      </div>
+    </footer>
   </main>
 
   
@@ -2395,6 +3037,60 @@
 
     let dividaIniciada = false;
 
+    // SUPORTE MULTI-ILHAS (SANTIAGO • FOGO • MAIO • BRAVA)
+    let todasUnidadesLista = [];
+    const ILHA_COORDS = {
+      "Santiago": { center: [15.08, -23.62], zoom: 11 },
+      "Fogo":     { center: [14.95, -24.38], zoom: 11 },
+      "Maio":     { center: [15.20, -23.18], zoom: 11 },
+      "Brava":    { center: [14.86, -24.71], zoom: 12 },
+      "":         { center: [15.05, -23.85], zoom: 9 }
+    };
+
+    const ILHA_UNIDADES = {
+      "Santiago": ["Praia", "Santa Catarina", "Santa Cruz", "Tarrafal", "Calheta S. Miguel", "São Domingos"],
+      "Fogo": ["São Filipe", "Mosteiros"],
+      "Maio": ["Maio"],
+      "Brava": ["Brava"]
+    };
+
+    function aoMudarIlha(ilha) {
+      const selUni = document.getElementById("f-uni");
+      if (selUni && todasUnidadesLista.length) {
+        const filtradas = ilha && ILHA_UNIDADES[ilha]
+          ? todasUnidadesLista.filter(u => ILHA_UNIDADES[ilha].includes(u))
+          : todasUnidadesLista;
+        popularSelect("f-uni", filtradas);
+      }
+      if (map && ILHA_COORDS[ilha]) {
+        const cfg = ILHA_COORDS[ilha];
+        map.setView(cfg.center, cfg.zoom);
+      }
+      aplicarFiltros(1);
+    }
+
+    function aoMudarIlhaDivida(ilha) {
+      const selUni = document.getElementById("div-uni");
+      if (selUni) {
+        Array.from(selUni.options).forEach(opt => {
+          if (!opt.value) { opt.hidden = false; return; }
+          if (!ilha) {
+            opt.hidden = false;
+          } else {
+            opt.hidden = !(ILHA_UNIDADES[ilha] && ILHA_UNIDADES[ilha].includes(opt.value));
+          }
+        });
+        if (selUni.selectedOptions[0] && selUni.selectedOptions[0].hidden) {
+          selUni.value = "";
+        }
+      }
+      const badge = document.getElementById("badge-concelhos-total");
+      if (badge) {
+        badge.textContent = ilha ? `Ilha de ${ilha}` : "Região Sul (4 Ilhas)";
+      }
+      aplicarFiltrosDivida(1);
+    }
+
     function selecionarModulo(modId) {
       document.querySelectorAll(".mod-tab-btn").forEach(btn => btn.classList.remove("active"));
       const btnAtivo = document.getElementById(`tab-btn-${modId}`);
@@ -2409,17 +3105,21 @@
       if (paneMod3) paneMod3.classList.add("hidden");
       paneUpd.classList.add("hidden");
 
+      const paneMod2 = document.getElementById("modulo-mod2");
+      if (paneMod2) paneMod2.classList.add("hidden");
+
       if (modId === "mod1") {
         paneMod1.classList.remove("hidden");
         if (map) {
           setTimeout(() => map.invalidateSize(), 60);
         }
+      } else if (modId === "mod2") {
+        if (paneMod2) paneMod2.classList.remove("hidden");
+        iniciarOuRedimensionar3D();
       } else if (modId === "mod3") {
         if (paneMod3) paneMod3.classList.remove("hidden");
-        if (!dividaIniciada) {
-          dividaIniciada = true;
-          aplicarFiltrosDivida(1);
-        }
+        dividaIniciada = true;
+        aplicarFiltrosDivida(1);
       } else {
         const info = INFO_MODULOS[modId] || {
           icone: "🚧",
@@ -2458,6 +3158,15 @@
       }
 
       markersLayer = L.layerGroup().addTo(map);
+    }
+
+    
+    function alternarTelaCheia() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
     }
 
     function setTema(theme) {
@@ -2510,7 +3219,8 @@
           body: "{}"
         });
         const d = await r.json();
-        popularSelect("f-uni", d.unidades || []);
+        todasUnidadesLista = d.unidades || [];
+        popularSelect("f-uni", todasUnidadesLista);
         popularSelect("f-estado", d.estados || []);
         popularSelect("f-grupo", d.grupos || []);
         popularSelect("f-anomalia", d.anomalias || [], true);
@@ -2567,10 +3277,21 @@
       const tipoBuscaSel = document.getElementById("f-tipo-busca").value;
       const infoBusca = interpretarBusca(rawBusca, tipoBuscaSel);
 
+      const elIlha = document.getElementById("f-ilha");
+      const ilha = elIlha ? elIlha.value : "";
+      if (ilha) params.append("ilha", `eq.${ilha}`);
+
       const risco = document.getElementById("f-risco").value;
       const uni = document.getElementById("f-uni").value;
       const cf1 = document.getElementById("f-cf1").value;
       const cobranca = document.getElementById("f-cobranca").value;
+      const prod = document.getElementById("f-produto") ? document.getElementById("f-produto").value : "";
+      if (prod === "__ELETRICIDADE__") {
+        params.append("produto", "in.(EB,EE,EM)");
+      } else if (prod) {
+        params.append("produto", `eq.${prod}`);
+      }
+
       const estado = document.getElementById("f-estado").value;
       const grupo = document.getElementById("f-grupo").value;
       const anom = document.getElementById("f-anomalia").value;
@@ -2724,7 +3445,9 @@
             p_status_cobranca: cobranca,
             p_divida: divida,
             p_busca: infoBusca.texto || null,
-            p_tipo_busca: infoBusca.modo || "auto"
+            p_tipo_busca: infoBusca.modo || "auto",
+            p_ilha: (document.getElementById("f-ilha") ? document.getElementById("f-ilha").value : null) || null,
+            p_produto: (document.getElementById("f-produto") ? document.getElementById("f-produto").value : null) || null
           })
         });
         if (tokenAtual && tokenAtual !== ultimoTokenFiltro) return;
@@ -2732,8 +3455,32 @@
         const total = d.total_contratos || 0;
 
         document.getElementById("kpi-contratos").textContent = fmtInt(total);
+
+        // Atualizar título do card e subtipo de acordo com o filtro de ilha/unidade
+        const selIlha = document.getElementById("f-ilha") ? document.getElementById("f-ilha").value : "";
+        const elTituloCard = document.getElementById("lbl-kpi-contratos-titulo");
+        const elSubtipoCard = document.getElementById("lbl-kpi-contratos-subtipo");
+        const elTituloMapa = document.getElementById("lbl-titulo-mapa");
+        const elTituloUni = document.getElementById("lbl-titulo-unidades");
+
+        if (elTituloCard) {
+          elTituloCard.textContent = selIlha ? `CONTRATOS ${selIlha.toUpperCase()}` : "CONTRATOS SUL";
+        }
+        if (elSubtipoCard) {
+          elSubtipoCard.textContent = uni ? uni.toUpperCase() : (selIlha ? `ILHA ${selIlha.toUpperCase()}` : "REGIÃO SUL");
+        }
+        if (elTituloMapa) {
+          elTituloMapa.textContent = `🌍 Mapa Georreferenciado de Risco de Perdas (${selIlha ? selIlha : "Região Sul"})`;
+        }
+        if (elTituloUni) {
+          elTituloUni.textContent = `🏢 Unidades Comerciais (${selIlha ? selIlha : "Região Sul"})`;
+        }
         document.getElementById("kpi-contratos-sub").textContent =
-          uni ? `Unidade: ${uni}` : "Ilha de Santiago (6 Unidades)";
+          (() => {
+          const selIlha = document.getElementById("f-ilha") ? document.getElementById("f-ilha").value : "";
+          const txtIlha = selIlha ? `Ilha de ${selIlha}` : "Região Sul (4 Ilhas)";
+          return uni ? `Unidade: ${uni} (${txtIlha})` : `${txtIlha} • ${d.por_unidade ? d.por_unidade.length : 0} Unidades`;
+        })();
 
         const crit = d.risco_critico || 0;
         const alto = d.risco_alto || 0;
@@ -2875,7 +3622,7 @@
     // PAINEL DE DIAGNÓSTICO PNT & PADRÕES DE PERDAS (MODULO 1)
     // =========================================================================
     function resetarFiltrosMod1Inputs() {
-      ["f-busca", "f-prioridade", "f-risco", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
+      ["f-busca", "f-prioridade", "f-risco", "f-ilha", "f-produto", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = "";
       });
@@ -2937,11 +3684,15 @@
     let ultimoTokenFiltro = 0;
 
     function resetarTodosFiltros() {
-      ["f-busca", "f-prioridade", "f-risco", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
+      ["f-busca", "f-prioridade", "f-risco", "f-ilha", "f-produto", "f-uni", "f-cf1", "f-cobranca", "f-estado", "f-grupo", "f-anomalia", "f-mat-cont", "f-mat-leit", "f-pt", "f-divida", "f-desvio"].forEach(id => {
         document.getElementById(id).value = "";
       });
       document.getElementById("f-tipo-busca").value = "auto";
       document.getElementById("f-ordem").value = "score_risco.desc.nullslast,valor.desc.nullslast";
+      const elTitReset = document.getElementById("lbl-kpi-contratos-titulo");
+      const elSubReset = document.getElementById("lbl-kpi-contratos-subtipo");
+      if (elTitReset) elTitReset.textContent = "CONTRATOS SUL";
+      if (elSubReset) elSubReset.textContent = "REGIÃO SUL";
       aplicarFiltros(1);
     }
 
@@ -3288,7 +4039,7 @@
     }
 
     async function abrirDossiePorCIL(cil) {
-      const local = registosPaginaAtual.find(x => Number(x.cil) === Number(cil));
+      const local = registosPaginaAtual.find(x => Number(x.cil) === Number(cil)) || (typeof registosDividaPagina !== 'undefined' ? registosDividaPagina.find(x => Number(x.cil) === Number(cil)) : null);
       if (local) {
         renderizarDossieObjeto(local);
         return;
@@ -3316,7 +4067,8 @@
       if (!r) return;
       ultimoDossieCliente = r;
 
-      document.getElementById("d-badge-uc").textContent = `${r.desc_uni || "SANTIAGO"} • ${r.grup_tp_cli || "—"}`;
+      const badgeAdS = (r.produto === "AG" || (r.nome && r.nome.includes("AGUAS DE SANTIAGO"))) ? " • 💧 CONTA ESPECIAL AdS (ÁGUA)" : "";
+      document.getElementById("d-badge-uc").textContent = `${r.desc_uni || "SANTIAGO"} • ${r.grup_tp_cli || "—"}${badgeAdS}`;
       document.getElementById("d-nome").textContent = r.nome || "CLIENTE SEM NOME";
       document.getElementById("d-sub").textContent = `CIL: ${r.cil} | NIB: ${r.nib || "—"} | CIL_ID: ${r.cil_id || "—"}`;
 
@@ -3504,7 +4256,415 @@
       }
     }
 
+    
+    // =========================================================================
+    // MOTOR 3D: TOPOGRAFIA INTERATIVA DE SANTIAGO & POSTOS DE TRANSFORMAÇÃO (PTs)
+    // =========================================================================
+    const DADOS_PTS_3D = [
+      { id: "PT-015", nome: "Fazenda / Sucupira", concelho: "Praia", x: 12, z: 22, injetada: 142.5, faturada: 88.1, perda: 54.4, taxa: 38.2, divida: 34218450, clientes: 418, status: "critico" },
+      { id: "PT-042", nome: "Palmarejo Universitário", concelho: "Praia", x: 10, z: 24, injetada: 168.0, faturada: 120.1, perda: 47.9, taxa: 28.5, divida: 28410200, clientes: 520, status: "alerta" },
+      { id: "PT-088", nome: "Achada Santo António Sul", concelho: "Praia", x: 13, z: 25, injetada: 195.4, faturada: 154.3, perda: 41.1, taxa: 21.0, divida: 22140800, clientes: 630, status: "alerta" },
+      { id: "PT-112", nome: "Platô Histórico / Centro", concelho: "Praia", x: 14, z: 23, injetada: 110.2, faturada: 97.6, perda: 12.6, taxa: 11.4, divida: 14820100, clientes: 310, status: "normal" },
+      { id: "PT-204", nome: "Assomada Centro Comercial", concelho: "Santa Catarina", x: 1, z: 2, injetada: 124.0, faturada: 84.7, perda: 39.3, taxa: 31.7, divida: 19640000, clientes: 380, status: "critico" },
+      { id: "PT-215", nome: "Rincão Costeiro", concelho: "Santa Catarina", x: -10, z: 4, injetada: 48.0, faturada: 36.4, perda: 11.6, taxa: 24.1, divida: 8920000, clientes: 140, status: "alerta" },
+      { id: "PT-310", nome: "Pedra Badejo Orla", concelho: "Santa Cruz", x: 14, z: 5, injetada: 86.5, faturada: 62.4, perda: 24.1, taxa: 27.8, divida: 16540300, clientes: 260, status: "alerta" },
+      { id: "PT-401", nome: "Tarrafal Baía / Ponta", concelho: "Tarrafal", x: -8, z: -26, injetada: 72.0, faturada: 61.8, perda: 10.2, taxa: 14.2, divida: 11210000, clientes: 210, status: "normal" },
+      { id: "PT-502", nome: "São Domingos Vale", concelho: "São Domingos", x: 8, z: 14, injetada: 65.0, faturada: 45.9, perda: 19.1, taxa: 29.3, divida: 13740000, clientes: 190, status: "alerta" },
+      { id: "PT-601", nome: "Calheta São Miguel", concelho: "São Miguel", x: 6, z: -12, injetada: 54.0, faturada: 43.5, perda: 10.5, taxa: 19.5, divida: 7850000, clientes: 165, status: "alerta" }
+    ];
+
+    let ptSelecionado3D = DADOS_PTS_3D[0];
+    let scene3D, camera3D, renderer3D, controls3D, animId3D;
+    let beacons3D = [];
+    let autoRotacao3D = true;
+    let iniciado3D = false;
+
+    function iniciarOuRedimensionar3D() {
+      const container = document.getElementById("canvas-3d-viewport");
+      if (!container) return;
+
+      if (!iniciado3D) {
+        initThreeJS(container);
+        iniciado3D = true;
+      } else {
+        if (renderer3D && camera3D) {
+          const w = container.clientWidth;
+          const h = container.clientHeight;
+          camera3D.aspect = w / h;
+          camera3D.updateProjectionMatrix();
+          renderer3D.setSize(w, h);
+        }
+      }
+      renderizarRankingPTs3D();
+      atualizarCardPT(ptSelecionado3D);
+    }
+
+    function initThreeJS(container) {
+      if (typeof THREE === 'undefined') {
+        console.warn("Three.js ainda não carregado.");
+        return;
+      }
+
+      const width = container.clientWidth || 800;
+      const height = container.clientHeight || 540;
+
+      scene3D = new THREE.Scene();
+      scene3D.background = new THREE.Color(0x0a101d);
+      scene3D.fog = new THREE.FogExp2(0x0a101d, 0.012);
+
+      camera3D = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+      camera3D.position.set(0, 48, 65);
+
+      renderer3D = new THREE.WebGLRenderer({ antialias: true });
+      renderer3D.setSize(width, height);
+      renderer3D.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer3D.shadowMap.enabled = true;
+      container.appendChild(renderer3D.domElement);
+
+      if (typeof THREE.OrbitControls !== 'undefined') {
+        controls3D = new THREE.OrbitControls(camera3D, renderer3D.domElement);
+        controls3D.enableDamping = true;
+        controls3D.dampingFactor = 0.05;
+        controls3D.maxPolarAngle = Math.PI / 2.1;
+        controls3D.minDistance = 25;
+        controls3D.maxDistance = 140;
+      }
+
+      // Iluminação
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+      scene3D.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+      dirLight.position.set(30, 60, 40);
+      dirLight.castShadow = true;
+      scene3D.add(dirLight);
+
+      const blueLight = new THREE.PointLight(0x4E79A7, 2.5, 120);
+      blueLight.position.set(-20, 25, 10);
+      scene3D.add(blueLight);
+
+      // 1. Oceano Atlântico em torno de Santiago
+      const oceanGeo = new THREE.PlaneGeometry(300, 300, 32, 32);
+      const oceanMat = new THREE.MeshStandardMaterial({
+        color: 0x061120,
+        roughness: 0.3,
+        metalness: 0.8,
+        transparent: true,
+        opacity: 0.92
+      });
+      const ocean = new THREE.Mesh(oceanGeo, oceanMat);
+      ocean.rotation.x = -Math.PI / 2;
+      ocean.position.y = -0.5;
+      scene3D.add(ocean);
+
+      // Grid sutil no oceano
+      const grid = new THREE.GridHelper(200, 40, 0x1E293B, 0x131C2B);
+      grid.position.y = -0.4;
+      scene3D.add(grid);
+
+      // 2. Malha Topográfica 3D da Ilha de Santiago
+      criarTerrenoSantiago();
+
+      // 3. Beacons 3D dos Postos de Transformação
+      criarBeaconsPTs();
+
+      // Raycaster para clique nos PTs
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      renderer3D.domElement.addEventListener('click', (e) => {
+        const rect = renderer3D.domElement.getBoundingClientRect();
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera3D);
+        const intersects = raycaster.intersectObjects(beacons3D, true);
+
+        if (intersects.length > 0) {
+          let obj = intersects[0].object;
+          while (obj && !obj.userData.ptData && obj.parent) {
+            obj = obj.parent;
+          }
+          if (obj && obj.userData.ptData) {
+            selecionarPT3D(obj.userData.ptData);
+          }
+        }
+      });
+
+      // Loop de animação
+      function animate() {
+        animId3D = requestAnimationFrame(animate);
+        if (controls3D) controls3D.update();
+
+        if (autoRotacao3D && scene3D) {
+          scene3D.rotation.y += 0.0018;
+        }
+
+        // Animação dos anéis pulsantes dos beacons
+        const t = Date.now() * 0.003;
+        beacons3D.forEach(b => {
+          if (b.userData.ring) {
+            const scale = 1 + Math.sin(t + b.userData.offset) * 0.22;
+            b.userData.ring.scale.set(scale, scale, 1);
+          }
+        });
+
+        renderer3D.render(scene3D, camera3D);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        if (!iniciado3D) return;
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        camera3D.aspect = w / h;
+        camera3D.updateProjectionMatrix();
+        renderer3D.setSize(w, h);
+      });
+    }
+
+    function criarTerrenoSantiago() {
+      // Santiago: comprimento Norte-Sul (~55km), largura Leste-Oeste (~28km)
+      const terrainGeo = new THREE.PlaneGeometry(36, 64, 48, 64);
+      const pos = terrainGeo.attributes.position;
+
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const y = pos.getY(i); // no plano é Y, no 3D será Z
+
+        // Forma de losango alongado de Santiago
+        const ny = y / 32; // -1 (sul, praia) a +1 (norte, tarrafal)
+        const nx = x / 18; // -1 a +1
+
+        // Perímetro aproximado da costa de Santiago
+        const maxLargura = (1 - Math.abs(ny * 0.85)) * (0.9 + 0.15 * Math.sin(ny * 4));
+        const dentroIlha = Math.abs(nx) < maxLargura;
+
+        if (dentroIlha) {
+          // Relevo montanhoso: Pico d'Antónia (sul-centro) e Serra da Malagueta (norte-centro)
+          const distAntonia = Math.hypot(x - 2, y - 5);
+          const elevAntonia = Math.max(0, 8.5 - distAntonia * 0.9);
+
+          const distMalagueta = Math.hypot(x - 1, y + 14);
+          const elevMalagueta = Math.max(0, 7.2 - distMalagueta * 0.8);
+
+          const planaltoGeral = Math.max(0, 2.5 - Math.hypot(x, y * 0.4) * 0.12);
+          const rugosidade = (Math.sin(x * 0.8) * Math.cos(y * 0.8)) * 0.8;
+
+          const zElev = Math.max(0.1, elevAntonia + elevMalagueta + planaltoGeral + rugosidade);
+          pos.setZ(i, zElev);
+        } else {
+          pos.setZ(i, -1.5);
+        }
+      }
+      terrainGeo.computeVertexNormals();
+
+      const terrainMat = new THREE.MeshStandardMaterial({
+        color: 0x1E293B,
+        roughness: 0.85,
+        metalness: 0.15,
+        flatShading: true
+      });
+
+      const terrain = new THREE.Mesh(terrainGeo, terrainMat);
+      terrain.rotation.x = -Math.PI / 2;
+      terrain.position.y = 0;
+      terrain.receiveShadow = true;
+      scene3D.add(terrain);
+    }
+
+    function criarBeaconsPTs() {
+      beacons3D = [];
+      DADOS_PTS_3D.forEach((pt, idx) => {
+        const group = new THREE.Group();
+        group.userData = { ptData: pt, offset: idx * 1.5 };
+
+        // Cor por status
+        let corHex = 0x59A14F; // verde normal
+        if (pt.status === "alerta") corHex = 0xF28E2B; // laranja
+        if (pt.status === "critico") corHex = 0xE15759; // vermelho
+
+        // Altura da coluna proporcional à perda (8 a 22 unidades)
+        const alturaCol = 6 + (pt.taxa / 40) * 16;
+
+        // Cilindro vertical
+        const cylGeo = new THREE.CylinderGeometry(0.5, 0.7, alturaCol, 12);
+        const cylMat = new THREE.MeshStandardMaterial({
+          color: corHex,
+          emissive: corHex,
+          emissiveIntensity: 0.35,
+          roughness: 0.3,
+          metalness: 0.6
+        });
+        const cyl = new THREE.Mesh(cylGeo, cylMat);
+        cyl.position.y = alturaCol / 2;
+        group.add(cyl);
+
+        // Esfera brilhante no topo
+        const sphereGeo = new THREE.SphereGeometry(1.0, 16, 16);
+        const sphereMat = new THREE.MeshBasicMaterial({ color: corHex });
+        const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+        sphere.position.y = alturaCol + 0.8;
+        group.add(sphere);
+
+        // Anel na base
+        const ringGeo = new THREE.RingGeometry(1.2, 2.0, 24);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: corHex,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.65
+        });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.y = 0.15;
+        group.add(ring);
+        group.userData.ring = ring;
+
+        group.position.set(pt.x, 0, pt.z);
+        scene3D.add(group);
+        beacons3D.push(group);
+      });
+    }
+
+    function selecionarPT3D(pt) {
+      ptSelecionado3D = pt;
+      atualizarCardPT(pt);
+
+      // Destacar visualmente no 3D
+      beacons3D.forEach(b => {
+        if (b.userData.ptData.id === pt.id) {
+          b.scale.set(1.25, 1.25, 1.25);
+        } else {
+          b.scale.set(1, 1, 1);
+        }
+      });
+    }
+
+    function atualizarCardPT(pt) {
+      if (!pt) return;
+      document.getElementById("pt-sel-codigo").textContent = `${pt.id} • ${pt.nome}`;
+      document.getElementById("pt-sel-local").textContent = `Concelho de ${pt.concelho} • Cabo Verde`;
+      document.getElementById("pt-sel-taxa").textContent = `${pt.taxa.toFixed(1)}%`;
+      document.getElementById("pt-sel-injetada").textContent = `${pt.injetada.toFixed(1)} MWh`;
+      document.getElementById("pt-sel-faturada").textContent = `${pt.faturada.toFixed(1)} MWh`;
+      document.getElementById("pt-sel-perda").textContent = `${pt.perda.toFixed(1)} MWh`;
+
+      const pctFat = (pt.faturada / pt.injetada) * 100;
+      const pctPerda = (pt.perda / pt.injetada) * 100;
+      document.getElementById("pt-bar-faturada").style.width = `${pctFat.toFixed(1)}%`;
+      document.getElementById("pt-bar-perda").style.width = `${pctPerda.toFixed(1)}%`;
+
+      const prejuizoEcv = Math.round(pt.perda * 26000); // ~26 ECV/kWh
+      document.getElementById("pt-sel-prejuizo").textContent = `~${prejuizoEcv.toLocaleString('pt-PT')} ECV/mês`;
+      document.getElementById("pt-sel-divida").textContent = `${pt.divida.toLocaleString('pt-PT')} ECV`;
+      document.getElementById("pt-sel-clientes").textContent = `${pt.clientes} clientes ligados`;
+
+      const badge = document.getElementById("pt-sel-badge");
+      if (pt.status === "critico") {
+        badge.className = "badge badge-danger";
+        badge.textContent = "🚨 PERDA CRÍTICA CF1";
+      } else if (pt.status === "alerta") {
+        badge.className = "badge badge-warn";
+        badge.textContent = "⚠️ ALERTA DE PERDA";
+      } else {
+        badge.className = "badge badge-ok";
+        badge.textContent = "📗 BALANÇO NORMAL";
+      }
+    }
+
+    function renderizarRankingPTs3D() {
+      const container = document.getElementById("ranking-pts-3d-list");
+      if (!container) return;
+
+      const ordenados = [...DADOS_PTS_3D].sort((a, b) => b.taxa - a.taxa).slice(0, 5);
+      container.innerHTML = ordenados.map((pt, i) => {
+        const isAtivo = pt.id === ptSelecionado3D?.id ? "active" : "";
+        const cor = pt.status === "critico" ? "#E15759" : (pt.status === "alerta" ? "#F28E2B" : "#59A14F");
+        return `
+          <div class="rank-item ${isAtivo}" onclick="selecionarPT3DPorId('${pt.id}')" style="border-left:3.5px solid ${cor};">
+            <div class="rank-top">
+              <span><b>#${i+1}</b> ${pt.id} — ${pt.nome}</span>
+              <span style="color:${cor}; font-weight:700;">${pt.taxa.toFixed(1)}% perda</span>
+            </div>
+            <div class="rank-metrics">
+              <span>${pt.concelho}</span>
+              <span style="font-family:var(--font-mono);">${pt.divida.toLocaleString('pt-PT')} ECV</span>
+            </div>
+            <div class="rank-bar-track">
+              <div class="rank-bar-fill" style="width:${pt.taxa}%; background:${cor};"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selecionarPT3DPorId(ptId) {
+      const pt = DADOS_PTS_3D.find(p => p.id === ptId);
+      if (pt) selecionarPT3D(pt);
+    }
+
+    function alternarAutoRotacao() {
+      autoRotacao3D = !autoRotacao3D;
+      const btn = document.getElementById("btn-auto-rot");
+      if (btn) btn.textContent = autoRotacao3D ? "⏸ Pausar Giro" : "▶ Retomar Giro";
+    }
+
+    function resetarCamera3D() {
+      if (camera3D) {
+        camera3D.position.set(0, 48, 65);
+        if (controls3D) {
+          controls3D.target.set(0, 0, 0);
+          controls3D.update();
+        }
+      }
+      if (scene3D) {
+        scene3D.rotation.y = 0;
+      }
+    }
+
+    function filtrarPTNaTriagem() {
+      if (!ptSelecionado3D) return;
+      selecionarModulo('mod1');
+      const inputBusca = document.getElementById("f-busca");
+      const tipoBusca = document.getElementById("f-tipo-busca");
+      if (inputBusca && tipoBusca) {
+        tipoBusca.value = "pt";
+        inputBusca.value = ptSelecionado3D.id;
+        aplicarFiltros(1);
+      }
+    }
+
+    // =========================================================================
+    // MICROINTERAÇÃO 3D TILT NOS CARDS (EFEITO FÍSICO TÁTIL)
+    // =========================================================================
+    function ativarMicrointeracaoTilt3D() {
+      const cards = document.querySelectorAll('.kpi-card, .pnt-pattern-card, .action-card, .pt-card-balance');
+      cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const cx = rect.width / 2;
+          const cy = rect.height / 2;
+          const rotX = ((y - cy) / cy) * -5; // max 5 graus
+          const rotY = ((x - cx) / cx) * 5;
+          card.style.transform = `perspective(700px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateY(-2px)`;
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = '';
+        });
+      });
+    }
+
+    // Chamar inicialização do Tilt quando a página carregar
     window.addEventListener("DOMContentLoaded", () => {
+      setTimeout(ativarMicrointeracaoTilt3D, 500);
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem('santiago_theme') || 'light';
+      setTema(savedTheme);
       iniciarMapa();
       carregarListasFiltros();
       aplicarFiltros(1);
@@ -3518,13 +4678,50 @@
     // SIMULADOR FINANCEIRO DE RECUPERAÇÃO DE RECEITA (CASH-IN SIMULATOR)
     // =========================================================================
     const BASE_SIMULACAO = {
-      grandes: 2500000000, // ~2.5 Bilhões em contas > 250k ECV
-      gov: 1450000000,     // ~1.45 Bilhão em Autarquias e Estado
-      massa: 2100000000,   // ~2.1 Bilhões em Domésticos e PMEs
-      cf1: 108220000       // ~108.2 Milhões em autos de fraude CF1
+      grandes: 2599339517, // ~2.60 Bilhões em contas privadas > 250k ECV
+      gov: 2595538988,     // ~2.60 Bilhões em Autarquias, Estado e Empresas Públicas
+      massa: 1841940392,   // ~1.84 Bilhão em Domésticos e PMEs (< 250k ECV)
+      cf1: 108580309       // ~108.6 Milhões em autos de fraude CF1 com dívida
     };
 
+    function formatarBaseSim(val) {
+      if (val >= 1e9) return `${(val / 1e9).toFixed(2)} Bilhões ECV`;
+      if (val >= 1e6) return `${(val / 1e6).toFixed(1)} Milhões ECV`;
+      return fmtECV(val);
+    }
+
+    function formatarCurtoSim(val) {
+      if (val >= 1e9) return `${(val / 1e9).toFixed(2)} B ECV`;
+      if (val >= 1e6) return `${(val / 1e6).toFixed(1)} M ECV`;
+      return fmtECV(val);
+    }
+
     function atualizarSimulador() {
+      if (dadosResumoDivida) {
+        if (dadosResumoDivida.divida_grandes_priv > 0) BASE_SIMULACAO.grandes = Number(dadosResumoDivida.divida_grandes_priv);
+        if (dadosResumoDivida.divida_setor_publico > 0) BASE_SIMULACAO.gov = Number(dadosResumoDivida.divida_setor_publico);
+        if (dadosResumoDivida.divida_massa > 0) BASE_SIMULACAO.massa = Number(dadosResumoDivida.divida_massa);
+        if (dadosResumoDivida.cf1_divida_total > 0) BASE_SIMULACAO.cf1 = Number(dadosResumoDivida.cf1_divida_total);
+      }
+
+      const bLblGrandes = document.getElementById("base-lbl-grandes");
+      const mLblGrandes = document.getElementById("max-lbl-grandes");
+      const bLblGov = document.getElementById("base-lbl-gov");
+      const mLblGov = document.getElementById("max-lbl-gov");
+      const bLblMassa = document.getElementById("base-lbl-massa");
+      const mLblMassa = document.getElementById("max-lbl-massa");
+      const bLblCf1 = document.getElementById("base-lbl-cf1");
+      const mLblCf1 = document.getElementById("max-lbl-cf1");
+
+      if (bLblGrandes) bLblGrandes.textContent = `Base: ${formatarBaseSim(BASE_SIMULACAO.grandes)}`;
+      if (mLblGrandes) mLblGrandes.textContent = `50% (${formatarCurtoSim(BASE_SIMULACAO.grandes * 0.5)})`;
+      if (bLblGov) bLblGov.textContent = `Base: ${formatarBaseSim(BASE_SIMULACAO.gov)}`;
+      if (mLblGov) mLblGov.textContent = `50% (${formatarCurtoSim(BASE_SIMULACAO.gov * 0.5)})`;
+      if (bLblMassa) bLblMassa.textContent = `Base: ${formatarBaseSim(BASE_SIMULACAO.massa)}`;
+      if (mLblMassa) mLblMassa.textContent = `30% (${formatarCurtoSim(BASE_SIMULACAO.massa * 0.3)})`;
+      if (bLblCf1) bLblCf1.textContent = `Base: ${formatarBaseSim(BASE_SIMULACAO.cf1)}`;
+      if (mLblCf1) mLblCf1.textContent = `100% (${formatarCurtoSim(BASE_SIMULACAO.cf1)})`;
+
       const pGrandes = Number(document.getElementById("slider-sim-grandes")?.value || 15);
       const pGov = Number(document.getElementById("slider-sim-gov")?.value || 25);
       const pMassa = Number(document.getElementById("slider-sim-massa")?.value || 7);
@@ -3534,7 +4731,7 @@
       const valGov = BASE_SIMULACAO.gov * (pGov / 100);
       const valMassa = BASE_SIMULACAO.massa * (pMassa / 100);
       const valCf1 = BASE_SIMULACAO.cf1 * (pCf1 / 100);
-      const totalRecuperado = valGrandes + valGov + valMassa + valCf1;
+      const totalRecuperado = Math.round(valGrandes + valGov + valMassa + valCf1);
 
       // Atualizar labels dos sliders
       const elLGrandes = document.getElementById("lbl-sim-grandes");
@@ -3550,15 +4747,18 @@
       // Atualizar KPIs de Impacto no Caixa
       const elTot = document.getElementById("sim-res-total");
       const elTaxa = document.getElementById("sim-res-taxa");
+      const elTaxaAtual = document.getElementById("sim-res-taxa-atual");
       const elMensal = document.getElementById("sim-res-mensal");
 
       if (elTot) elTot.textContent = `+${fmtECV(totalRecuperado)}`;
 
-      const arrecadadoBase = dadosResumoDivida?.cob_total_2026 || 2194115146;
-      const totalDivida = dadosResumoDivida?.total_divida || 6157513692;
+      const arrecadadoBase = dadosResumoDivida?.cob_total_2026 || 2541070380;
+      const totalDivida = dadosResumoDivida?.total_divida || 8595747001;
+      const taxaAtual = (arrecadadoBase / (arrecadadoBase + totalDivida)) * 100;
       const novaTaxa = ((arrecadadoBase + totalRecuperado) / (arrecadadoBase + totalDivida)) * 100;
 
       if (elTaxa) elTaxa.textContent = `${novaTaxa.toFixed(1)}%`;
+      if (elTaxaAtual) elTaxaAtual.textContent = `Atual: ${taxaAtual.toFixed(1)}%`;
       if (elMensal) elMensal.textContent = `${(totalRecuperado / 12 / 1e6).toFixed(1)}M ECV/mês`;
     }
 
@@ -3627,18 +4827,26 @@
       if (!ptNome) return;
       ptAtivoRoteiro = ptNome;
 
-      // Atualizar métricas resumidas do PT a partir dos dados já em memória ou padrão
-      const ptInfo = (dadosResumoDivida?.top_pts_divida || []).find(p => p.pt === ptNome);
+      const selPt = document.getElementById("sel-roteiro-pt");
+      if (selPt && selPt.value !== ptNome) {
+        const existe = Array.from(selPt.options).some(o => o.value === ptNome);
+        if (!existe) {
+          const opt = document.createElement("option");
+          opt.value = ptNome;
+          opt.textContent = `⚡ PT ${ptNome}`;
+          selPt.appendChild(opt);
+        }
+        selPt.value = ptNome;
+      }
+
+      // Atualizar métricas resumidas do PT a partir dos dados em memória ou consultar resumo exato
+      const listaPtsMem = [...(dadosResumoDivida?.top_pts_maior_divida || []), ...(dadosResumoDivida?.top_pts_divida || [])];
+      const ptInfo = listaPtsMem.find(p => p.pt === ptNome);
       if (ptInfo) {
         document.getElementById("pt-card-divida").textContent = fmtECV(ptInfo.soma_divida || 0);
         document.getElementById("pt-card-contratos").textContent = `${fmtInt(ptInfo.qtd_contratos || 0)} clientes`;
         document.getElementById("pt-card-cf1").textContent = `${fmtInt(ptInfo.qtd_cf1 || 0)} autos`;
         document.getElementById("pt-card-cobrado").textContent = fmtECV(ptInfo.soma_cob_2026 || 0);
-      } else {
-        document.getElementById("pt-card-divida").textContent = "--";
-        document.getElementById("pt-card-contratos").textContent = "--";
-        document.getElementById("pt-card-cf1").textContent = "--";
-        document.getElementById("pt-card-cobrado").textContent = "--";
       }
 
       const tbody = document.getElementById("corpo-preview-roteiro-pt");
@@ -3647,16 +4855,26 @@
       }
 
       try {
-        const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?pt=eq.${ptNome}&valor=gt.0&order=valor.desc&limit=25&select=cil,id_cliente,nome,localidade,contador,valor,qtd,cf1_qtd_autos,cf1_estado_juridico,status_cobranca,pt,desc_uni`, {
+        const promLista = fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?pt=eq.${encodeURIComponent(ptNome)}&valor=gt.0&order=valor.desc&limit=25&select=cil,id_cliente,nome,localidade,contador,valor,qtd,cf1_qtd_autos,cf1_estado_juridico,status_cobranca,pt,desc_uni`, {
           headers: HEADERS
-        });
-        clientesRoteiroPT = await r.json();
+        }).then(r => r.json());
 
-        // Se o ptInfo não estava no top 10, atualizar agora com os clientes
-        if (!ptInfo && clientesRoteiroPT.length > 0) {
-          const somaDiv = clientesRoteiroPT.reduce((acc, c) => acc + (c.valor || 0), 0);
-          document.getElementById("pt-card-divida").textContent = fmtECV(somaDiv);
-          document.getElementById("pt-card-contratos").textContent = `${fmtInt(clientesRoteiroPT.length)}+ clientes`;
+        const promResumoPT = !ptInfo
+          ? fetch(`${SUPABASE_URL}/rest/v1/rpc/get_resumo_santiago`, {
+              method: "POST",
+              headers: HEADERS,
+              body: JSON.stringify({ p_pt: ptNome, p_divida: "gt0" })
+            }).then(r => r.json())
+          : Promise.resolve(null);
+
+        const [listaAlvos, resumoPT] = await Promise.all([promLista, promResumoPT]);
+        clientesRoteiroPT = Array.isArray(listaAlvos) ? listaAlvos : [];
+
+        if (resumoPT) {
+          document.getElementById("pt-card-divida").textContent = fmtECV(resumoPT.total_divida || 0);
+          document.getElementById("pt-card-contratos").textContent = `${fmtInt(resumoPT.com_divida || resumoPT.total_contratos || 0)} clientes`;
+          document.getElementById("pt-card-cf1").textContent = `${fmtInt(resumoPT.total_autos_cf1 || resumoPT.com_cf1 || 0)} autos`;
+          document.getElementById("pt-card-cobrado").textContent = fmtECV(resumoPT.cob_total_2026 || 0);
         }
 
         renderizarPreviewRoteiroPT(clientesRoteiroPT);
@@ -3789,7 +5007,13 @@
       const elOrdem = document.getElementById("div-ordem");
 
       if (elBusca) elBusca.value = "";
+      const elDivIlha = document.getElementById("div-ilha");
+      if (elDivIlha) elDivIlha.value = "";
       if (elUni) elUni.value = "";
+      const badgeConcelho = document.getElementById("badge-concelhos-total");
+      if (badgeConcelho) badgeConcelho.textContent = "Região Sul (4 Ilhas)";
+      const elDivSub = document.getElementById("lbl-kpi-div-subtipo");
+      if (elDivSub) elDivSub.textContent = "REGIÃO SUL (ECV)";
       if (elLoc) elLoc.value = "";
       if (elGrupo) elGrupo.value = "";
       if (elProd) elProd.value = "";
@@ -3800,6 +5024,7 @@
       if (elOrdem) elOrdem.value = "valor.desc";
 
       document.querySelectorAll(".action-card").forEach(c => c.classList.remove("active"));
+      if (typeof atualizarBotoesProdutoDivida === "function") atualizarBotoesProdutoDivida("");
     }
 
     function resetarFiltrosDivida() {
@@ -3824,16 +5049,44 @@
       } else if (tipo === "governo_autarquia") {
         document.getElementById("card-act-gov")?.classList.add("active");
         const g = document.getElementById("div-grupo");
-        if (g) g.value = "Autarquia";
+        if (g) g.value = "__SETOR_PUBLICO__";
       } else if (tipo === "acordo_amortizacao") {
         document.getElementById("card-act-deal")?.classList.add("active");
         const c = document.getElementById("div-cobranca");
         const q = document.getElementById("div-qtd-fat");
         if (c) c.value = "Devedor em Amortização";
         if (q) q.value = "4a12";
+      } else if (tipo === "ads_especial") {
+        document.getElementById("card-act-ads")?.classList.add("active");
+        const p = document.getElementById("div-produto");
+        if (p) p.value = "AG";
+        atualizarBotoesProdutoDivida("AG");
       }
 
       aplicarFiltrosDivida(1);
+    }
+
+    function selecionarProdutoDivida(prod) {
+      const el = document.getElementById("div-produto");
+      if (el) el.value = prod;
+      atualizarBotoesProdutoDivida(prod);
+      aplicarFiltrosDivida(1);
+    }
+
+    function atualizarBotoesProdutoDivida(prod) {
+      const bTodos = document.getElementById("btn-prod-todos");
+      const bElet = document.getElementById("btn-prod-elet");
+      const bAgua = document.getElementById("btn-prod-agua");
+
+      if (bTodos) {
+        bTodos.className = "btn-prod-pill" + (prod === "" ? " active" : "");
+      }
+      if (bElet) {
+        bElet.className = "btn-prod-pill" + (prod === "__ELETRICIDADE__" ? " active" : "");
+      }
+      if (bAgua) {
+        bAgua.className = "btn-prod-pill" + (prod === "AG" ? " active-water" : "");
+      }
     }
 
     function filtrarConcelhoDivida(concelho) {
@@ -3847,6 +5100,7 @@
       resetarFiltrosDividaInputs();
       const el = document.getElementById("div-localidade");
       if (el) el.value = pt;
+      carregarRoteiroPT(pt);
       aplicarFiltrosDivida(1);
     }
 
@@ -3856,6 +5110,7 @@
       p.append("valor", "gt.0");
 
       const buscaRaw = (document.getElementById("div-busca")?.value || "").trim();
+      const ilha = document.getElementById("div-ilha")?.value || "";
       const uni = document.getElementById("div-uni")?.value || "";
       const loc = (document.getElementById("div-localidade")?.value || "").trim();
       const grupo = document.getElementById("div-grupo")?.value || "";
@@ -3866,12 +5121,21 @@
       const qtdFat = document.getElementById("div-qtd-fat")?.value || "";
       const ordem = document.getElementById("div-ordem")?.value || "valor.desc";
 
+      if (ilha) p.append("ilha", `eq.${ilha}`);
       if (uni) p.append("desc_uni", `eq.${uni}`);
       if (loc) {
         p.append("or", `(localidade.ilike.*${loc}*,pt.ilike.*${loc}*)`);
       }
-      if (grupo) p.append("grup_tp_cli", `eq.${grupo}`);
-      if (prod) p.append("produto", `eq.${prod}`);
+      if (grupo === "__SETOR_PUBLICO__") {
+        p.append("grup_tp_cli", "in.(Autarquia,Estado,Empresa Publica,Empresa Pública)");
+      } else if (grupo) {
+        p.append("grup_tp_cli", `eq.${grupo}`);
+      }
+      if (prod === "__ELETRICIDADE__") {
+        p.append("produto", "in.(EB,EE,EM)");
+      } else if (prod) {
+        p.append("produto", `eq.${prod}`);
+      }
       if (cob) p.append("status_cobranca", `eq.${cob}`);
 
       // Faixas de Dívida
@@ -3947,6 +5211,9 @@
           if (m && m[1] !== "*") totalDevedoresFiltrados = parseInt(m[1], 10);
         }
 
+        const elContTot = document.getElementById("div-contagem-total");
+        if (elContTot) elContTot.textContent = `${fmtInt(totalDevedoresFiltrados)} contratos encontrados`;
+
         registosDividaPagina = await r.json();
         renderizarTabelaDivida(registosDividaPagina);
         atualizarPaginacaoDivida();
@@ -3957,13 +5224,16 @@
     }
 
     async function atualizarKPIsDivida(token) {
+      const ilha = document.getElementById("div-ilha")?.value || null;
       const uni = document.getElementById("div-uni")?.value || null;
+      const prod = document.getElementById("div-produto")?.value || null;
       const grupo = document.getElementById("div-grupo")?.value || null;
       const cob = document.getElementById("div-cobranca")?.value || null;
       const cf1 = document.getElementById("div-cf1")?.value || "";
+      const qtdFat = document.getElementById("div-qtd-fat")?.value || "";
       const loc = (document.getElementById("div-localidade")?.value || "").trim();
       const busca = (document.getElementById("div-busca")?.value || "").trim();
-      const infoBusca = busca ? interpretarBusca(busca, "auto") : {};
+      const infoBusca = busca ? interpretarBusca(busca, "tudo") : {};
 
       let cf1FiltroRpc = null;
       if (cf1 === "com_cf1") cf1FiltroRpc = "__COM_CF1__";
@@ -3971,6 +5241,16 @@
       else if (cf1 === "sem_cf1") cf1FiltroRpc = "__SEM_CF1__";
 
       try {
+        const faixa = document.getElementById("div-faixa")?.value || "todas";
+        let faixaRpc = "gt0";
+        if (faixa === "grandes") faixaRpc = "gte1000000";
+        else if (faixa === "250k") faixaRpc = "gte250000";
+        else if (faixa === "50k") faixaRpc = "gte50000";
+        else if (faixa === "10k") faixaRpc = "gte10000";
+        else if (faixa === "ate10k") faixaRpc = "ate10k";
+
+        const pDividaRpc = qtdFat ? `${faixaRpc}|${qtdFat}` : faixaRpc;
+
         const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_resumo_santiago`, {
           method: "POST",
           headers: HEADERS,
@@ -3986,9 +5266,11 @@
             p_pt: loc || null,
             p_cf1_filtro: cf1FiltroRpc,
             p_status_cobranca: cob,
-            p_divida: "gt0",
+            p_divida: pDividaRpc,
             p_busca: infoBusca.texto || null,
-            p_tipo_busca: infoBusca.modo || "auto"
+            p_tipo_busca: infoBusca.modo || "tudo",
+            p_ilha: ilha,
+            p_produto: prod || null
           })
         });
         if (token !== tokenFiltroDivida) return;
@@ -3996,7 +5278,8 @@
         dadosResumoDivida = d;
 
         const totDiv = d.total_divida || 0;
-        const totCont = d.total_contratos || d.com_divida || 0;
+        const totCont = d.com_divida || d.total_contratos || 0;
+        const qtdDevedores = totCont;
         const semPagDiv = d.divida_sem_pagamento || 0;
         const qtdSemPag = d.devedor_sem_pagamento || 0;
         const qtdAmort = d.com_cobranca_2026 || 0;
@@ -4009,16 +5292,57 @@
 
         // KPI 1: Dívida Total Carteira
         document.getElementById("kpi-div-total").textContent = fmtECV(totDiv);
-        document.getElementById("kpi-div-total-sub").textContent = `${fmtInt(totCont)} clientes (${fmtInt(totFat)} faturas)`;
+        const elDivSubtipo = document.getElementById("lbl-kpi-div-subtipo");
+        if (elDivSubtipo) {
+          elDivSubtipo.textContent = uni ? `${uni.toUpperCase()} (ECV)` : (ilha ? `${ilha.toUpperCase()} (ECV)` : "REGIÃO SUL (ECV)");
+        }
+        document.getElementById("kpi-div-total-sub").textContent = `${fmtInt(qtdDevedores)} devedores (${fmtInt(totFat)} faturas)`;
 
         // KPI 2: Inadimplência Crítica (Sem Amortização)
         document.getElementById("kpi-div-critica").textContent = fmtECV(semPagDiv);
         const pctCritica = totDiv > 0 ? ((semPagDiv / totDiv) * 100).toFixed(1) : "0.0";
         document.getElementById("kpi-div-critica-sub").textContent = `${fmtInt(qtdSemPag)} clientes (${pctCritica}% estagnada)`;
 
-        // KPI 3: Cobrança Realizada 2026
+        // KPI 3: Cobrança Realizada 2026 (Harmonizado com a Aba de Contratos)
         document.getElementById("kpi-div-arrecadado").textContent = fmtECV(cobTotal2026);
-        document.getElementById("kpi-div-arrecadado-sub").textContent = `${fmtInt(qtdAmort)} pagando com saldo`;
+        document.getElementById("kpi-div-arrecadado-sub").textContent = `${fmtInt(qtdAmort)} pagadores (2026)`;
+
+        // Atualizar Faixa Dinâmica de Produto & Destaque AdS
+        const porProd = d.por_produto || [];
+        const itemAg = porProd.find(p => p.produto === "AG");
+        const divAg = itemAg ? Number(itemAg.soma_divida || 0) : 0;
+        const cntAg = itemAg ? Number(itemAg.qtd_devedores || itemAg.qtd_contratos || 0) : 0;
+        const fatAg = itemAg ? Number(itemAg.soma_faturas || 42) : 0;
+        const cobAg = itemAg ? Number(itemAg.soma_cob_2026 || 0) : 0;
+
+        const itensElet = porProd.filter(p => p.produto !== "AG");
+        const divElet = itensElet.reduce((s, p) => s + Number(p.soma_divida || 0), 0);
+        const cntElet = itensElet.reduce((s, p) => s + Number(p.qtd_devedores || p.qtd_contratos || 0), 0);
+        const fatElet = itensElet.reduce((s, p) => s + Number(p.soma_faturas || 0), 0);
+        const cobElet = itensElet.reduce((s, p) => s + Number(p.soma_cob_2026 || 0), 0);
+
+        const elValElet = document.getElementById("prod-val-elet");
+        const elDetElet = document.getElementById("prod-det-elet");
+        const elPctElet = document.getElementById("prod-pct-elet");
+        const elValAgua = document.getElementById("prod-val-agua");
+        const elDetAgua = document.getElementById("prod-det-agua");
+        const elPctAgua = document.getElementById("prod-pct-agua");
+        const elPillTot = document.getElementById("pill-tot-div");
+        const elPillElet = document.getElementById("pill-elet-div");
+        const elPillAgua = document.getElementById("pill-agua-div");
+
+        if (elValElet) elValElet.textContent = fmtECV(divElet);
+        if (elDetElet) elDetElet.textContent = `${fmtInt(cntElet)} devedores (${fmtInt(fatElet)} fat.) • ${fmtECV(cobElet)} cobrado em 2026`;
+        if (elPctElet) elPctElet.textContent = totDiv > 0 ? `${((divElet / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
+
+        if (elValAgua) elValAgua.textContent = fmtECV(divAg);
+        if (elDetAgua) elDetAgua.textContent = `${fmtInt(cntAg)} contratos especiais (${fmtInt(fatAg)} faturas) • ${fmtECV(cobAg)} cobrado`;
+        if (elPctAgua) elPctAgua.textContent = totDiv > 0 ? `${((divAg / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
+
+        if (elPillTot) elPillTot.textContent = fmtECV(totDiv);
+        if (elPillElet) elPillElet.textContent = fmtECV(divElet);
+        if (elPillAgua) elPillAgua.textContent = fmtECV(divAg);
+        if (typeof atualizarBotoesProdutoDivida === "function") atualizarBotoesProdutoDivida(prod || "");
 
         // KPI 4: Taxa de Recuperação 2026
         const baseRecup = cobTotal2026 + totDiv;
@@ -4032,9 +5356,13 @@
         document.getElementById("kpi-div-ticket-medio").textContent = fmtECV(ticketMedio);
         document.getElementById("kpi-div-ticket-medio-sub").textContent = `Média: ${medFat} fat./cliente`;
 
-        // KPI 6: Concentração Grandes Contas
-        document.getElementById("kpi-div-grandes").textContent = fmtECV(totDiv * 0.72); // Pareto referencial
-        document.getElementById("kpi-div-grandes-sub").textContent = `~72% detido por >250k ECV`;
+        // KPI 6: Concentração Top Devedores (Pareto Real > 250k ECV e > 1M ECV)
+        const divGrandes250k = d.divida_grandes_250k !== undefined ? Number(d.divida_grandes_250k) : Math.round(totDiv * 0.776);
+        const qtdGrandes250k = d.qtd_grandes_250k !== undefined ? Number(d.qtd_grandes_250k) : 0;
+        const qtdMilionarios = d.qtd_milionarios_1m !== undefined ? Number(d.qtd_milionarios_1m) : 0;
+        const pctPareto = totDiv > 0 ? ((divGrandes250k / totDiv) * 100).toFixed(1) : "0.0";
+        document.getElementById("kpi-div-grandes").textContent = fmtECV(divGrandes250k);
+        document.getElementById("kpi-div-grandes-sub").textContent = `${fmtInt(qtdGrandes250k)} contas >250k (${pctPareto}% da dívida) • ${fmtInt(qtdMilionarios)} >1M`;
 
         // KPI 7: Devedores com Auto CF1
         document.getElementById("kpi-div-cf1").textContent = `${fmtInt(comCf1)} clientes`;
@@ -4042,13 +5370,13 @@
 
         // KPI 8: Carteira em Risco
         document.getElementById("kpi-div-risco").textContent = `${fmtInt(crit + alto)} clientes`;
-        document.getElementById("kpi-div-risco-sub").textContent = `${fmtInt(crit)} Crít. / ${fmtInt(alto)} Alto • Sc: ${d.score_medio || 0}`;
+        document.getElementById("kpi-div-risco-sub").textContent = `${fmtInt(crit)} Crít. / ${fmtInt(alto)} Alto • Sc: ${d.score_medio || 0}/100`;
 
-        document.getElementById("div-contagem-total").textContent = `${fmtInt(totalDevedoresFiltrados || totCont)} contratos encontrados`;
+        document.getElementById("div-contagem-total").textContent = `${fmtInt(totCont)} contratos encontrados`;
 
-        // Renderizar Painéis de Distribuição (Concelhos & PTs)
+        // Renderizar Painéis de Distribuição (Concelhos & PTs com Maior Dívida)
         renderizarDistribuicaoConcelhos(d.por_unidade || []);
-        renderizarTopPTsDivida(d.top_pts_divida || []);
+        renderizarTopPTsDivida(d.top_pts_maior_divida || d.top_pts_divida || []);
         atualizarSimulador();
         if (clientesRoteiroPT.length === 0) {
           carregarRoteiroPT(ptAtivoRoteiro);
@@ -4136,6 +5464,11 @@
       const cf1Qtd = Number(r.cf1_qtd_autos || 0);
       const cf1Jur = r.cf1_estado_juridico || "";
 
+      // 0. Caso Estratégico Especial AdS (Água)
+      if (r.produto === "AG" || (r.nome && (r.nome.toUpperCase().includes("AGUAS DE SANTIAGO") || r.nome.toUpperCase().includes("ADS")))) {
+        return `<span class="badge" style="background:#083344; color:#38BDF8; border:1px solid #0284C7; font-weight:700;" title="Protocolo Governamental de Encontro de Contas AdS">💧 Protocolo Especial AdS</span>`;
+      }
+
       // 1. Fraude CF1 com MP ou reincidência
       if (cf1Qtd > 0) {
         if (cf1Jur === "Enviado ao MP" || cf1Jur === "A enviar ao MP") {
@@ -4202,16 +5535,21 @@
           : `<span style="color:var(--text-muted); font-size:11px;">—</span>`;
 
         const badgeAcao = calcularAcaoRecomendada(r);
+        const isAdS = (r.produto === "AG" || (r.nome && (r.nome.toUpperCase().includes("AGUAS DE SANTIAGO") || r.nome.toUpperCase().includes("ADS"))));
+        const rowStyle = isAdS ? `style="background:rgba(6,182,212,0.08); border-left:4px solid #06B6D4;"` : "";
+        const nomeHtml = isAdS 
+          ? `<div style="font-weight:700; color:#E0F2FE;">${r.nome}</div><span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-size:9.5px; font-weight:700; margin-top:2px; display:inline-block;">💧 CONTA ESPECIAL AdS (ÁGUA)</span>`
+          : `<span style="font-weight:500;">${r.nome || '—'}</span>`;
 
         return `
-          <tr>
+          <tr ${rowStyle}>
             <td style="font-family:var(--font-mono); font-weight:600; color:var(--accent-cyan);">${r.cil}</td>
             <td style="font-family:var(--font-mono); color:var(--text-muted);">${r.id_cliente || r.id || '—'}</td>
-            <td style="font-weight:500; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.nome || ''}">${r.nome || '—'}</td>
+            <td style="max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.nome || ''}">${nomeHtml}</td>
             <td><span class="badge" style="background:#131C2B; border:1px solid var(--border-bright);">${r.desc_uni || '—'}</span></td>
             <td style="color:var(--text-secondary); max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.localidade || ''} • PT: ${r.pt || '-'}">${r.localidade || '—'}${r.pt ? ' <span style="color:var(--accent-cyan); font-family:var(--font-mono); font-size:10px;">(' + r.pt + ')</span>' : ''}</td>
             <td>${r.grup_tp_cli || '—'}</td>
-            <td><span class="badge" style="font-family:var(--font-mono);">${r.produto || '—'}</span></td>
+            <td>${r.produto === 'AG' ? '<span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-weight:700; padding:2px 8px;">💧 AG (Água)</span>' : `<span class="badge" style="font-family:var(--font-mono);">${r.produto || '—'}</span>`}</td>
             <td style="text-align:right; font-family:var(--font-mono); ${qtdFat > 12 ? 'color:#F87171; font-weight:700;' : ''}">${fmtInt(qtdFat)}</td>
             <td style="text-align:right;">${badgeDiv}</td>
             <td style="text-align:right; font-family:var(--font-mono); color:#34D399;">${pago2026 > 0 ? fmtInt(pago2026) + ' ECV' : '<span style="color:var(--text-muted);">0</span>'}</td>
