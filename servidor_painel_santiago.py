@@ -19,6 +19,9 @@ class PainelHandler(SimpleHTTPRequestHandler):
         if caminho in ("/", "/index.html", "/painel", "/painel_santiago.html"):
             self.path = "/painel_santiago.html"
             return True
+        if caminho == "/config_santiago.js":
+            self.path = "/config_santiago.js"
+            return True
         if caminho in ("/apresentacao", "/apresentacao.html", "/apresentacao_edec_administracao.html"):
             self.path = "/apresentacao_edec_administracao.html"
             return True

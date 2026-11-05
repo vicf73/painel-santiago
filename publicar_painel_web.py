@@ -15,6 +15,7 @@ OWNER = "vicf73"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PAINEL_PATH = os.path.join(BASE_DIR, "painel_santiago.html")
 APRESENTACAO_PATH = os.path.join(BASE_DIR, "apresentacao_edec_administracao.html")
+CONFIG_JS_PATH = os.path.join(BASE_DIR, "config_santiago.js")
 
 
 def obter_token_github() -> str:
@@ -101,6 +102,7 @@ def publicar():
 
     # 2. Enviar painel_santiago.html como index.html e painel_santiago.html
     print("A enviar Painel Santiago (SCADA, Triagem, Dívida & Inadimplência)...")
+    enviar_ficheiro(headers, CONFIG_JS_PATH, "config_santiago.js", "Atualização de config_santiago.js")
     enviar_ficheiro(headers, PAINEL_PATH, "index.html", "Atualização do Painel Santiago (index.html)")
     enviar_ficheiro(headers, PAINEL_PATH, "painel_santiago.html", "Atualização do Painel Santiago (painel_santiago.html)")
 
