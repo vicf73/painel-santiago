@@ -3532,7 +3532,8 @@
             p_busca: infoBusca.texto || null,
             p_tipo_busca: infoBusca.modo || "auto",
             p_ilha: (document.getElementById("f-ilha") ? document.getElementById("f-ilha").value : null) || null,
-            p_produto: (document.getElementById("f-produto") ? document.getElementById("f-produto").value : null) || null
+            p_produto: (document.getElementById("f-produto") ? document.getElementById("f-produto").value : null) || null,
+            p_empresa: null
           })
         });
         if (tokenAtual && tokenAtual !== ultimoTokenFiltro) return;
