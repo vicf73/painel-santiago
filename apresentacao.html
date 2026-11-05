@@ -1411,6 +1411,10 @@
                         <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-70">-- devedores (-- fat.) • Dívida Antiga Legada</div>
                     </div>
                 </div>
+                <!-- Faixa de Evolução Histórica 2026 (Etapa 4: santiago_snapshot_mensal) -->
+                <div id="ca-snap-evolucao-row" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-family:var(--font-mono); font-size:0.72rem; color:var(--text-secondary);">
+                    <span>📈 <strong>Evolução 2026 (Fev ➔ Set):</strong> A sincronizar histórico mensal...</span>
+                </div>
             </div>
         </section>
 
@@ -2312,6 +2316,29 @@
 
                 if (badgeTxt) badgeTxt.textContent = 'Supabase Live • ' + nomeAmbito;
                 try {
+                    const escopoSnap = ilhaFiltro ? (ilhaFiltro.charAt(0).toUpperCase() + ilhaFiltro.slice(1).toLowerCase()) : 'TODAS';
+                    const { data: snapsCA } = await client.from('santiago_snapshot_mensal').select('*').eq('ilha', escopoSnap).order('ano_mes', { ascending: true });
+                    if (Array.isArray(snapsCA) && snapsCA.length >= 2) {
+                        const s0 = snapsCA[0], s1 = snapsCA[snapsCA.length - 1];
+                        const fmtM = (v) => (Math.abs(v) >= 1e9 ? (v/1e9).toFixed(2).replace('.',',')+' B' : (v/1e6).toFixed(1).replace('.',',')+' M');
+                        const dTot = Number(s1.divida_total) - Number(s0.divida_total);
+                        const d17 = Number(s1.divida_edec_17) - Number(s0.divida_edec_17);
+                        const d21 = Number(s1.divida_electra_21) - Number(s0.divida_electra_21);
+                        const d07 = Number(s1.divida_sul_07) - Number(s0.divida_sul_07);
+                        const d70 = Number(s1.divida_sarl_70) - Number(s0.divida_sarl_70);
+                        const rowSnap = document.getElementById('ca-snap-evolucao-row');
+                        if (rowSnap) {
+                            rowSnap.innerHTML = `
+                                <span>📈 <strong>Evolução Real (${s0.label_periodo} ➔ ${s1.label_periodo}):</strong> Stock ${fmtM(s0.divida_total)} ➔ <strong>${fmtM(s1.divida_total)} ECV</strong> (${dTot>=0?'+':''}${fmtM(dTot)})</span>
+                                <span style="display:flex; gap:10px; flex-wrap:wrap;">
+                                    <span style="color:#60A5FA;">17-EDEC: <strong>${d17>=0?'+':''}${fmtM(d17)}</strong></span>
+                                    <span style="color:#FBBF24;">21-ELECTRA: <strong>${d21>=0?'+':''}${fmtM(d21)}</strong></span>
+                                    <span style="color:#34D399;">07-Sul: <strong>${d07>=0?'+':''}${fmtM(d07)} ✔</strong></span>
+                                    <span style="color:#34D399;">70-SARL: <strong>${d70>=0?'+':''}${fmtM(d70)} ✔</strong></span>
+                                </span>
+                            `;
+                        }
+                    }
                     const { data: logsEtl } = await client.from('santiago_etl_execucoes').select('executado_em,total_contratos,reconciliacao_ok').order('executado_em', { ascending: false }).limit(1);
                     if (logsEtl && logsEtl[0]) {
                         const dtStr = new Date(logsEtl[0].executado_em).toLocaleString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
