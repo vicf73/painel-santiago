@@ -4,7 +4,7 @@ Plataforma unificada de telemetria comercial, auditoria de perdas não técnicas
 
 ## 🚀 Links de Acesso Online 24/7 (Nuvem):
 - 📊 **Painel Operacional Principal (SCADA):** https://vicf73.github.io/painel-santiago/
-- 📑 **Apresentação Executiva ao Conselho de Administração:** https://vicf73.github.io/painel-santiago/apresentacao.html
+- 📑 **TABELA STORY EXECUTIVO:** https://vicf73.github.io/painel-santiago/apresentacao.html
 - 🏢 **Versão Alternativa do Painel:** https://vicf73.github.io/painel-santiago/painel_santiago.html
 
 ## ⚡ Conectividade
