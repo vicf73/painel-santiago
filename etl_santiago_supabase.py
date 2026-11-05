@@ -1038,6 +1038,8 @@ def preparar_registos_supabase(df: pd.DataFrame) -> list[dict]:
         "nivel_risco": df["Nivel_Risco"],
         "motivo_risco": df["Motivo_Risco"],
         "criterio": df["Criterio"] if "Criterio" in df.columns else None,
+        "ultima_carga_em": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "ativo_extracao": True,
     })
     # Remover linhas sem CIL
     df_db = df_db[df_db["cil"].notna()].copy()
@@ -1060,7 +1062,53 @@ def chave_escrita_valida() -> bool:
         return False
 
 
+def validar_e_reconciliar_etl(df: pd.DataFrame) -> dict:
+    """
+    Etapa 3: Valida integridade e reconcilia a soma das dívidas por empresa (17, 21, 07, 70)
+    contra a dívida total consolidada antes de permitir a carga.
+    """
+    tot_contratos = len(df)
+    por_ilha = df["ILHA"].value_counts().to_dict() if "ILHA" in df.columns else {}
+    div_total = float(pd.to_numeric(df["VALOR"], errors="coerce").fillna(0.0).sum())
+    div_17 = float(pd.to_numeric(df.get("divida_edec", 0), errors="coerce").fillna(0.0).sum())
+    div_21 = float(pd.to_numeric(df.get("divida_electra", 0), errors="coerce").fillna(0.0).sum())
+    div_07 = float(pd.to_numeric(df.get("divida_sul", 0), errors="coerce").fillna(0.0).sum())
+    div_70 = float(pd.to_numeric(df.get("divida_sarl", 0), errors="coerce").fillna(0.0).sum())
+    soma_empresas = div_17 + div_21 + div_07 + div_70
+    dif_abs = abs(div_total - soma_empresas)
+    dif_pct = (dif_abs / div_total * 100.0) if div_total > 0 else 0.0
+    reconciliado = (tot_contratos >= 50000) and (dif_pct <= 0.5)
+
+    resumo = {
+        "executado_em": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "total_contratos": int(tot_contratos),
+        "contratos_santiago": int(por_ilha.get("Santiago", 0)),
+        "contratos_fogo": int(por_ilha.get("Fogo", 0)),
+        "contratos_maio": int(por_ilha.get("Maio", 0)),
+        "contratos_brava": int(por_ilha.get("Brava", 0)),
+        "divida_total": round(div_total, 2),
+        "divida_edec_17": round(div_17, 2),
+        "divida_electra_21": round(div_21, 2),
+        "divida_sul_07": round(div_07, 2),
+        "divida_sarl_70": round(div_70, 2),
+        "reconciliacao_ok": bool(reconciliado),
+        "diferenca_reconciliacao_pct": round(dif_pct, 4),
+    }
+
+    print(f"  [8.5/9] Reconciliação de Auditoria (Etapa 3):")
+    print(f"          -> Contratos: {tot_contratos:,} | Dívida Total: {div_total:,.2f} ECV")
+    print(f"          -> Soma Empresas (17+21+07+70): {soma_empresas:,.2f} ECV (Dif: {dif_pct:.4f}%)")
+    print(f"          -> Status Reconciliação: {'APROVADO ✔' if reconciliado else 'FALHOU ✖'}")
+    return resumo
+
+
 def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: int = 3):
+    resumo_auditoria = validar_e_reconciliar_etl(df)
+    if not resumo_auditoria["reconciliacao_ok"]:
+        raise RuntimeError(
+            f"Carga abortada pela Reconciliação (Etapa 3): Diferença={resumo_auditoria['diferenca_reconciliacao_pct']}% "
+            f"ou total de contratos inválido ({resumo_auditoria['total_contratos']})."
+        )
     if not chave_escrita_valida():
         print("=" * 72)
         print(" [BLOQUEADO] Sincronização Supabase NÃO executada.")
@@ -1114,8 +1162,26 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
                 pct = (enviados / total) * 100
                 print(f"    -> Progresso Supabase: {enviados:,}/{total:,} ({pct:.1f}%) [{time.time() - t0:.1f}s]")
 
+    duracao = round(time.time() - t0, 2)
+    # Etapa 3: Registar execução oficial na tabela public.santiago_etl_execucoes
+    try:
+        log_payload = {
+            **resumo_auditoria,
+            "duracao_segundos": duracao,
+            "erros_lotes": erros,
+            "observacoes": f"Sincronizados {enviados:,}/{total:,} registos via ETL Python",
+        }
+        requests.post(
+            f"{SUPABASE_URL.rstrip('/')}/rest/v1/santiago_etl_execucoes",
+            headers=headers,
+            json=log_payload,
+            timeout=20,
+        )
+    except Exception as exc_log:
+        print(f"    [AVISO] Não foi possível gravar log em santiago_etl_execucoes: {exc_log}")
+
     print("=" * 72)
-    print(f" SINCRONIZAÇÃO SUPABASE CONCLUÍDA EM {time.time() - t0:.2f}s!")
+    print(f" SINCRONIZAÇÃO SUPABASE CONCLUÍDA EM {duracao:.2f}s!")
     print(f" Total sincronizado: {enviados:,} / {total:,} registos | Lotes com erro: {erros}")
     print("=" * 72)
 

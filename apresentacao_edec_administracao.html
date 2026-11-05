@@ -2311,6 +2311,14 @@
                 const bEfMe = document.getElementById('bar-efic-meta'); if (bEfMe) bEfMe.style.width = Math.min(100, novaTaxa) + '%';
 
                 if (badgeTxt) badgeTxt.textContent = 'Supabase Live • ' + nomeAmbito;
+                try {
+                    const { data: logsEtl } = await client.from('santiago_etl_execucoes').select('executado_em,total_contratos,reconciliacao_ok').order('executado_em', { ascending: false }).limit(1);
+                    if (logsEtl && logsEtl[0]) {
+                        const dtStr = new Date(logsEtl[0].executado_em).toLocaleString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                        const fStatus = document.getElementById('footerSourceStatus');
+                        if (fStatus) fStatus.innerHTML = 'Fonte: Supabase RPC <code>get_resumo_santiago</code> • Última Carga Conciliada: <strong>' + dtStr + ' ✔</strong>';
+                    }
+                } catch (eLog) {}
                 if (badge) badge.style.borderColor = 'rgba(89, 161, 79, 0.45)';
             } catch (err) {
                 console.warn('Fallback para dados consolidados offline:', err);
