@@ -2709,6 +2709,31 @@
             <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-70">-- devedores (-- fat.) • Dívida Antiga Legada</div>
           </div>
         </div>
+
+        <!-- ETAPA 4: EVOLUÇÃO HISTÓRICA MENSAL POR EMPRESA CREDORA (SNAPSHOT_MENSAL) -->
+        <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border-dim);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-family:var(--font-display); font-size:12.5px; font-weight:800; color:var(--text-primary);">
+                📈 EVOLUÇÃO HISTÓRICA 2026 POR EMPRESA CREDORA (Fev/2026 ➔ Set/2026)
+              </span>
+              <span class="badge" style="background:rgba(16,185,129,0.15); color:#34D399; border:1px solid rgba(16,185,129,0.35); font-size:10px;" id="snap-scope-badge">Região Sul (4 Ilhas)</span>
+            </div>
+            <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary);" id="snap-delta-summary">
+              A carregar série histórica de snapshots...
+            </div>
+          </div>
+          <div id="snap-history-grid" style="display:grid; grid-template-columns: 1.35fr 1fr; gap:14px; align-items:stretch;">
+            <!-- Barras Empilhadas por Período -->
+            <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:6px; padding:12px 14px;" id="snap-bars-container">
+              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">A sincronizar santiago_snapshot_mensal...</div>
+            </div>
+            <!-- Variação Acumulada no Ano por Empresa -->
+            <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:6px; padding:12px 14px;" id="snap-deltas-container">
+              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">A calcular variações por empresa...</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- MATRIZ DE DECISÃO OPERACIONAL DA GESTÃO (AÇÕES TÁTICAS COM 1 CLIQUE) -->
@@ -6534,6 +6559,7 @@
         if (elPill7) elPill7.textContent = fmtECV(divSul);
         if (elPill70) elPill70.textContent = fmtECV(divSarl);
         if (typeof atualizarBotoesEmpresaDivida === "function") atualizarBotoesEmpresaDivida(document.getElementById("div-empresa")?.value || "");
+        carregarEvolucaoMensalDivida(document.getElementById("div-ilha")?.value || "");
 
         // KPI 4: Taxa de Recuperação 2026
         const baseRecup = cobTotal2026 + totDiv;
@@ -6760,6 +6786,110 @@
           </tr>
         `;
       }).join("");
+    }
+
+
+    async function carregarEvolucaoMensalDivida(ilhaFiltro = "") {
+      const escopo = ilhaFiltro ? ilhaFiltro : "TODAS";
+      const badgeEl = document.getElementById("snap-scope-badge");
+      if (badgeEl) badgeEl.textContent = ilhaFiltro ? `Ilha de ${ilhaFiltro}` : "Região Sul (4 Ilhas)";
+
+      try {
+        const r = await fetch(
+          `${SUPABASE_URL}/rest/v1/santiago_snapshot_mensal?ilha=eq.${encodeURIComponent(escopo)}&select=*&order=ano_mes.asc`,
+          { headers: HEADERS }
+        );
+        if (!r.ok) return;
+        const serie = await r.json();
+        if (!Array.isArray(serie) || serie.length === 0) return;
+
+        const first = serie[0];
+        const last = serie[serie.length - 1];
+        const maxTotal = Math.max(...serie.map(s => Number(s.divida_total) || 1));
+
+        const fmtCurto = (v) => {
+          const n = Number(v) || 0;
+          if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2).replace(".", ",") + " B";
+          if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1).replace(".", ",") + " M";
+          return fmtInt(Math.round(n));
+        };
+
+        const deltaTot = (Number(last.divida_total) || 0) - (Number(first.divida_total) || 0);
+        const deltaPct = first.divida_total > 0 ? ((deltaTot / first.divida_total) * 100).toFixed(1) : "0.0";
+        const sumEl = document.getElementById("snap-delta-summary");
+        if (sumEl) {
+          const corD = deltaTot > 0 ? "#F87171" : "#34D399";
+          const sinal = deltaTot > 0 ? "+" : "";
+          sumEl.innerHTML = `Variação ${first.label_periodo} ➔ ${last.label_periodo}: <strong style="color:${corD};">${sinal}${fmtCurto(deltaTot)} ECV (${sinal}${deltaPct}%)</strong>`;
+        }
+
+        const barsBox = document.getElementById("snap-bars-container");
+        if (barsBox) {
+          barsBox.innerHTML = serie.map(s => {
+            const tot = Number(s.divida_total) || 1;
+            const wTot = Math.max(15, (tot / maxTotal) * 100);
+            const p17 = (Number(s.divida_edec_17) / tot) * 100;
+            const p21 = (Number(s.divida_electra_21) / tot) * 100;
+            const p07 = (Number(s.divida_sul_07) / tot) * 100;
+            const p70 = (Number(s.divida_sarl_70) / tot) * 100;
+            return `
+              <div style="margin-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; margin-bottom:3px;">
+                  <span style="font-weight:700; color:var(--text-primary);">${s.label_periodo} <span style="color:var(--text-muted); font-weight:400;">(${fmtInt(s.total_devedores)} dev.)</span></span>
+                  <span style="font-weight:800; color:var(--text-primary);">${fmtCurto(s.divida_total)} ECV</span>
+                </div>
+                <div style="width:${wTot.toFixed(1)}%; height:13px; border-radius:4px; overflow:hidden; display:flex; background:#1E293B; border:1px solid var(--border-dim);">
+                  <div style="width:${p17.toFixed(1)}%; background:#60A5FA;" title="17 - EDEC SA: ${fmtECV(s.divida_edec_17)}"></div>
+                  <div style="width:${p21.toFixed(1)}%; background:#FBBF24;" title="21 - ELECTRA SA: ${fmtECV(s.divida_electra_21)}"></div>
+                  <div style="width:${p07.toFixed(1)}%; background:#A78BFA;" title="07 - EDEC Sul: ${fmtECV(s.divida_sul_07)}"></div>
+                  <div style="width:${p70.toFixed(1)}%; background:#F472B6;" title="70 - ELECTRA SARL: ${fmtECV(s.divida_sarl_70)}"></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:9.8px; color:var(--text-secondary); margin-top:2px;">
+                  <span style="color:#60A5FA;">17: ${fmtCurto(s.divida_edec_17)}</span>
+                  <span style="color:#FBBF24;">21: ${fmtCurto(s.divida_electra_21)}</span>
+                  <span style="color:#A78BFA;">07: ${fmtCurto(s.divida_sul_07)}</span>
+                  <span style="color:#F472B6;">70: ${fmtCurto(s.divida_sarl_70)}</span>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
+
+        const deltasBox = document.getElementById("snap-deltas-container");
+        if (deltasBox) {
+          const empresas = [
+            { cod: "17 - EDEC SA", cor: "#60A5FA", v0: Number(first.divida_edec_17), v1: Number(last.divida_edec_17), nota: "Faturação Corrente" },
+            { cod: "21 - ELECTRA SA", cor: "#FBBF24", v0: Number(first.divida_electra_21), v1: Number(last.divida_electra_21), nota: "Contrato Especial AdS" },
+            { cod: "07 - EDEC Sul", cor: "#A78BFA", v0: Number(first.divida_sul_07), v1: Number(last.divida_sul_07), nota: "Histórico Regional Sul" },
+            { cod: "70 - ELECTRA SARL", cor: "#F472B6", v0: Number(first.divida_sarl_70), v1: Number(last.divida_sarl_70), nota: "Dívida Antiga Legada" }
+          ];
+          deltasBox.innerHTML = `
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; margin-bottom:8px; font-family:var(--font-mono);">
+              Variação Acumulada (${first.label_periodo} ➔ ${last.label_periodo})
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              ${empresas.map(e => {
+                const dif = e.v1 - e.v0;
+                const pct = e.v0 > 0 ? ((dif / e.v0) * 100).toFixed(1) : "0.0";
+                const reduziu = dif <= 0;
+                const corBadge = reduziu ? "#34D399" : "#F87171";
+                const sinal = dif > 0 ? "+" : "";
+                return `
+                  <div style="padding:8px 10px; border-radius:6px; background:var(--bg-input); border-left:3px solid ${e.cor}; border-top:1px solid var(--border-dim); border-right:1px solid var(--border-dim); border-bottom:1px solid var(--border-dim);">
+                    <div style="font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:${e.cor};">${e.cod}</div>
+                    <div style="font-family:var(--font-display); font-size:13.5px; font-weight:800; color:${corBadge}; margin:2px 0;">
+                      ${sinal}${fmtCurto(dif)} ECV (${sinal}${pct}%)
+                    </div>
+                    <div style="font-family:var(--font-mono); font-size:9.5px; color:var(--text-muted);">
+                      ${fmtCurto(e.v0)} ➔ ${fmtCurto(e.v1)} • ${reduziu ? "Amortização ✔" : "Crescimento ▲"}
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          `;
+        }
+      } catch (e) {}
     }
 
     function atualizarPaginacaoDivida() {

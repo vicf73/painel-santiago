@@ -1177,8 +1177,53 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
             json=log_payload,
             timeout=20,
         )
+        # Etapa 4: Atualizar snapshot mensal em public.santiago_snapshot_mensal
+        ano_mes_atual = datetime.now().strftime("%Y-%m")
+        label_atual = datetime.now().strftime("%b/%Y").capitalize()
+        snaps = []
+        for escopo in ["TODAS", "Santiago", "Fogo", "Maio", "Brava"]:
+            sub = df if escopo == "TODAS" else df[df["ILHA"] == escopo]
+            val_s = pd.to_numeric(sub["VALOR"], errors="coerce").fillna(0.0)
+            qtd_s = pd.to_numeric(sub["QTD"], errors="coerce").fillna(0.0)
+            d17 = pd.to_numeric(sub.get("divida_edec", 0), errors="coerce").fillna(0.0)
+            f17 = pd.to_numeric(sub.get("faturas_edec", 0), errors="coerce").fillna(0.0)
+            d21 = pd.to_numeric(sub.get("divida_electra", 0), errors="coerce").fillna(0.0)
+            f21 = pd.to_numeric(sub.get("faturas_electra", 0), errors="coerce").fillna(0.0)
+            d07 = pd.to_numeric(sub.get("divida_sul", 0), errors="coerce").fillna(0.0)
+            f07 = pd.to_numeric(sub.get("faturas_sul", 0), errors="coerce").fillna(0.0)
+            d70 = pd.to_numeric(sub.get("divida_sarl", 0), errors="coerce").fillna(0.0)
+            f70 = pd.to_numeric(sub.get("faturas_sarl", 0), errors="coerce").fillna(0.0)
+            cob_s = pd.to_numeric(sub.get("cob_valor_total", 0), errors="coerce").fillna(0.0)
+            snaps.append({
+                "ano_mes": ano_mes_atual,
+                "label_periodo": label_atual,
+                "ilha": escopo,
+                "total_contratos": int(len(sub)),
+                "total_devedores": int((val_s > 0).sum()),
+                "total_faturas": int(qtd_s.sum()),
+                "divida_total": round(float(val_s.sum()), 2),
+                "divida_edec_17": round(float(d17.sum()), 2),
+                "devedores_edec_17": int((d17 > 0).sum()),
+                "faturas_edec_17": int(f17.sum()),
+                "divida_electra_21": round(float(d21.sum()), 2),
+                "devedores_electra_21": int((d21 > 0).sum()),
+                "faturas_electra_21": int(f21.sum()),
+                "divida_sul_07": round(float(d07.sum()), 2),
+                "devedores_sul_07": int((d07 > 0).sum()),
+                "faturas_sul_07": int(f07.sum()),
+                "divida_sarl_70": round(float(d70.sum()), 2),
+                "devedores_sarl_70": int((d70 > 0).sum()),
+                "faturas_sarl_70": int(f70.sum()),
+                "cob_total_2026": round(float(cob_s.sum()), 2),
+            })
+        requests.post(
+            f"{SUPABASE_URL.rstrip('/')}/rest/v1/santiago_snapshot_mensal?on_conflict=ano_mes,ilha",
+            headers=headers,
+            json=snaps,
+            timeout=20,
+        )
     except Exception as exc_log:
-        print(f"    [AVISO] Não foi possível gravar log em santiago_etl_execucoes: {exc_log}")
+        print(f"    [AVISO] Não foi possível gravar log/snapshot: {exc_log}")
 
     print("=" * 72)
     print(f" SINCRONIZAÇÃO SUPABASE CONCLUÍDA EM {duracao:.2f}s!")
