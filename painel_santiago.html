@@ -1513,9 +1513,449 @@
       .geo3d-container { grid-template-columns: 1fr; }
       .canvas-3d-viewport { height: 420px; }
     }
+
+    /* =========================================================================
+       ETAPA 1: SISTEMA DE AUTENTICAÇÃO E GESTÃO DE UTILIZADORES (RBAC)
+       ========================================================================= */
+    body.auth-locked {
+      overflow: hidden !important;
+    }
+    body.auth-locked .scada-topbar,
+    body.auth-locked .workspace,
+    body.auth-locked .drawer-backdrop {
+      filter: blur(10px);
+      pointer-events: none;
+      user-select: none;
+    }
+    .auth-gate-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: radial-gradient(circle at 20% 20%, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.98));
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .auth-gate-overlay.hidden {
+      display: none !important;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 430px;
+      background: #0F172A;
+      border: 1px solid rgba(78, 121, 167, 0.45);
+      border-top: 4px solid #4E79A7;
+      border-radius: 12px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65);
+      padding: 28px 28px 24px;
+      color: #F8FAFC;
+      font-family: var(--font-sans, 'Inter', sans-serif);
+    }
+    .auth-brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .auth-badge-shield {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4E79A7, #2B547E);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 14px rgba(78, 121, 167, 0.4);
+    }
+    .auth-title {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: #F8FAFC;
+    }
+    .auth-subtitle {
+      font-size: 11.5px;
+      color: #94A3B8;
+      font-family: var(--font-mono, monospace);
+      margin-top: 2px;
+    }
+    .auth-form-group {
+      margin-bottom: 14px;
+    }
+    .auth-form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #CBD5E1;
+      margin-bottom: 6px;
+    }
+    .auth-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .auth-input {
+      width: 100%;
+      background: #1E293B;
+      border: 1px solid #334155;
+      border-radius: 7px;
+      padding: 10px 12px;
+      color: #F8FAFC;
+      font-size: 13.5px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .auth-input:focus {
+      border-color: #4E79A7;
+      box-shadow: 0 0 0 3px rgba(78, 121, 167, 0.25);
+    }
+    .auth-toggle-pwd {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #94A3B8;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 4px;
+    }
+    .auth-btn-submit {
+      width: 100%;
+      margin-top: 8px;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #4E79A7, #3B628B);
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: filter 0.15s, transform 0.1s;
+    }
+    .auth-btn-submit:hover {
+      filter: brightness(1.1);
+    }
+    .auth-btn-submit:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    .auth-error-box {
+      margin-top: 12px;
+      padding: 9px 12px;
+      border-radius: 6px;
+      background: rgba(225, 87, 89, 0.16);
+      border: 1px solid rgba(225, 87, 89, 0.45);
+      color: #FCA5A5;
+      font-size: 12px;
+      display: none;
+    }
+    .auth-footer-note {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #1E293B;
+      font-size: 11px;
+      color: #64748B;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    /* Modal de Gestão de Utilizadores e Senha */
+    .rbac-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 95000;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .rbac-modal-backdrop.hidden {
+      display: none !important;
+    }
+    .rbac-modal-box {
+      width: 100%;
+      max-width: 1080px;
+      max-height: 90vh;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-bright);
+      border-top: 4px solid var(--accent-cyan);
+      border-radius: 10px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      color: var(--text-primary);
+    }
+    .rbac-modal-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-panel-elevated);
+    }
+    .rbac-modal-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 960px) {
+      .rbac-modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    .rbac-form-card {
+      background: var(--bg-panel-elevated);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .rbac-field {
+      margin-bottom: 10px;
+    }
+    .rbac-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+    .rbac-checks-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dim);
+    }
+    .rbac-check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+    .rbac-role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+    .rbac-role-admin { background: rgba(239, 68, 68, 0.15); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .rbac-role-direcao { background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.35); }
+    .rbac-role-gestor { background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); }
+    .rbac-role-operador { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .rbac-role-visualizador { background: rgba(148, 163, 184, 0.15); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.35); }
+
   </style>
 </head>
-<body>
+<body class="auth-locked">
+  <!-- =========================================================================
+       ECRÃ DE LOGIN (SUPABASE AUTH + RBAC SANTIAGO)
+       ========================================================================= -->
+  <div id="santiago-auth-gate" class="auth-gate-overlay">
+    <div class="auth-card">
+      <div class="auth-brand-row">
+        <div class="auth-badge-shield">🔐</div>
+        <div>
+          <div class="auth-title">EDEC • Acesso Seguro Santiago</div>
+          <div class="auth-subtitle">Telemetria Comercial, Dívida, CF1 &amp; Story Executivo</div>
+        </div>
+      </div>
+      <form id="form-login-santiago" onsubmit="submeterLoginSantiago(event)">
+        <div class="auth-form-group">
+          <label for="login-email">Email Institucional / Utilizador</label>
+          <input type="email" id="login-email" class="auth-input" placeholder="exemplo@edec.cv" required autocomplete="username" />
+        </div>
+        <div class="auth-form-group">
+          <label for="login-password">Palavra-passe</label>
+          <div class="auth-input-wrap">
+            <input type="password" id="login-password" class="auth-input" placeholder="••••••••••••" required autocomplete="current-password" style="padding-right:38px;" />
+            <button type="button" class="auth-toggle-pwd" onclick="alternarVisibilidadeSenha('login-password', this)" title="Mostrar/Ocultar senha">👁️</button>
+          </div>
+        </div>
+        <button type="submit" id="btn-login-submit" class="auth-btn-submit">
+          Entrar no Sistema ➔
+        </button>
+        <div id="login-error-msg" class="auth-error-box"></div>
+      </form>
+      <div class="auth-footer-note">
+        <span>🛡️ Protegido por Supabase Auth &amp; RLS</span>
+        <span>Santiago • Fogo • Maio • Brava</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL DE ADMINISTRAÇÃO DE UTILIZADORES E NÍVEIS DE ACESSO (EXCLUSIVO ADMIN)
+       ========================================================================= -->
+  <div id="modal-gestao-utilizadores" class="rbac-modal-backdrop hidden">
+    <div class="rbac-modal-box">
+      <div class="rbac-modal-header">
+        <div>
+          <div style="font-size:15px; font-weight:800; display:flex; align-items:center; gap:8px;">
+            <span>👥</span> Administração de Utilizadores e Níveis de Acesso (RBAC)
+            <span class="rbac-role-badge rbac-role-admin">EXCLUSIVO ADMINISTRADOR</span>
+          </div>
+          <div style="font-size:11.5px; color:var(--text-secondary); font-family:var(--font-mono); margin-top:2px;">
+            Crie contas, defina níveis hierárquicos, restrinja por ilha e controle permissões de módulos e exportação.
+          </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="carregarListaUtilizadoresAdmin()">↻ Atualizar Lista</button>
+          <button class="btn" onclick="fecharModalGestaoUtilizadores()">✕ Fechar</button>
+        </div>
+      </div>
+
+      <div class="rbac-modal-body">
+        <!-- Formulário Criar / Editar Utilizador -->
+        <div class="rbac-form-card">
+          <div style="font-size:13px; font-weight:800; margin-bottom:10px; color:var(--accent-cyan); display:flex; justify-content:space-between; align-items:center;">
+            <span id="rbac-form-title">➕ Novo Utilizador</span>
+            <button type="button" class="btn btn-sm" onclick="limparFormularioUtilizador()" style="font-size:10.5px; padding:2px 7px;">Limpar</button>
+          </div>
+          <form id="form-rbac-user" onsubmit="salvarUtilizadorAdmin(event)">
+            <input type="hidden" id="rbac-user-id" value="" />
+            <div class="rbac-field">
+              <label>Nome Completo *</label>
+              <input type="text" id="rbac-nome" class="input-ctrl" placeholder="Ex: João Silva" required />
+            </div>
+            <div class="rbac-field">
+              <label>Email de Acesso (Login) *</label>
+              <input type="email" id="rbac-email" class="input-ctrl mono" placeholder="utilizador@edec.cv" required />
+            </div>
+            <div class="rbac-field">
+              <label>Cargo / Unidade</label>
+              <input type="text" id="rbac-cargo" class="input-ctrl" placeholder="Ex: Gestor Comercial Praia" />
+            </div>
+            <div class="rbac-field">
+              <label id="lbl-rbac-senha">Palavra-passe Inicial *</label>
+              <input type="text" id="rbac-senha" class="input-ctrl mono" placeholder="Mínimo 6 caracteres (ex: Edec@2026)" />
+            </div>
+            <div class="rbac-field">
+              <label>Nível de Acesso ao Sistema *</label>
+              <select id="rbac-nivel" class="select-ctrl" onchange="aoMudarNivelAcessoForm(this.value)">
+                <option value="admin">👑 Administrador Geral (Total + Utilizadores)</option>
+                <option value="direcao">🏛️ Direção Executiva (Story + Painel + Export)</option>
+                <option value="gestor" selected>📊 Gestor Operacional (Painel + Dívida + Export)</option>
+                <option value="operador">🛠️ Operador / Analista (Consulta Operacional)</option>
+                <option value="visualizador">👁️ Visualizador (Apenas Leitura Básica)</option>
+              </select>
+            </div>
+            <div class="rbac-field">
+              <label>Âmbito Geográfico (Restrição RLS)</label>
+              <select id="rbac-ilha" class="select-ctrl">
+                <option value="">🌍 Todas as 4 Ilhas (Região Sul Completa)</option>
+                <option value="Santiago">🏝️ Apenas Ilha de Santiago</option>
+                <option value="Fogo">🌋 Apenas Ilha do Fogo</option>
+                <option value="Maio">🏖️ Apenas Ilha do Maio</option>
+                <option value="Brava">🌺 Apenas Ilha da Brava</option>
+              </select>
+            </div>
+
+            <div class="rbac-checks-grid">
+              <label class="rbac-check-item">
+                <input type="checkbox" id="rbac-perm-divida" checked />
+                <span>💰 Aceder à Aba 3 (Dívida &amp; Inadimplência)</span>
+              </label>
+              <label class="rbac-check-item">
+                <input type="checkbox" id="rbac-perm-cf1" checked />
+                <span>⚖️ Aceder a Mapa GIS 3D &amp; Fraude CF1</span>
+              </label>
+              <label class="rbac-check-item">
+                <input type="checkbox" id="rbac-perm-story" checked />
+                <span>📑 Aceder à Tabela Story Executivo</span>
+              </label>
+              <label class="rbac-check-item">
+                <input type="checkbox" id="rbac-perm-export" checked />
+                <span>⬇ Permitir Exportação de Ficheiros CSV</span>
+              </label>
+              <label class="rbac-check-item">
+                <input type="checkbox" id="rbac-ativo" checked />
+                <span>🟢 Conta Ativa (Permitir Login)</span>
+              </label>
+            </div>
+
+            <button type="submit" id="btn-rbac-save" class="btn" style="width:100%; justify-content:center; background:var(--accent-cyan); color:#fff; border-color:var(--accent-cyan); font-weight:700; padding:9px;">
+              💾 Guardar Utilizador &amp; Permissões
+            </button>
+            <div id="rbac-form-msg" style="margin-top:8px; font-size:11.5px; font-family:var(--font-mono);"></div>
+          </form>
+        </div>
+
+        <!-- Tabela de Utilizadores Registados -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:13px; font-weight:700;">Contas Registadas no Sistema (<span id="rbac-count-users">0</span>)</div>
+            <span style="font-size:11px; color:var(--text-muted); font-family:var(--font-mono);">Sincronizado em tempo real com Supabase Auth</span>
+          </div>
+          <div class="table-scroll" style="max-height:540px; border:1px solid var(--border-dim); border-radius:8px;">
+            <table style="width:100%; border-collapse:collapse; font-size:12px;">
+              <thead>
+                <tr style="background:var(--bg-panel-elevated); text-align:left; border-bottom:1px solid var(--border-dim);">
+                  <th style="padding:9px 10px;">Utilizador / Email</th>
+                  <th style="padding:9px 10px;">Nível de Acesso</th>
+                  <th style="padding:9px 10px;">Âmbito</th>
+                  <th style="padding:9px 10px;">Módulos &amp; Permissões</th>
+                  <th style="padding:9px 10px;">Estado / Último Login</th>
+                  <th style="padding:9px 10px; text-align:right;">Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-rbac-users">
+                <tr><td colspan="6" style="padding:20px; text-align:center; color:var(--text-muted);">A carregar utilizadores...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL ALTERAR A MINHA PALAVRA-PASSE
+       ========================================================================= -->
+  <div id="modal-minha-senha" class="rbac-modal-backdrop hidden">
+    <div class="rbac-modal-box" style="max-width:420px;">
+      <div class="rbac-modal-header">
+        <div style="font-size:14px; font-weight:800;">🔑 Alterar a Minha Palavra-passe</div>
+        <button class="btn btn-sm" onclick="fecharModalMinhaSenha()">✕</button>
+      </div>
+      <div style="padding:18px 20px;">
+        <form onsubmit="salvarMinhaNovaSenha(event)">
+          <div class="rbac-field">
+            <label>Nova Palavra-passe *</label>
+            <input type="password" id="minha-nova-senha" class="input-ctrl mono" placeholder="Mínimo 6 caracteres" required minlength="6" />
+          </div>
+          <div class="rbac-field">
+            <label>Confirmar Nova Palavra-passe *</label>
+            <input type="password" id="minha-conf-senha" class="input-ctrl mono" placeholder="Repita a nova palavra-passe" required minlength="6" />
+          </div>
+          <button type="submit" id="btn-save-minha-senha" class="btn" style="width:100%; justify-content:center; background:var(--accent-cyan); color:#fff; font-weight:700; padding:9px; margin-top:6px;">
+            Atualizar Palavra-passe
+          </button>
+          <div id="msg-minha-senha" style="margin-top:8px; font-size:12px; font-family:var(--font-mono);"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 
   <!-- TOP SCADA TELEMETRY HEADER -->
   <header class="scada-topbar">
@@ -1557,11 +1997,24 @@
 
       </button>
 
-      <a href="apresentacao_edec_administracao.html" target="_blank" class="btn" style="text-decoration:none; border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600;" title="Abrir Tabela Story Executivo">
+      <a href="apresentacao_edec_administracao.html" target="_blank" class="btn" id="btn-story-executivo" style="text-decoration:none; border-color:var(--accent-cyan); color:var(--accent-cyan); font-weight:600;" title="Abrir Tabela Story Executivo">
         📑 TABELA STORY EXECUTIVO
       </a>
       <button class="btn btn-amber" onclick="exportarCSVFiltrado()" id="btn-export" title="Exporta 100% dos registos do filtro ativo em lotes automáticos">
         ⬇ Exportar CSV Completo (Filtro Atual)
+      </button>
+      <!-- CONTROLOS DE UTILIZADOR & ADMINISTRAÇÃO RBAC -->
+      <div class="status-pill" id="auth-user-pill" style="display:none; border-color:var(--accent-cyan); gap:6px;" title="Utilizador Autenticado">
+        <span id="auth-user-label" style="font-weight:700; color:var(--text-primary);">--</span>
+      </div>
+      <button class="btn" id="btn-gestao-users" onclick="abrirModalGestaoUtilizadores()" style="display:none; border-color:#F87171; color:#F87171; font-weight:700;" title="Criar, editar utilizadores e gerir níveis de acesso">
+        👥 Utilizadores &amp; Acessos
+      </button>
+      <button class="btn" id="btn-minha-senha" onclick="abrirModalMinhaSenha()" style="display:none;" title="Alterar a minha palavra-passe">
+        🔑 Senha
+      </button>
+      <button class="btn" id="btn-logout-santiago" onclick="terminarSessaoSantiago()" style="display:none;" title="Terminar sessão com segurança">
+        🚪 Sair
       </button>
     </div>
   </header>
@@ -4746,12 +5199,549 @@
       setTimeout(ativarMicrointeracaoTilt3D, 500);
     });
 
+
+    // =========================================================================
+    // ETAPA 1: MOTOR DE AUTENTICAÇÃO SUPABASE AUTH & CONTROLO DE ACESSO (RBAC)
+    // =========================================================================
+    const AUTH_STORAGE_KEY = "santiago_auth_session";
+    let sessaoAuthAtual = null;
+    let perfilUtilizadorAtual = null;
+    let cacheUtilizadoresAdmin = [];
+
+    function alternarVisibilidadeSenha(inputId, btn) {
+      const inp = document.getElementById(inputId);
+      if (!inp) return;
+      if (inp.type === "password") {
+        inp.type = "text";
+        btn.textContent = "🙈";
+      } else {
+        inp.type = "password";
+        btn.textContent = "👁️";
+      }
+    }
+
+    function lerSessaoGuardada() {
+      try {
+        const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function guardarSessao(sessao) {
+      sessaoAuthAtual = sessao;
+      try {
+        if (sessao) {
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(sessao));
+          HEADERS["Authorization"] = `Bearer ${sessao.access_token}`;
+        } else {
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+          HEADERS["Authorization"] = `Bearer ${SUPABASE_KEY}`;
+        }
+      } catch (e) {}
+    }
+
+    async function renovarTokenSeNecessario(sessao) {
+      if (!sessao || !sessao.access_token) return null;
+      const agoraSeg = Math.floor(Date.now() / 1000);
+      if (sessao.expires_at && sessao.expires_at - agoraSeg > 120) {
+        HEADERS["Authorization"] = `Bearer ${sessao.access_token}`;
+        return sessao;
+      }
+      if (!sessao.refresh_token) return null;
+      try {
+        const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh_token: sessao.refresh_token })
+        });
+        if (!r.ok) return null;
+        const novo = await r.json();
+        guardarSessao(novo);
+        return novo;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function carregarPerfilUtilizador(email) {
+      const r = await fetch(
+        `${SUPABASE_URL}/rest/v1/santiago_utilizadores?email=eq.${encodeURIComponent(email.toLowerCase().trim())}&select=*&limit=1`,
+        { headers: HEADERS }
+      );
+      if (!r.ok) return null;
+      const lista = await r.json();
+      return (Array.isArray(lista) && lista.length > 0) ? lista[0] : null;
+    }
+
+    function aplicarPermissoesInterface(perfil) {
+      perfilUtilizadorAtual = perfil;
+      const pill = document.getElementById("auth-user-pill");
+      const lbl = document.getElementById("auth-user-label");
+      const btnUsers = document.getElementById("btn-gestao-users");
+      const btnSenha = document.getElementById("btn-minha-senha");
+      const btnLogout = document.getElementById("btn-logout-santiago");
+      const btnExport = document.getElementById("btn-export");
+      const btnStory = document.getElementById("btn-story-executivo");
+      const tabMod2 = document.getElementById("tab-btn-mod2");
+      const tabMod3 = document.getElementById("tab-btn-mod3");
+      const tabMod5 = document.getElementById("tab-btn-mod5");
+
+      const mapIcones = {
+        admin: "👑 ADMIN",
+        direcao: "🏛️ DIREÇÃO",
+        gestor: "📊 GESTOR",
+        operador: "🛠️ OPERADOR",
+        visualizador: "👁️ LEITURA"
+      };
+      const tagNivel = mapIcones[perfil.nivel_acesso] || perfil.nivel_acesso.toUpperCase();
+
+      if (pill && lbl) {
+        lbl.textContent = `${perfil.nome} • ${tagNivel}`;
+        pill.style.display = "inline-flex";
+      }
+      if (btnSenha) btnSenha.style.display = "inline-flex";
+      if (btnLogout) btnLogout.style.display = "inline-flex";
+
+      // Botão Gestão de Utilizadores: exclusivo para Administrador
+      const ehAdmin = perfil.nivel_acesso === "admin";
+      if (btnUsers) btnUsers.style.display = ehAdmin ? "inline-flex" : "none";
+
+      // Controlo de permissões granulares
+      if (btnExport) btnExport.style.display = (ehAdmin || perfil.pode_exportar) ? "inline-flex" : "none";
+      if (btnStory) btnStory.style.display = (ehAdmin || perfil.pode_ver_story) ? "inline-flex" : "none";
+      if (tabMod3) tabMod3.style.display = (ehAdmin || perfil.pode_ver_divida) ? "inline-flex" : "none";
+      if (tabMod2) tabMod2.style.display = (ehAdmin || perfil.pode_ver_cf1) ? "inline-flex" : "none";
+      if (tabMod5) tabMod5.style.display = (ehAdmin || perfil.pode_ver_cf1) ? "inline-flex" : "none";
+
+      // Restrição geográfica por Ilha (se configurada pelo Administrador)
+      const selIlha1 = document.getElementById("f-ilha");
+      const selIlha3 = document.getElementById("div-ilha");
+      if (perfil.ilha_restrita) {
+        [selIlha1, selIlha3].forEach(sel => {
+          if (sel) {
+            sel.value = perfil.ilha_restrita;
+            sel.disabled = true;
+            sel.title = `Acesso restrito à Ilha de ${perfil.ilha_restrita}`;
+          }
+        });
+      } else {
+        [selIlha1, selIlha3].forEach(sel => {
+          if (sel) {
+            sel.disabled = false;
+            sel.title = "";
+          }
+        });
+      }
+    }
+
+    function mostrarEcraLogin(msgErro = "") {
+      document.body.classList.add("auth-locked");
+      const gate = document.getElementById("santiago-auth-gate");
+      if (gate) gate.classList.remove("hidden");
+      const errBox = document.getElementById("login-error-msg");
+      if (errBox) {
+        if (msgErro) {
+          errBox.textContent = msgErro;
+          errBox.style.display = "block";
+        } else {
+          errBox.style.display = "none";
+        }
+      }
+    }
+
+    function desbloquearPainelPosLogin() {
+      document.body.classList.remove("auth-locked");
+      const gate = document.getElementById("santiago-auth-gate");
+      if (gate) gate.classList.add("hidden");
+      if (!map) {
+        iniciarMapa();
+      } else {
+        setTimeout(() => map.invalidateSize(), 100);
+      }
+      carregarListasFiltros();
+      aplicarFiltros(1);
+    }
+
+    async function submeterLoginSantiago(ev) {
+      ev.preventDefault();
+      const email = (document.getElementById("login-email")?.value || "").trim().toLowerCase();
+      const password = document.getElementById("login-password")?.value || "";
+      const btn = document.getElementById("btn-login-submit");
+      const errBox = document.getElementById("login-error-msg");
+
+      if (errBox) errBox.style.display = "none";
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "A autenticar no Supabase...";
+      }
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const dados = await r.json();
+        if (!r.ok || !dados.access_token) {
+          throw new Error(dados.error_description || dados.msg || "Email ou palavra-passe incorretos.");
+        }
+
+        guardarSessao(dados);
+        const perfil = await carregarPerfilUtilizador(email);
+        if (!perfil) {
+          guardarSessao(null);
+          throw new Error("A sua conta não está autorizada na lista de utilizadores do Sistema Santiago.");
+        }
+        if (!perfil.ativo) {
+          guardarSessao(null);
+          throw new Error("A sua conta encontra-se suspensa. Contacte o Administrador (vitfonseca73@gmail.com).");
+        }
+
+        aplicarPermissoesInterface(perfil);
+        desbloquearPainelPosLogin();
+      } catch (err) {
+        mostrarEcraLogin(err.message || "Falha na autenticação.");
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = "Entrar no Sistema ➔";
+        }
+      }
+    }
+
+    async function terminarSessaoSantiago() {
+      try {
+        if (sessaoAuthAtual?.access_token) {
+          await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
+            method: "POST",
+            headers: HEADERS
+          });
+        }
+      } catch (e) {}
+      guardarSessao(null);
+      perfilUtilizadorAtual = null;
+      mostrarEcraLogin();
+    }
+
+    async function iniciarFluxoAutenticacao() {
+      document.body.classList.add("auth-locked");
+      const sessao = await renovarTokenSeNecessario(lerSessaoGuardada());
+      if (!sessao || !sessao.user?.email) {
+        guardarSessao(null);
+        mostrarEcraLogin();
+        return;
+      }
+      const perfil = await carregarPerfilUtilizador(sessao.user.email);
+      if (!perfil || !perfil.ativo) {
+        guardarSessao(null);
+        mostrarEcraLogin("Sessão expirada ou conta sem permissão ativa.");
+        return;
+      }
+      aplicarPermissoesInterface(perfil);
+      desbloquearPainelPosLogin();
+    }
+
+    // =========================================================================
+    // GESTÃO DE UTILIZADORES E ACESSOS (EXCLUSIVO ADMIN)
+    // =========================================================================
+    function aoMudarNivelAcessoForm(nivel) {
+      const cDiv = document.getElementById("rbac-perm-divida");
+      const cCf1 = document.getElementById("rbac-perm-cf1");
+      const cSto = document.getElementById("rbac-perm-story");
+      const cExp = document.getElementById("rbac-perm-export");
+      if (!cDiv || !cCf1 || !cSto || !cExp) return;
+
+      if (nivel === "admin" || nivel === "direcao" || nivel === "gestor") {
+        cDiv.checked = true;
+        cCf1.checked = true;
+        cSto.checked = true;
+        cExp.checked = true;
+      } else if (nivel === "operador") {
+        cDiv.checked = true;
+        cCf1.checked = true;
+        cSto.checked = false;
+        cExp.checked = false;
+      } else {
+        cDiv.checked = true;
+        cCf1.checked = false;
+        cSto.checked = false;
+        cExp.checked = false;
+      }
+    }
+
+    function limparFormularioUtilizador() {
+      document.getElementById("rbac-user-id").value = "";
+      document.getElementById("rbac-nome").value = "";
+      const inpEmail = document.getElementById("rbac-email");
+      inpEmail.value = "";
+      inpEmail.disabled = false;
+      document.getElementById("rbac-cargo").value = "";
+      document.getElementById("rbac-senha").value = "";
+      document.getElementById("lbl-rbac-senha").textContent = "Palavra-passe Inicial *";
+      document.getElementById("rbac-nivel").value = "gestor";
+      document.getElementById("rbac-ilha").value = "";
+      aoMudarNivelAcessoForm("gestor");
+      document.getElementById("rbac-ativo").checked = true;
+      document.getElementById("rbac-form-title").textContent = "➕ Novo Utilizador";
+      document.getElementById("rbac-form-msg").textContent = "";
+    }
+
+    function abrirModalGestaoUtilizadores() {
+      if (!perfilUtilizadorAtual || perfilUtilizadorAtual.nivel_acesso !== "admin") {
+        alert("Acesso restrito ao Administrador Geral do Sistema.");
+        return;
+      }
+      document.getElementById("modal-gestao-utilizadores").classList.remove("hidden");
+      limparFormularioUtilizador();
+      carregarListaUtilizadoresAdmin();
+    }
+
+    function fecharModalGestaoUtilizadores() {
+      document.getElementById("modal-gestao-utilizadores").classList.add("hidden");
+    }
+
+    async function carregarListaUtilizadoresAdmin() {
+      const tbody = document.getElementById("tbody-rbac-users");
+      const countEl = document.getElementById("rbac-count-users");
+      if (!tbody) return;
+      tbody.innerHTML = `<tr><td colspan="6" style="padding:18px; text-align:center; color:var(--text-muted);">A sincronizar utilizadores...</td></tr>`;
+
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/santiago_utilizadores?select=*&order=criado_em.asc`, {
+          headers: HEADERS
+        });
+        if (!r.ok) throw new Error("Não foi possível carregar a lista de utilizadores.");
+        const lista = await r.json();
+        cacheUtilizadoresAdmin = lista;
+        if (countEl) countEl.textContent = lista.length;
+
+        const badgeNivel = (n) => {
+          const map = {
+            admin: `<span class="rbac-role-badge rbac-role-admin">👑 Administrador</span>`,
+            direcao: `<span class="rbac-role-badge rbac-role-direcao">🏛️ Direção</span>`,
+            gestor: `<span class="rbac-role-badge rbac-role-gestor">📊 Gestor</span>`,
+            operador: `<span class="rbac-role-badge rbac-role-operador">🛠️ Operador</span>`,
+            visualizador: `<span class="rbac-role-badge rbac-role-visualizador">👁️ Visualizador</span>`
+          };
+          return map[n] || n;
+        };
+
+        tbody.innerHTML = lista.map(u => {
+          const dtLogin = u.ultimo_acesso ? new Date(u.ultimo_acesso).toLocaleString("pt-PT") : "Ainda sem login";
+          const perms = [
+            u.pode_ver_divida ? "💰 Dívida" : null,
+            u.pode_ver_cf1 ? "⚖️ CF1/GIS" : null,
+            u.pode_ver_story ? "📑 Story" : null,
+            u.pode_exportar ? "⬇ CSV" : null
+          ].filter(Boolean).join(" • ") || "Básico";
+
+          const ehRoot = (u.email || "").toLowerCase() === "vitfonseca73@gmail.com";
+          return `
+            <tr style="border-bottom:1px solid var(--border-dim);">
+              <td style="padding:9px 10px;">
+                <div style="font-weight:700; color:var(--text-primary);">${u.nome}</div>
+                <div style="font-family:var(--font-mono); font-size:11px; color:var(--accent-cyan);">${u.email}</div>
+                <div style="font-size:10.5px; color:var(--text-muted);">${u.cargo || ""}</div>
+              </td>
+              <td style="padding:9px 10px;">${badgeNivel(u.nivel_acesso)}</td>
+              <td style="padding:9px 10px; font-family:var(--font-mono); font-size:11.5px;">
+                ${u.ilha_restrita ? `🏝️ ${u.ilha_restrita}` : `<span style="color:var(--text-secondary);">🌍 4 Ilhas</span>`}
+              </td>
+              <td style="padding:9px 10px; font-size:11px; color:var(--text-secondary);">${perms}</td>
+              <td style="padding:9px 10px;">
+                <div>${u.ativo ? `<span style="color:#34D399; font-weight:700;">● Ativo</span>` : `<span style="color:#F87171; font-weight:700;">● Suspenso</span>`}</div>
+                <div style="font-size:10px; color:var(--text-muted); font-family:var(--font-mono); margin-top:2px;">${dtLogin}</div>
+              </td>
+              <td style="padding:9px 10px; text-align:right; white-space:nowrap;">
+                <button class="btn btn-sm" onclick="preencherEdicaoUtilizador('${u.id}')" title="Editar permissões ou redefinir senha">✏️ Editar</button>
+                ${!ehRoot ? `
+                  <button class="btn btn-sm" onclick="alternarEstadoUtilizador('${u.id}', ${!u.ativo})" title="${u.ativo ? 'Suspender acesso' : 'Reativar acesso'}">
+                    ${u.ativo ? "⏸️" : "▶️"}
+                  </button>
+                  <button class="btn btn-sm" style="color:#F87171;" onclick="removerUtilizadorAdmin('${u.id}', '${u.email}')" title="Eliminar utilizador">🗑️</button>
+                ` : `<span style="font-size:10px; color:var(--text-muted); font-family:var(--font-mono); padding:0 4px;">Admin Principal</span>`}
+              </td>
+            </tr>
+          `;
+        }).join("");
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:18px; text-align:center; color:#F87171;">${e.message}</td></tr>`;
+      }
+    }
+
+    function preencherEdicaoUtilizador(uid) {
+      const u = cacheUtilizadoresAdmin.find(x => x.id === uid);
+      if (!u) return;
+      document.getElementById("rbac-user-id").value = u.id;
+      document.getElementById("rbac-nome").value = u.nome || "";
+      document.getElementById("rbac-email").value = u.email || "";
+      document.getElementById("rbac-cargo").value = u.cargo || "";
+      document.getElementById("rbac-senha").value = "";
+      document.getElementById("lbl-rbac-senha").textContent = "Nova Palavra-passe (deixe vazio para manter)";
+      document.getElementById("rbac-nivel").value = u.nivel_acesso || "operador";
+      document.getElementById("rbac-ilha").value = u.ilha_restrita || "";
+      document.getElementById("rbac-perm-divida").checked = !!u.pode_ver_divida;
+      document.getElementById("rbac-perm-cf1").checked = !!u.pode_ver_cf1;
+      document.getElementById("rbac-perm-story").checked = !!u.pode_ver_story;
+      document.getElementById("rbac-perm-export").checked = !!u.pode_exportar;
+      document.getElementById("rbac-ativo").checked = !!u.ativo;
+      document.getElementById("rbac-form-title").textContent = `✏️ Editar: ${u.nome}`;
+      document.getElementById("rbac-form-msg").textContent = "";
+    }
+
+    async function salvarUtilizadorAdmin(ev) {
+      ev.preventDefault();
+      const id = document.getElementById("rbac-user-id").value;
+      const nome = document.getElementById("rbac-nome").value.trim();
+      const email = document.getElementById("rbac-email").value.trim().toLowerCase();
+      const cargo = document.getElementById("rbac-cargo").value.trim();
+      const senha = document.getElementById("rbac-senha").value.trim();
+      const nivel_acesso = document.getElementById("rbac-nivel").value;
+      const ilha_restrita = document.getElementById("rbac-ilha").value || null;
+      const pode_ver_divida = document.getElementById("rbac-perm-divida").checked;
+      const pode_ver_cf1 = document.getElementById("rbac-perm-cf1").checked;
+      const pode_ver_story = document.getElementById("rbac-perm-story").checked;
+      const pode_exportar = document.getElementById("rbac-perm-export").checked;
+      const ativo = document.getElementById("rbac-ativo").checked;
+      const msgEl = document.getElementById("rbac-form-msg");
+      const btn = document.getElementById("btn-rbac-save");
+
+      if (!id && senha.length < 6) {
+        msgEl.style.color = "#F87171";
+        msgEl.textContent = "Defina uma palavra-passe inicial com pelo menos 6 caracteres.";
+        return;
+      }
+
+      const payload = {
+        nome,
+        email,
+        cargo,
+        nivel_acesso,
+        ilha_restrita,
+        pode_ver_divida,
+        pode_ver_cf1,
+        pode_ver_story,
+        pode_exportar,
+        ativo,
+        criado_por: perfilUtilizadorAtual?.email || "admin"
+      };
+      if (senha) payload.senha_definir = senha;
+
+      btn.disabled = true;
+      msgEl.style.color = "var(--accent-cyan)";
+      msgEl.textContent = "A sincronizar com Supabase Auth...";
+
+      try {
+        const url = id
+          ? `${SUPABASE_URL}/rest/v1/santiago_utilizadores?id=eq.${id}`
+          : `${SUPABASE_URL}/rest/v1/santiago_utilizadores`;
+        const method = id ? "PATCH" : "POST";
+
+        const r = await fetch(url, {
+          method,
+          headers: { ...HEADERS, "Prefer": "return=representation" },
+          body: JSON.stringify(payload)
+        });
+        if (!r.ok) {
+          const errTxt = await r.text();
+          throw new Error(errTxt || "Erro ao guardar utilizador.");
+        }
+        msgEl.style.color = "#34D399";
+        msgEl.textContent = id ? "✔ Utilizador atualizado com sucesso!" : "✔ Novo utilizador criado e ativo!";
+        await carregarListaUtilizadoresAdmin();
+        if (!id) limparFormularioUtilizador();
+      } catch (e) {
+        msgEl.style.color = "#F87171";
+        msgEl.textContent = "Erro: " + e.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function alternarEstadoUtilizador(uid, novoAtivo) {
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/santiago_utilizadores?id=eq.${uid}`, {
+          method: "PATCH",
+          headers: HEADERS,
+          body: JSON.stringify({ ativo: novoAtivo })
+        });
+        if (!r.ok) throw new Error("Falha ao alterar estado.");
+        carregarListaUtilizadoresAdmin();
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    async function removerUtilizadorAdmin(uid, email) {
+      if (email.toLowerCase() === "vitfonseca73@gmail.com") {
+        alert("O Administrador Geral principal não pode ser removido.");
+        return;
+      }
+      if (!confirm(`Tem a certeza que deseja eliminar o acesso de ${email}?`)) return;
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/santiago_utilizadores?id=eq.${uid}`, {
+          method: "DELETE",
+          headers: HEADERS
+        });
+        if (!r.ok) throw new Error("Não foi possível eliminar o utilizador.");
+        carregarListaUtilizadoresAdmin();
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+
+    // Alteração da própria palavra-passe pelo utilizador autenticado
+    function abrirModalMinhaSenha() {
+      document.getElementById("minha-nova-senha").value = "";
+      document.getElementById("minha-conf-senha").value = "";
+      document.getElementById("msg-minha-senha").textContent = "";
+      document.getElementById("modal-minha-senha").classList.remove("hidden");
+    }
+
+    function fecharModalMinhaSenha() {
+      document.getElementById("modal-minha-senha").classList.add("hidden");
+    }
+
+    async function salvarMinhaNovaSenha(ev) {
+      ev.preventDefault();
+      const s1 = document.getElementById("minha-nova-senha").value;
+      const s2 = document.getElementById("minha-conf-senha").value;
+      const msg = document.getElementById("msg-minha-senha");
+      const btn = document.getElementById("btn-save-minha-senha");
+
+      if (s1 !== s2) {
+        msg.style.color = "#F87171";
+        msg.textContent = "As palavras-passe não coincidem.";
+        return;
+      }
+      btn.disabled = true;
+      msg.style.color = "var(--accent-cyan)";
+      msg.textContent = "A atualizar palavra-passe...";
+      try {
+        const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+          method: "PUT",
+          headers: HEADERS,
+          body: JSON.stringify({ password: s1 })
+        });
+        if (!r.ok) throw new Error("Não foi possível atualizar a palavra-passe.");
+        msg.style.color = "#34D399";
+        msg.textContent = "✔ Palavra-passe alterada com sucesso!";
+        setTimeout(() => fecharModalMinhaSenha(), 1200);
+      } catch (e) {
+        msg.style.color = "#F87171";
+        msg.textContent = e.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
       const savedTheme = localStorage.getItem('santiago_theme') || 'light';
       setTema(savedTheme);
-      iniciarMapa();
-      carregarListasFiltros();
-      aplicarFiltros(1);
+      iniciarFluxoAutenticacao();
     });
   
         // =========================================================================
