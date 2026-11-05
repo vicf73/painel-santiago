@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apresentação Executiva CA — EDEC Região Sul | Tableau Story</title>
+    <title>TABELA STORY EXECUTIVO - EDEC Região Sul</title>
     <script>
         (function() {
             var t = localStorage.getItem('santiago_theme') || 'light';
@@ -1016,9 +1016,9 @@
             </div>
             <div class="tb-title-group">
                 <div class="tb-workbook-label">
-                    <span>TABLEAU STORY EXECUTIVA</span>
+                    <span>TABELA STORY EXECUTIVO</span>
                     <span>•</span>
-                    <span>CONSELHO DE ADMINISTRAÇÃO EDEC</span>
+                    <span>EDEC REGIÃO SUL</span>
                 </div>
                 <div class="tb-workbook-title">Diagnóstico de Dívida, Concentração Pareto & Plano Diretor de Recuperação (Região Sul)</div>
             </div>
@@ -1084,7 +1084,7 @@
                 <span class="story-point-num">6</span> Retorno Financeiro (12M)
             </button>
             <button class="story-point-tab" onclick="goToSlide(6)">
-                <span class="story-point-num">7</span> Deliberações em Ata CA
+                <span class="story-point-num">7</span> Deliberações Executivas
             </button>
         </div>
 
@@ -1306,6 +1306,50 @@
                     <div class="ban-progress"><div class="ban-progress-fill" style="width:55%; background:var(--tableau-orange);"></div></div>
                 </div>
             </div>
+
+            <!-- COMPOSIÇÃO EXECUTIVA POR EMPRESA CREDORA -->
+            <div style="margin-top:14px; background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:6px; padding:12px 16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="font-weight:700; font-size:0.85rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+                        <span>🏢</span> Composição da Carteira por Empresa Credora (Faturação Atual vs Legada)
+                    </div>
+                    <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted);">Segregação Contábil Oficial da Dívida</span>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
+                    <div style="background:var(--bg-card-alt); border-left:3px solid #60A5FA; border-radius:4px; padding:8px 12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.75rem; color:#60A5FA; font-weight:700;">🏢 17 - EDEC SA</span>
+                            <span class="ban-tag" style="background:rgba(96,165,250,0.15); color:#60A5FA; font-size:0.68rem;" id="ca-emp-pct-17">--</span>
+                        </div>
+                        <div style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-17">-- ECV</div>
+                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-17">-- devedores (-- fat.) • Faturação Atual</div>
+                    </div>
+                    <div style="background:var(--bg-card-alt); border-left:3px solid #FBBF24; border-radius:4px; padding:8px 12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.75rem; color:#FBBF24; font-weight:700;">⚡ 21 - ELECTRA SA</span>
+                            <span class="ban-tag tag-orange" style="font-size:0.68rem;" id="ca-emp-pct-21">--</span>
+                        </div>
+                        <div style="font-size:1.05rem; font-weight:800; color:#FBBF24; margin:2px 0;" id="ca-emp-val-21">-- ECV</div>
+                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-21">-- devedores (-- fat.) • Contrato Especial AdS</div>
+                    </div>
+                    <div style="background:var(--bg-card-alt); border-left:3px solid #A78BFA; border-radius:4px; padding:8px 12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.75rem; color:#A78BFA; font-weight:700;">📍 07 - EDEC SUL</span>
+                            <span class="ban-tag" style="background:rgba(167,139,250,0.15); color:#A78BFA; font-size:0.68rem;" id="ca-emp-pct-7">--</span>
+                        </div>
+                        <div style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-7">-- ECV</div>
+                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-7">-- devedores (-- fat.) • Dívida Sul Histórica</div>
+                    </div>
+                    <div style="background:var(--bg-card-alt); border-left:3px solid #F472B6; border-radius:4px; padding:8px 12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.75rem; color:#F472B6; font-weight:700;">🏛️ 70 - ELECTRA SARL</span>
+                            <span class="ban-tag" style="background:rgba(244,114,182,0.15); color:#F472B6; font-size:0.68rem;" id="ca-emp-pct-70">--</span>
+                        </div>
+                        <div style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-70">-- ECV</div>
+                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-70">-- devedores (-- fat.) • Dívida Antiga Legada</div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- =====================================================
@@ -1369,6 +1413,33 @@
                                 <span class="tb-bar-label">🚰 Água AdS (Produto AG)</span>
                                 <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-ag" style="width:17.9%; background:var(--tableau-red);"></div></div>
                                 <span class="tb-bar-val" id="val-prod-ag">1,54 B (17,9%)</span>
+                            </div>
+                        </div>
+
+                        <div class="worksheet-title" style="margin-top:20px;">
+                            <span>🏢 Segregação por Empresa Credora</span>
+                            <span class="meta">Origem Contábil da Dívida</span>
+                        </div>
+                        <div class="tb-bar-list">
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">🏢 17 - EDEC SA (Faturação Atual)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-17" style="width:15.5%; background:#60A5FA;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-17">--</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">⚡ 21 - ELECTRA SA (AdS Especial)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-21" style="width:20.1%; background:#FBBF24;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-21">--</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">📍 07 - EDEC Sul (Histórico Sul)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-7" style="width:51.6%; background:#A78BFA;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-7">--</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label">🏛️ 70 - ELECTRA SARL (Dívida Legada)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-70" style="width:24.2%; background:#F472B6;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-70">--</span>
                             </div>
                         </div>
                     </div>
@@ -1773,7 +1844,7 @@
     <script>
         const SUPABASE_URL = 'https://esbbohmkgbcrpegqvagk.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDEzODUsImV4cCI6MjA5MTAxNzM4NX0.024-923234-234234';
-        const REAL_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDEzODUsImV4cCI6MjA5MTAxNzM4NX0.h141r122X3X6g_I3V22iQ3I74A75J3chK4Qp2P5I5nU';
+        const REAL_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MDQ3OTUsImV4cCI6MjA5OTA4MDc5NX0.85Ypz7LghhQ37Ur5YE2eLM4PFkMw2o3S8QtbhRSzBuU';
 
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -2063,6 +2134,55 @@
                 setTxt('val-prod-ag', fmtECV(divAgua).replace(' ECV', '') + ' (' + pctAgua.toFixed(1).replace('.', ',') + '%)');
                 const bEl = document.getElementById('bar-prod-el'); if (bEl) bEl.style.width = Math.min(100, pctEletr) + '%';
                 const bAg = document.getElementById('bar-prod-ag'); if (bAg) bAg.style.width = Math.min(100, pctAgua) + '%';
+
+                // Atualização dos Indicadores de Dívida por Empresa Credora
+                const div17 = Number(d.tot_divida_edec) || 0;
+                const fat17 = Number(d.tot_faturas_edec) || 0;
+                const cli17 = Number(d.devedores_edec) || 0;
+                const pct17 = totDiv > 0 ? ((div17 / totDiv) * 100) : 0;
+
+                const div21 = Number(d.tot_divida_electra) || 0;
+                const fat21 = Number(d.tot_faturas_electra) || 0;
+                const cli21 = Number(d.devedores_electra) || 0;
+                const pct21 = totDiv > 0 ? ((div21 / totDiv) * 100) : 0;
+
+                const div7 = Number(d.tot_divida_sul) || 0;
+                const fat7 = Number(d.tot_faturas_sul) || 0;
+                const cli7 = Number(d.devedores_sul) || 0;
+                const pct7 = totDiv > 0 ? ((div7 / totDiv) * 100) : 0;
+
+                const div70 = Number(d.tot_divida_sarl) || 0;
+                const fat70 = Number(d.tot_faturas_sarl) || 0;
+                const cli70 = Number(d.devedores_sarl) || 0;
+                const pct70 = totDiv > 0 ? ((div70 / totDiv) * 100) : 0;
+
+                // Cards no Slide 2
+                setTxt('ca-emp-val-17', fmtECV(div17));
+                setTxt('ca-emp-pct-17', pct17.toFixed(1).replace('.', ',') + '%');
+                setTxt('ca-emp-sub-17', fmtInt(cli17) + ' devedores (' + fmtInt(fat17) + ' fat.) • Faturação Atual');
+
+                setTxt('ca-emp-val-21', fmtECV(div21));
+                setTxt('ca-emp-pct-21', pct21.toFixed(1).replace('.', ',') + '%');
+                setTxt('ca-emp-sub-21', fmtInt(cli21) + ' devedores (' + fmtInt(fat21) + ' fat.) • Contrato Especial AdS');
+
+                setTxt('ca-emp-val-7', fmtECV(div7));
+                setTxt('ca-emp-pct-7', pct7.toFixed(1).replace('.', ',') + '%');
+                setTxt('ca-emp-sub-7', fmtInt(cli7) + ' devedores (' + fmtInt(fat7) + ' fat.) • Dívida Sul Histórica');
+
+                setTxt('ca-emp-val-70', fmtECV(div70));
+                setTxt('ca-emp-pct-70', pct70.toFixed(1).replace('.', ',') + '%');
+                setTxt('ca-emp-sub-70', fmtInt(cli70) + ' devedores (' + fmtInt(fat70) + ' fat.) • Dívida Antiga Legada');
+
+                // Barras no Slide 3
+                setTxt('val-emp-17', fmtECV(div17).replace(' ECV', '') + ' (' + pct17.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-emp-21', fmtECV(div21).replace(' ECV', '') + ' (' + pct21.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-emp-7', fmtECV(div7).replace(' ECV', '') + ' (' + pct7.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-emp-70', fmtECV(div70).replace(' ECV', '') + ' (' + pct70.toFixed(1).replace('.', ',') + '%)');
+
+                const b17 = document.getElementById('bar-emp-17'); if (b17) b17.style.width = Math.min(100, pct17) + '%';
+                const b21 = document.getElementById('bar-emp-21'); if (b21) b21.style.width = Math.min(100, pct21) + '%';
+                const b7 = document.getElementById('bar-emp-7'); if (b7) b7.style.width = Math.min(100, pct7) + '%';
+                const b70 = document.getElementById('bar-emp-70'); if (b70) b70.style.width = Math.min(100, pct70) + '%';
 
                 setTxt('v1-soma-pub-ads', fmtECV(divPub + divAgua));
 
