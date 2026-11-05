@@ -1002,9 +1002,67 @@
                 page-break-inside: avoid !important;
             }
         }
+
+        /* Ecrã de Login Partilhado (Etapa 1) */
+        body.auth-locked .tableau-topbar,
+        body.auth-locked .tableau-storybar,
+        body.auth-locked .story-stage,
+        body.auth-locked .tableau-footer {
+            filter: blur(10px);
+            pointer-events: none;
+            user-select: none;
+        }
+        .ca-auth-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: radial-gradient(circle at 20% 20%, rgba(15, 23, 42, 0.94), rgba(2, 6, 23, 0.98));
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .ca-auth-overlay.hidden { display: none !important; }
+        .ca-auth-card {
+            width: 100%;
+            max-width: 410px;
+            background: #0F172A;
+            border: 1px solid rgba(78, 121, 167, 0.45);
+            border-top: 4px solid #4E79A7;
+            border-radius: 12px;
+            padding: 26px;
+            color: #F8FAFC;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.65);
+        }
+
     </style>
 </head>
-<body>
+<body class="auth-locked">
+    <div id="ca-auth-gate" class="ca-auth-overlay">
+        <div class="ca-auth-card">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                <div style="width:40px; height:40px; border-radius:9px; background:#4E79A7; display:flex; align-items:center; justify-content:center; font-size:19px;">🔐</div>
+                <div>
+                    <div style="font-size:16px; font-weight:800;">TABELA STORY EXECUTIVO</div>
+                    <div style="font-size:11px; color:#94A3B8; font-family:var(--font-mono);">Autenticação Obrigatória • EDEC Região Sul</div>
+                </div>
+            </div>
+            <form onsubmit="submeterLoginStory(event)">
+                <div style="margin-bottom:12px;">
+                    <label style="display:block; font-size:11px; font-weight:700; color:#CBD5E1; margin-bottom:5px; text-transform:uppercase;">Email Institucional</label>
+                    <input type="email" id="ca-login-email" required style="width:100%; padding:9px 11px; border-radius:6px; border:1px solid #334155; background:#1E293B; color:#F8FAFC; font-size:13px;" placeholder="exemplo@edec.cv" />
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block; font-size:11px; font-weight:700; color:#CBD5E1; margin-bottom:5px; text-transform:uppercase;">Palavra-passe</label>
+                    <input type="password" id="ca-login-pwd" required style="width:100%; padding:9px 11px; border-radius:6px; border:1px solid #334155; background:#1E293B; color:#F8FAFC; font-size:13px;" placeholder="••••••••••••" />
+                </div>
+                <button type="submit" id="ca-btn-login" style="width:100%; padding:10px; border:none; border-radius:6px; background:#4E79A7; color:#fff; font-weight:700; cursor:pointer;">Aceder ao Story Executivo ➔</button>
+                <div id="ca-login-err" style="display:none; margin-top:10px; padding:8px 10px; border-radius:6px; background:rgba(225,87,89,0.18); border:1px solid rgba(225,87,89,0.4); color:#FCA5A5; font-size:12px;"></div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- =========================================================
          TABLEAU PUBLIC TOPBAR
@@ -1054,9 +1112,13 @@
                 ⛶ Ecrã Inteiro
             </button>
 
+            <span class="tb-btn" id="ca-user-badge" style="display:none; pointer-events:none; font-weight:700;"></span>
             <a href="painel_santiago.html" class="tb-btn tb-btn-primary" title="Voltar ao Painel Operacional SCADA">
                 📊 Abrir Painel SCADA
             </a>
+            <button class="tb-btn" id="ca-btn-logout" onclick="sairStoryExecutivo()" style="display:none;" title="Terminar Sessão">
+                🚪 Sair
+            </button>
         </div>
     </header>
 
@@ -1988,7 +2050,12 @@
             const badgeTxt = document.getElementById('liveSyncText');
             try {
                 if (badgeTxt) badgeTxt.textContent = 'Atualizando dados...';
-                const client = window.supabase.createClient(SUPABASE_URL, REAL_KEY);
+                const sessRaw = localStorage.getItem('santiago_auth_session');
+                const sessObj = sessRaw ? JSON.parse(sessRaw) : null;
+                const jwtTok = sessObj?.access_token || REAL_KEY;
+                const client = window.supabase.createClient(SUPABASE_URL, REAL_KEY, {
+                    global: { headers: { Authorization: 'Bearer ' + jwtTok } }
+                });
 
                 const rpcParams = { p_divida: 'gt0' };
                 if (ilhaFiltro) rpcParams.p_ilha = ilhaFiltro;
@@ -2251,9 +2318,99 @@
             }
         }
 
-        // Inicializar sincronização ao carregar a página
+        async function validarSessaoStory() {
+            try {
+                const raw = localStorage.getItem('santiago_auth_session');
+                if (!raw) return false;
+                let sess = JSON.parse(raw);
+                const agora = Math.floor(Date.now() / 1000);
+                if (sess.expires_at && sess.expires_at - agora < 120 && sess.refresh_token) {
+                    const rr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+                        method: 'POST',
+                        headers: { 'apikey': REAL_KEY, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refresh_token: sess.refresh_token })
+                    });
+                    if (rr.ok) {
+                        sess = await rr.json();
+                        localStorage.setItem('santiago_auth_session', JSON.stringify(sess));
+                    }
+                }
+                if (!sess?.access_token || !sess?.user?.email) return false;
+                const rp = await fetch(
+                    SUPABASE_URL + '/rest/v1/santiago_utilizadores?email=eq.' + encodeURIComponent(sess.user.email.toLowerCase()) + '&select=*&limit=1',
+                    { headers: { 'apikey': REAL_KEY, 'Authorization': 'Bearer ' + sess.access_token } }
+                );
+                if (!rp.ok) return false;
+                const arr = await rp.json();
+                const perfil = arr && arr[0];
+                if (!perfil || !perfil.ativo) return false;
+                if (perfil.nivel_acesso !== 'admin' && !perfil.pode_ver_story) {
+                    const errEl = document.getElementById('ca-login-err');
+                    if (errEl) {
+                        errEl.textContent = 'O seu nível de acesso não inclui permissão para a Tabela Story Executivo.';
+                        errEl.style.display = 'block';
+                    }
+                    return false;
+                }
+                document.body.classList.remove('auth-locked');
+                document.getElementById('ca-auth-gate')?.classList.add('hidden');
+                const ub = document.getElementById('ca-user-badge');
+                if (ub) { ub.textContent = '👤 ' + perfil.nome; ub.style.display = 'inline-flex'; }
+                const bl = document.getElementById('ca-btn-logout');
+                if (bl) bl.style.display = 'inline-flex';
+                const selIlha = document.getElementById('selectIlhaCA');
+                if (perfil.ilha_restrita && selIlha) {
+                    selIlha.value = perfil.ilha_restrita.toUpperCase();
+                    selIlha.disabled = true;
+                    sincronizarDadosAoVivo(perfil.ilha_restrita);
+                } else {
+                    sincronizarDadosAoVivo(null);
+                }
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function submeterLoginStory(ev) {
+            ev.preventDefault();
+            const email = document.getElementById('ca-login-email').value.trim().toLowerCase();
+            const password = document.getElementById('ca-login-pwd').value;
+            const btn = document.getElementById('ca-btn-login');
+            const errEl = document.getElementById('ca-login-err');
+            if (errEl) errEl.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'A autenticar...';
+            try {
+                const r = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+                    method: 'POST',
+                    headers: { 'apikey': REAL_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const d = await r.json();
+                if (!r.ok || !d.access_token) throw new Error(d.error_description || 'Credenciais inválidas.');
+                localStorage.setItem('santiago_auth_session', JSON.stringify(d));
+                const ok = await validarSessaoStory();
+                if (!ok && errEl && errEl.style.display === 'none') {
+                    throw new Error('Conta sem permissão ativa para este módulo.');
+                }
+            } catch (e) {
+                if (errEl) { errEl.textContent = e.message; errEl.style.display = 'block'; }
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Aceder ao Story Executivo ➔';
+            }
+        }
+
+        function sairStoryExecutivo() {
+            localStorage.removeItem('santiago_auth_session');
+            document.body.classList.add('auth-locked');
+            document.getElementById('ca-auth-gate')?.classList.remove('hidden');
+        }
+
+        // Inicializar sincronização ao carregar a página (com verificação de login)
         document.addEventListener('DOMContentLoaded', () => {
-            sincronizarDadosAoVivo(null);
+            validarSessaoStory();
         });
     </script>
 </body>
