@@ -13,7 +13,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config_santiago.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
     <style>
         /* =========================================================
            TABLEAU PUBLIC EXECUTIVE STORY DESIGN SYSTEM
@@ -1908,9 +1909,8 @@
          JAVASCRIPT ENGINE: SLIDES, THEME, & LIVE SUPABASE SYNC
          ========================================================= -->
     <script>
-        const SUPABASE_URL = 'https://esbbohmkgbcrpegqvagk.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU0NDEzODUsImV4cCI6MjA5MTAxNzM4NX0.024-923234-234234';
-        const REAL_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MDQ3OTUsImV4cCI6MjA5OTA4MDc5NX0.85Ypz7LghhQ37Ur5YE2eLM4PFkMw2o3S8QtbhRSzBuU';
+        const SUPABASE_URL = window.SANTIAGO_CONFIG?.SUPABASE_URL || 'https://esbbohmkgbcrpegqvagk.supabase.co';
+        const REAL_KEY = window.SANTIAGO_CONFIG?.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzYmJvaG1rZ2JjcnBlZ3F2YWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MDQ3OTUsImV4cCI6MjA5OTA4MDc5NX0.85Ypz7LghhQ37Ur5YE2eLM4PFkMw2o3S8QtbhRSzBuU';
 
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
