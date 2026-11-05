@@ -1,0 +1,24 @@
+# Credenciais e variáveis de ambiente (NUNCA versionar)
+.env
+.env.*
+
+# Dados brutos, folhas de cálculo e extrações de clientes
+*.xlsx
+*.xls
+*.xlsm
+*.csv
+*.txt
+*.gz
+*.zip
+
+# Pastas de arquivo, cache e backups locais
+__pycache__/
+*.py[cod]
+_arquivo_antigo/
+backups/
+entrada/
+
+# Backups manuais antigos
+*.bak
+*.backup*
+~$*
