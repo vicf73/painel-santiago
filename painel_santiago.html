@@ -2184,6 +2184,79 @@
         </div>
       </section>
 
+      <!-- SEGREGAÇÃO POR EMPRESA CREDORA (EDEC SA, ELECTRA SA, EDEC SUL, ELECTRA SARL) -->
+      <section style="background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:14px 18px; margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">🏢</span>
+            <span style="font-family:var(--font-display); font-size:13.5px; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.04em;">
+              Composição da Carteira por Empresa Credora
+            </span>
+            <span class="badge" style="background:rgba(242,142,43,0.18); color:#F28E2B; border:1px solid #F28E2B; font-size:10px; font-weight:700;">SEGREGAÇÃO HISTÓRICA / SOCIETÁRIA</span>
+          </div>
+          <!-- Botões de Filtro Rápido de Empresa -->
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn-prod-pill active" id="btn-emp-todas" onclick="selecionarEmpresaDivida('')">
+              🌐 Todas as Empresas (<span id="pill-tot-emp">--</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-emp-17" onclick="selecionarEmpresaDivida('17')">
+              🏢 17 - EDEC SA (<span id="pill-emp-17">--</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-emp-21" onclick="selecionarEmpresaDivida('21')">
+              ⚡ 21 - ELECTRA SA (<span id="pill-emp-21">--</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-emp-7" onclick="selecionarEmpresaDivida('7')">
+              📍 07 - EDEC Sul (<span id="pill-emp-7">--</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-emp-70" onclick="selecionarEmpresaDivida('70')">
+              🏛️ 70 - ELECTRA SARL (<span id="pill-emp-70">--</span>)
+            </button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
+          <!-- Card 1: EDEC SA (17) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(96,165,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('17')" title="Filtrar clientes com faturas em atraso da EDEC SA (Código 17)">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-mono); font-size:11px; color:#60A5FA; font-weight:700;">🏢 17 - EDEC SA</span>
+              <span class="badge" style="background:rgba(96,165,250,0.18); color:#60A5FA; border:1px solid rgba(96,165,250,0.4); font-size:9.5px;" id="emp-pct-17">--</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-17">-- ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-17">-- devedores (-- fat.) • Faturação Atual</div>
+          </div>
+
+          <!-- Card 2: ELECTRA SA (21) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(251,191,36,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('21')" title="Filtrar clientes com dívida ELECTRA SA (Código 21, inclui Contrato Especial AdS)">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-mono); font-size:11px; color:#FBBF24; font-weight:700;">⚡ 21 - ELECTRA SA</span>
+              <span class="badge badge-warn" style="font-size:9.5px;" id="emp-pct-21">--</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:#FBBF24; margin:2px 0;" id="emp-val-21">-- ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-21">-- devedores (-- fat.) • Contrato Especial AdS</div>
+          </div>
+
+          <!-- Card 3: EDEC Sul (07) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(167,139,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('7')" title="Filtrar clientes com dívida EDEC Sul (Código 07)">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-mono); font-size:11px; color:#A78BFA; font-weight:700;">📍 07 - EDEC SUL</span>
+              <span class="badge" style="background:rgba(167,139,250,0.18); color:#A78BFA; border:1px solid rgba(167,139,250,0.4); font-size:9.5px;" id="emp-pct-7">--</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-7">-- ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-7">-- devedores (-- fat.) • Dívida Sul Histórica</div>
+          </div>
+
+          <!-- Card 4: ELECTRA SARL (70) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(244,114,182,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('70')" title="Filtrar clientes com dívida legada ELECTRA SARL (Código 70)">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-mono); font-size:11px; color:#F472B6; font-weight:700;">🏛️ 70 - ELECTRA SARL</span>
+              <span class="badge" style="background:rgba(244,114,182,0.18); color:#F472B6; border:1px solid rgba(244,114,182,0.4); font-size:9.5px;" id="emp-pct-70">--</span>
+            </div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-70">-- ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-70">-- devedores (-- fat.) • Dívida Antiga Legada</div>
+          </div>
+        </div>
+      </section>
+
       <!-- MATRIZ DE DECISÃO OPERACIONAL DA GESTÃO (AÇÕES TÁTICAS COM 1 CLIQUE) -->
       <section style="margin-bottom:18px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -2574,6 +2647,18 @@
               <option value="Autarquia">Autarquia</option>
               <option value="Estado">Estado</option>
               <option value="Empresa Publica">Empresa Pública</option>
+            </select>
+          </div>
+
+          <!-- Empresa Credora -->
+          <div class="field-group">
+            <label>Empresa Credora</label>
+            <select id="div-empresa" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
+              <option value="">Todas as Empresas</option>
+              <option value="17">🏢 17 - EDEC SA</option>
+              <option value="21">⚡ 21 - ELECTRA SA</option>
+              <option value="7">📍 07 - EDEC Sul</option>
+              <option value="70">🏛️ 70 - ELECTRA SARL</option>
             </select>
           </div>
 
@@ -4994,6 +5079,24 @@
 
     const abrirDossieTecnico = abrirDossiePorCIL;
 
+    function selecionarEmpresaDivida(cod) {
+      const sel = document.getElementById("div-empresa");
+      if (sel) sel.value = cod || "";
+      atualizarBotoesEmpresaDivida(cod || "");
+      aplicarFiltrosDivida(1);
+    }
+
+    function atualizarBotoesEmpresaDivida(cod) {
+      ["", "17", "21", "7", "70"].forEach(c => {
+        const id = c ? `btn-emp-${c}` : "btn-emp-todas";
+        const btn = document.getElementById(id);
+        if (btn) {
+          if (c === (cod || "")) btn.classList.add("active");
+          else btn.classList.remove("active");
+        }
+      });
+    }
+
     function resetarFiltrosDividaInputs() {
       const elBusca = document.getElementById("div-busca");
       const elUni = document.getElementById("div-uni");
@@ -5017,6 +5120,9 @@
       if (elLoc) elLoc.value = "";
       if (elGrupo) elGrupo.value = "";
       if (elProd) elProd.value = "";
+      const elEmp = document.getElementById("div-empresa");
+      if (elEmp) elEmp.value = "";
+      atualizarBotoesEmpresaDivida("");
       if (elFaixa) elFaixa.value = "todas";
       if (elCob) elCob.value = "";
       if (elCf1) elCf1.value = "";
@@ -5135,6 +5241,17 @@
         p.append("produto", "in.(EB,EE,EM)");
       } else if (prod) {
         p.append("produto", `eq.${prod}`);
+      }
+
+      const emp = document.getElementById("div-empresa")?.value || "";
+      if (emp === "17") {
+        p.append("divida_edec", "gt.0");
+      } else if (emp === "21") {
+        p.append("divida_electra", "gt.0");
+      } else if (emp === "7") {
+        p.append("divida_sul", "gt.0");
+      } else if (emp === "70") {
+        p.append("divida_sarl", "gt.0");
       }
       if (cob) p.append("status_cobranca", `eq.${cob}`);
 
@@ -5270,7 +5387,8 @@
             p_busca: infoBusca.texto || null,
             p_tipo_busca: infoBusca.modo || "tudo",
             p_ilha: ilha,
-            p_produto: prod || null
+            p_produto: prod || null,
+            p_empresa: document.getElementById("div-empresa")?.value || null
           })
         });
         if (token !== tokenFiltroDivida) return;
@@ -5343,6 +5461,63 @@
         if (elPillElet) elPillElet.textContent = fmtECV(divElet);
         if (elPillAgua) elPillAgua.textContent = fmtECV(divAg);
         if (typeof atualizarBotoesProdutoDivida === "function") atualizarBotoesProdutoDivida(prod || "");
+
+        // Atualizar Indicadores de Composição por Empresa Credora
+        const divEdec = Number(d.tot_divida_edec || 0);
+        const fatEdec = Number(d.tot_faturas_edec || 0);
+        const cntEdec = Number(d.devedores_edec || 0);
+
+        const divElectra = Number(d.tot_divida_electra || 0);
+        const fatElectra = Number(d.tot_faturas_electra || 0);
+        const cntElectra = Number(d.devedores_electra || 0);
+
+        const divSul = Number(d.tot_divida_sul || 0);
+        const fatSul = Number(d.tot_faturas_sul || 0);
+        const cntSul = Number(d.devedores_sul || 0);
+
+        const divSarl = Number(d.tot_divida_sarl || 0);
+        const fatSarl = Number(d.tot_faturas_sarl || 0);
+        const cntSarl = Number(d.devedores_sarl || 0);
+
+        const elVal17 = document.getElementById("emp-val-17");
+        const elDet17 = document.getElementById("emp-det-17");
+        const elPct17 = document.getElementById("emp-pct-17");
+        if (elVal17) elVal17.textContent = fmtECV(divEdec);
+        if (elDet17) elDet17.textContent = `${fmtInt(cntEdec)} devedores (${fmtInt(fatEdec)} fat.) • Faturação Atual`;
+        if (elPct17) elPct17.textContent = totDiv > 0 ? `${((divEdec / totDiv) * 100).toFixed(1)}%` : "0%";
+
+        const elVal21 = document.getElementById("emp-val-21");
+        const elDet21 = document.getElementById("emp-det-21");
+        const elPct21 = document.getElementById("emp-pct-21");
+        if (elVal21) elVal21.textContent = fmtECV(divElectra);
+        if (elDet21) elDet21.textContent = `${fmtInt(cntElectra)} devedores (${fmtInt(fatElectra)} fat.) • Contrato Especial AdS`;
+        if (elPct21) elPct21.textContent = totDiv > 0 ? `${((divElectra / totDiv) * 100).toFixed(1)}%` : "0%";
+
+        const elVal7 = document.getElementById("emp-val-7");
+        const elDet7 = document.getElementById("emp-det-7");
+        const elPct7 = document.getElementById("emp-pct-7");
+        if (elVal7) elVal7.textContent = fmtECV(divSul);
+        if (elDet7) elDet7.textContent = `${fmtInt(cntSul)} devedores (${fmtInt(fatSul)} fat.) • Dívida Sul Histórica`;
+        if (elPct7) elPct7.textContent = totDiv > 0 ? `${((divSul / totDiv) * 100).toFixed(1)}%` : "0%";
+
+        const elVal70 = document.getElementById("emp-val-70");
+        const elDet70 = document.getElementById("emp-det-70");
+        const elPct70 = document.getElementById("emp-pct-70");
+        if (elVal70) elVal70.textContent = fmtECV(divSarl);
+        if (elDet70) elDet70.textContent = `${fmtInt(cntSarl)} devedores (${fmtInt(fatSarl)} fat.) • Dívida Antiga Legada`;
+        if (elPct70) elPct70.textContent = totDiv > 0 ? `${((divSarl / totDiv) * 100).toFixed(1)}%` : "0%";
+
+        const elPillTotEmp = document.getElementById("pill-tot-emp");
+        const elPill17 = document.getElementById("pill-emp-17");
+        const elPill21 = document.getElementById("pill-emp-21");
+        const elPill7 = document.getElementById("pill-emp-7");
+        const elPill70 = document.getElementById("pill-emp-70");
+        if (elPillTotEmp) elPillTotEmp.textContent = fmtECV(totDiv);
+        if (elPill17) elPill17.textContent = fmtECV(divEdec);
+        if (elPill21) elPill21.textContent = fmtECV(divElectra);
+        if (elPill7) elPill7.textContent = fmtECV(divSul);
+        if (elPill70) elPill70.textContent = fmtECV(divSarl);
+        if (typeof atualizarBotoesEmpresaDivida === "function") atualizarBotoesEmpresaDivida(document.getElementById("div-empresa")?.value || "");
 
         // KPI 4: Taxa de Recuperação 2026
         const baseRecup = cobTotal2026 + totDiv;
@@ -5518,11 +5693,18 @@
         const isGrande = valDiv >= 1000000;
         const isMedioGrande = valDiv >= 250000;
 
-        const badgeDiv = isGrande
+        const compEmp = [];
+        if (Number(r.divida_edec || 0) > 0) compEmp.push(`<span style="color:#60A5FA; background:rgba(96,165,250,0.12); padding:1px 4px; border-radius:3px;" title="17 - EDEC SA: ${fmtInt(r.divida_edec)} ECV (${r.faturas_edec || 0} fat.)">EDEC: ${fmtInt(r.divida_edec)}</span>`);
+        if (Number(r.divida_electra || 0) > 0) compEmp.push(`<span style="color:#FBBF24; background:rgba(251,191,36,0.12); padding:1px 4px; border-radius:3px;" title="21 - ELECTRA SA: ${fmtInt(r.divida_electra)} ECV (${r.faturas_electra || 0} fat.)">ELECTRA: ${fmtInt(r.divida_electra)}</span>`);
+        if (Number(r.divida_sul || 0) > 0) compEmp.push(`<span style="color:#A78BFA; background:rgba(167,139,250,0.12); padding:1px 4px; border-radius:3px;" title="07 - EDEC Sul: ${fmtInt(r.divida_sul)} ECV (${r.faturas_sul || 0} fat.)">Sul: ${fmtInt(r.divida_sul)}</span>`);
+        if (Number(r.divida_sarl || 0) > 0) compEmp.push(`<span style="color:#F472B6; background:rgba(244,114,182,0.12); padding:1px 4px; border-radius:3px;" title="70 - ELECTRA SARL: ${fmtInt(r.divida_sarl)} ECV (${r.faturas_sarl || 0} fat.)">SARL: ${fmtInt(r.divida_sarl)}</span>`);
+        const subEmpHtml = compEmp.length ? `<div style="font-family:var(--font-mono); font-size:9.5px; margin-top:3px; display:flex; gap:3px; justify-content:flex-end; flex-wrap:wrap;">${compEmp.join("")}</div>` : "";
+
+        const badgeDiv = (isGrande
           ? `<span class="badge badge-danger" title="Grande Devedor (> 1M ECV)">🔥 ${fmtInt(valDiv)} ECV</span>`
           : (isMedioGrande
               ? `<span class="badge badge-warn" title="Devedor Elevado (> 250k ECV)">⚡ ${fmtInt(valDiv)} ECV</span>`
-              : `<span style="font-family:var(--font-mono); font-weight:600; color:#FBBF24;">${fmtInt(valDiv)} ECV</span>`);
+              : `<span style="font-family:var(--font-mono); font-weight:600; color:#FBBF24;">${fmtInt(valDiv)} ECV</span>`)) + subEmpHtml;
 
         const badgeSt = stCob === "Devedor Sem Pagamento 2026"
           ? `<span class="badge badge-danger">🚨 Sem Pag. 2026</span>`
@@ -5588,7 +5770,7 @@
     async function exportarCSVDivida() {
       const params = construirParamsDivida();
       params.append("limit", "5000"); // Exporta até 5.000 clientes prioritários
-      params.append("select", "cil,id_cliente,nome,desc_uni,localidade,pt,grup_tp_cli,produto,tarifa,valor,qtd,cob_valor_total,status_cobranca,cf1_qtd_autos,cf1_estado_juridico,score_risco,nivel_risco");
+      params.append("select", "cil,id_cliente,nome,desc_uni,localidade,pt,grup_tp_cli,produto,tarifa,valor,qtd,divida_edec,faturas_edec,divida_electra,faturas_electra,divida_sul,faturas_sul,divida_sarl,faturas_sarl,empresa_predom,cob_valor_total,status_cobranca,cf1_qtd_autos,cf1_estado_juridico,score_risco,nivel_risco");
 
       try {
         const r = await fetch(`${SUPABASE_URL}/rest/v1/contratos_santiago?${params.toString()}`, { headers: HEADERS });
