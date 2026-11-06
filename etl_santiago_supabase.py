@@ -40,9 +40,10 @@ if os.path.exists(ENV_PATH):
                 os.environ.setdefault(k.strip(), v.strip())
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://esbbohmkgbcrpegqvagk.supabase.co")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_KEY", "").strip()
+ETL_SECRET_TOKEN = os.environ.get("ETL_SECRET_TOKEN", "").strip()
 # Segurança (Fase 0): a chave anon (pública) é APENAS de leitura.
-# A escrita no Supabase exige a chave secreta service_role, guardada SOMENTE no .env local
-# (nunca no HTML nem no GitHub). Obter em: Supabase > Project Settings > API Keys.
+# A escrita no Supabase usa SUPABASE_SERVICE_KEY ou ETL_SECRET_TOKEN (guardado apenas no .env local).
 SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
 BASE_ATUAL_SCRIPT = os.environ.get("PASTA_ATUAL_SCRIPT", BASE_ATUAL_SCRIPT)
 BASE_SANTIAGO = os.environ.get("PASTA_SANTIAGO", BASE_SANTIAGO)
@@ -197,8 +198,8 @@ def carregar_dim_divida() -> pd.DataFrame:
                 f,
                 sep="\t",
                 header=None,
-                usecols=[0, 4, 5, 9, 19, 26],
-                names=["EMP_ID", "UNIDADE", "CIL", "CLI_CONTA", "NUMFACT", "VAL_DIVIDA"],
+                usecols=[0, 4, 5, 9, 10, 11, 12, 13, 19, 26],
+                names=["EMP_ID", "UNIDADE", "CIL", "CLI_CONTA", "NOME", "TPCT", "TARIFA", "PRODUTO", "NUMFACT", "VAL_DIVIDA"],
                 encoding="latin1",
                 quoting=3,
                 dtype=str,
@@ -208,6 +209,7 @@ def carregar_dim_divida() -> pd.DataFrame:
 
         df_div = pd.concat(dfs, ignore_index=True)
         df_div["EMP_ID"] = df_div["EMP_ID"].fillna("").astype(str).str.strip().str.lstrip("0")
+        df_div["PRODUTO"] = df_div["PRODUTO"].fillna("").astype(str).str.strip().str.upper()
         ucs_excluir = {
             "010000000", "010101000", "010301000", "010400000", "010401000",
             "010501000", "010502000", "010601000", "010602000", "010603000",
@@ -222,12 +224,13 @@ def carregar_dim_divida() -> pd.DataFrame:
 
         # Garantir apenas CILs de 8 dígitos
         df_div = df_div[df_div["CIL"].str.len() == 8].copy()
-        df_div["CIL_ID"] = df_div["CIL"] + "," + df_div["CLI_CONTA"]
+        df_div["CIL"] = pd.to_numeric(df_div["CIL"], errors="coerce").astype("Int64")
+        df_div = df_div[df_div["CIL"].notna()].copy()
         df_div["VAL_DIVIDA"] = pd.to_numeric(
             df_div["VAL_DIVIDA"].str.replace(r"[^0-9,.\-]", "", regex=True), errors="coerce"
         ).fillna(0.0)
 
-        # Vetorização por Empresa (17: EDEC SA, 21: ELECTRA SA, 7: EDEC Sul, 70: ELECTRA SARL)
+        # Vetorização por Empresa (17: EDEC SA, 21: ELECTRA SA, 7: EDEC Sul, 70: ELECTRA SARL) e Produto AG (Água)
         df_div["VAL_17"] = np.where(df_div["EMP_ID"] == "17", df_div["VAL_DIVIDA"], 0.0)
         df_div["FAT_17"] = np.where(df_div["EMP_ID"] == "17", 1, 0)
         df_div["VAL_21"] = np.where(df_div["EMP_ID"] == "21", df_div["VAL_DIVIDA"], 0.0)
@@ -236,8 +239,10 @@ def carregar_dim_divida() -> pd.DataFrame:
         df_div["FAT_7"]  = np.where(df_div["EMP_ID"] == "7",  1, 0)
         df_div["VAL_70"] = np.where(df_div["EMP_ID"] == "70", df_div["VAL_DIVIDA"], 0.0)
         df_div["FAT_70"] = np.where(df_div["EMP_ID"] == "70", 1, 0)
+        df_div["VAL_AG"] = np.where(df_div["PRODUTO"] == "AG", df_div["VAL_DIVIDA"], 0.0)
+        df_div["FAT_AG"] = np.where(df_div["PRODUTO"] == "AG", 1, 0)
 
-        dim_divida = df_div.groupby("CIL_ID", dropna=False, as_index=False, sort=False).agg(
+        dim_divida = df_div.groupby("CIL", dropna=False, as_index=False, sort=False).agg(
             VALOR=("VAL_DIVIDA", "sum"),
             QTD=("NUMFACT", "count"),
             divida_edec=("VAL_17", "sum"),
@@ -248,6 +253,14 @@ def carregar_dim_divida() -> pd.DataFrame:
             faturas_sul=("FAT_7", "sum"),
             divida_sarl=("VAL_70", "sum"),
             faturas_sarl=("FAT_70", "sum"),
+            divida_ag=("VAL_AG", "sum"),
+            faturas_ag=("FAT_AG", "sum"),
+            UC_DIV=("UNIDADE", "first"),
+            ID_DIV=("CLI_CONTA", "first"),
+            NOME_DIV=("NOME", "first"),
+            TPCT_DIV=("TPCT", "first"),
+            TARIFA_DIV=("TARIFA", "first"),
+            PRODUTO_DIV=("PRODUTO", "first"),
         )
 
         conds = [
@@ -260,10 +273,10 @@ def carregar_dim_divida() -> pd.DataFrame:
         dim_divida["empresa_predom"] = np.select(conds, choices, default="Sem Dívida")
 
         print(
-            f"  [2/9] Dim_DIVIDA processada direto de Atual_script/DIVIDA: {len(dim_divida):,} CIL_IDs únicos "
-            f"[Total: {dim_divida['VALOR'].sum():,.2f} ECV | EDEC: {dim_divida['divida_edec'].sum():,.0f} ECV | "
-            f"ELECTRA: {dim_divida['divida_electra'].sum():,.0f} ECV | Sul: {dim_divida['divida_sul'].sum():,.0f} ECV | "
-            f"SARL: {dim_divida['divida_sarl'].sum():,.0f} ECV] ({time.time() - t0:.2f}s)"
+            f"  [2/9] Dim_DIVIDA processada direto de Atual_script/DIVIDA: {len(dim_divida):,} CILs únicos "
+            f"[Total: {dim_divida['VALOR'].sum():,.2f} ECV | Água (AG): {dim_divida['divida_ag'].sum():,.0f} ECV | "
+            f"EDEC: {dim_divida['divida_edec'].sum():,.0f} ECV | ELECTRA: {dim_divida['divida_electra'].sum():,.0f} ECV | "
+            f"Sul: {dim_divida['divida_sul'].sum():,.0f} ECV | SARL: {dim_divida['divida_sarl'].sum():,.0f} ECV] ({time.time() - t0:.2f}s)"
         )
         return dim_divida
 
@@ -863,20 +876,56 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
 
     # 4. CRUZAMENTO COM UC E FILTRAGEM DO UNIVERSO EDEC (SANTIAGO, FOGO, MAIO, BRAVA)
     t0 = time.time()
+    if not manter_duplicados_cil:
+        df_ctr = df_ctr.drop_duplicates(subset=["CIL"], keep="first").copy()
+
+    # Incorporar CILs presentes em DIVIDA (ex: clientes de Água AG ou contas históricas) que não estão em CONTRATO
+    if "UC_DIV" in dim_divida.columns:
+        cils_existentes = set(df_ctr["CIL"].dropna())
+        div_orf = dim_divida[~dim_divida["CIL"].isin(cils_existentes)].copy()
+        if len(div_orf) > 0:
+            uc_num = pd.to_numeric(div_orf["UC_DIV"].fillna("").astype(str).str.strip(), errors="coerce").astype("Int64")
+            id_num = pd.to_numeric(div_orf["ID_DIV"].fillna("").astype(str).str.strip(), errors="coerce").astype("Int64")
+            tpct_num = pd.to_numeric(div_orf["TPCT_DIV"].fillna("").astype(str).str.strip(), errors="coerce").astype("Int64")
+            prod_s = div_orf["PRODUTO_DIV"].fillna("AG").astype(str).str.strip()
+            df_extra = pd.DataFrame({
+                "UC": uc_num,
+                "NIB": id_num,
+                "CIL": div_orf["CIL"],
+                "ID": id_num,
+                "TPCT": tpct_num,
+                "NOME": div_orf["NOME_DIV"].fillna("CLIENTE EXTRAÇÃO DÍVIDA").astype(str).str.strip(),
+                "LOCALIDADE": np.where(prod_s == "AG", "REDE ÁGUA (EXTRAÇÃO DÍVIDA AG)", "EXTRAÇÃO DÍVIDA HISTÓRICA"),
+                "PRODUTO": prod_s,
+                "TARIFA": div_orf["TARIFA_DIV"].fillna("A1").astype(str).str.strip(),
+                "ESTCTR": pd.Series(30, index=div_orf.index, dtype="Int64"),
+                "CIL_ID": div_orf["CIL"].astype(str) + "," + id_num.astype(str),
+            })
+            df_ctr = pd.concat([df_ctr, df_extra], ignore_index=True)
+            print(f"  [3.5/9] Incorporados {len(df_extra):,} CILs exclusivos da pasta DIVIDA (Água AG / Histórico)")
+
     df = df_ctr.merge(dim_uc, left_on="UC", right_on="COD_UNI", how="left")
 
     ilhas_edec = {"Santiago", "Fogo", "Maio", "Brava"}
     df = df[df["ILHA"].isin(ilhas_edec)].copy()
     print(f"  [4/9] Universo EDEC filtrado (Santiago, Fogo, Maio, Brava): {len(df):,} contratos ({time.time() - t0:.2f}s)")
 
-    # 5. ENRIQUECIMENTO DE DADOS (JOINS DEFENSIVOS 1:1)
+    # 5. ENRIQUECIMENTO DE DADOS (JOINS DEFENSIVOS 1:1 POR CIL)
     df = df.merge(dim_tpct, left_on="TPCT", right_on="COD_CLI", how="left")
     df = df.merge(dim_estctr, left_on="ESTCTR", right_on="Código", how="left").rename(columns={"Descrição": "EST_CTR"})
-    df = df.merge(dim_divida, on="CIL_ID", how="left")
-    for c_emp in ["divida_edec", "divida_electra", "divida_sul", "divida_sarl"]:
+    cols_div_join = [
+        c for c in [
+            "CIL", "VALOR", "QTD",
+            "divida_edec", "faturas_edec", "divida_electra", "faturas_electra",
+            "divida_sul", "faturas_sul", "divida_sarl", "faturas_sarl",
+            "divida_ag", "faturas_ag", "empresa_predom",
+        ] if c in dim_divida.columns
+    ]
+    df = df.merge(dim_divida[cols_div_join], on="CIL", how="left")
+    for c_emp in ["divida_edec", "divida_electra", "divida_sul", "divida_sarl", "divida_ag"]:
         if c_emp in df.columns:
             df[c_emp] = pd.to_numeric(df[c_emp], errors="coerce").fillna(0.0)
-    for c_fat in ["faturas_edec", "faturas_electra", "faturas_sul", "faturas_sarl"]:
+    for c_fat in ["faturas_edec", "faturas_electra", "faturas_sul", "faturas_sarl", "faturas_ag"]:
         if c_fat in df.columns:
             df[c_fat] = pd.to_numeric(df[c_fat], errors="coerce").fillna(0).astype("int64")
     if "empresa_predom" in df.columns:
@@ -940,7 +989,7 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
         "cf1_ultimo_ano", "cf1_estado_divida", "cf1_estado_juridico", "cf1_evidencia_fotos",
         "cob_valor_total", "cob_qtd_meses", "cob_ultimo_mes", "cob_maturidade_predom",
         "cob_valor_atraso", "status_cobranca",
-        "divida_edec", "faturas_edec", "divida_electra", "faturas_electra", "divida_sul", "faturas_sul", "divida_sarl", "faturas_sarl", "empresa_predom",
+        "divida_edec", "faturas_edec", "divida_electra", "faturas_electra", "divida_sul", "faturas_sul", "divida_sarl", "faturas_sarl", "divida_ag", "faturas_ag", "empresa_predom",
         "Score_Risco", "Nivel_Risco", "Motivo_Risco", "Criterio",
     ]
     df = df[colunas_finais].copy()
@@ -1003,6 +1052,8 @@ def preparar_registos_supabase(df: pd.DataFrame) -> list[dict]:
         "faturas_sul": pd.to_numeric(df["faturas_sul"], errors="coerce").fillna(0).astype("Int64") if "faturas_sul" in df.columns else 0,
         "divida_sarl": pd.to_numeric(df["divida_sarl"], errors="coerce").fillna(0.0) if "divida_sarl" in df.columns else 0.0,
         "faturas_sarl": pd.to_numeric(df["faturas_sarl"], errors="coerce").fillna(0).astype("Int64") if "faturas_sarl" in df.columns else 0,
+        "divida_ag": pd.to_numeric(df["divida_ag"], errors="coerce").fillna(0.0) if "divida_ag" in df.columns else 0.0,
+        "faturas_ag": pd.to_numeric(df["faturas_ag"], errors="coerce").fillna(0).astype("Int64") if "faturas_ag" in df.columns else 0,
         "empresa_predom": df["empresa_predom"] if "empresa_predom" in df.columns else None,
         "valor": pd.to_numeric(df["VALOR"], errors="coerce"),
         "qtd": pd.to_numeric(df["QTD"], errors="coerce").astype("Int64"),
@@ -1051,7 +1102,9 @@ def preparar_registos_supabase(df: pd.DataFrame) -> list[dict]:
 
 
 def chave_escrita_valida() -> bool:
-    """Confirma que SUPABASE_SERVICE_KEY existe e não é a chave anon (pública)."""
+    """Confirma que existe SUPABASE_SERVICE_KEY ou ETL_SECRET_TOKEN válido no .env."""
+    if ETL_SECRET_TOKEN and len(ETL_SECRET_TOKEN) >= 24:
+        return True
     if not SUPABASE_SERVICE_KEY:
         return False
     if SUPABASE_SERVICE_KEY.startswith("sb_secret_"):
@@ -1131,10 +1184,16 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
     total = len(records)
     batches = [records[i : i + batch_size] for i in range(0, total, batch_size)]
 
-    endpoint = f"{SUPABASE_URL.rstrip('/')}/rest/v1/contratos_santiago?on_conflict=cil"
+    usar_rpc_token = bool(ETL_SECRET_TOKEN and not SUPABASE_SERVICE_KEY)
+    api_key_auth = SUPABASE_SERVICE_KEY if not usar_rpc_token else SUPABASE_ANON_KEY
+    endpoint = (
+        f"{SUPABASE_URL.rstrip('/')}/rest/v1/rpc/etl_upsert_lote_santiago"
+        if usar_rpc_token
+        else f"{SUPABASE_URL.rstrip('/')}/rest/v1/contratos_santiago?on_conflict=cil"
+    )
     headers = {
-        "apikey": SUPABASE_SERVICE_KEY,
-        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "apikey": api_key_auth,
+        "Authorization": f"Bearer {api_key_auth}",
         "Content-Type": "application/json",
         "Prefer": "resolution=merge-duplicates,return=minimal",
     }
@@ -1143,15 +1202,16 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
     erros = 0
 
     def enviar_lote(idx_batch, lote):
+        payload_envio = {"p_etl_token": ETL_SECRET_TOKEN, "p_lote": lote} if usar_rpc_token else lote
         for tentativa in range(4):
             try:
-                resp = requests.post(endpoint, headers=headers, json=lote, timeout=60)
+                resp = requests.post(endpoint, headers=headers, json=payload_envio, timeout=120)
                 if resp.status_code in (200, 201, 204):
                     return len(lote), None
                 err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
             except Exception as exc:
                 err_msg = str(exc)
-            time.sleep(1.5 * (tentativa + 1))
+            time.sleep(2.0 * (tentativa + 1))
         return 0, f"Lote {idx_batch}: {err_msg}"
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -1167,21 +1227,14 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
                 print(f"    -> Progresso Supabase: {enviados:,}/{total:,} ({pct:.1f}%) [{time.time() - t0:.1f}s]")
 
     duracao = round(time.time() - t0, 2)
-    # Etapa 3: Registar execução oficial na tabela public.santiago_etl_execucoes
+    # Etapa 3, 4 e 6: Registar execução oficial, atualizar snapshot mensal e pós-carga (inativos + cache KPIs)
     try:
         log_payload = {
             **resumo_auditoria,
             "duracao_segundos": duracao,
             "erros_lotes": erros,
-            "observacoes": f"Sincronizados {enviados:,}/{total:,} registos via ETL Python",
+            "observacoes": f"Sincronizados {enviados:,}/{total:,} registos via ETL Python (incluindo Água AG)",
         }
-        requests.post(
-            f"{SUPABASE_URL.rstrip('/')}/rest/v1/santiago_etl_execucoes",
-            headers=headers,
-            json=log_payload,
-            timeout=20,
-        )
-        # Etapa 4: Atualizar snapshot mensal em public.santiago_snapshot_mensal
         ano_mes_atual = datetime.now().strftime("%Y-%m")
         label_atual = datetime.now().strftime("%b/%Y").capitalize()
         snaps = []
@@ -1220,21 +1273,44 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
                 "faturas_sarl_70": int(f70.sum()),
                 "cob_total_2026": round(float(cob_s.sum()), 2),
             })
-        requests.post(
-            f"{SUPABASE_URL.rstrip('/')}/rest/v1/santiago_snapshot_mensal?on_conflict=ano_mes,ilha",
-            headers=headers,
-            json=snaps,
-            timeout=20,
-        )
-        # Etapa 6: Executar pós-carga no Supabase (1.5 inativos, 2.2 santiago_divida_empresa, 2.4 santiago_kpis_cache)
-        resp_pos = requests.post(
-            f"{SUPABASE_URL.rstrip('/')}/rest/v1/rpc/pos_carga_santiago",
-            headers={**headers, "Prefer": "return=representation"},
-            json={"p_inicio_carga": ts_inicio_carga if erros == 0 else None},
-            timeout=60,
-        )
-        if resp_pos.ok:
-            print(f"    -> Pós-Carga (Etapa 6): {resp_pos.text}")
+
+        if usar_rpc_token:
+            resp_pos = requests.post(
+                f"{SUPABASE_URL.rstrip('/')}/rest/v1/rpc/etl_finalizar_carga_santiago",
+                headers={**headers, "Prefer": "return=representation"},
+                json={
+                    "p_etl_token": ETL_SECRET_TOKEN,
+                    "p_inicio_carga": ts_inicio_carga if erros == 0 else None,
+                    "p_auditoria": log_payload,
+                    "p_snapshots": snaps,
+                },
+                timeout=90,
+            )
+            if resp_pos.ok:
+                print(f"    -> Pós-Carga & Cache KPIs (Etapa 6): {resp_pos.text}")
+            else:
+                print(f"    [AVISO] Pós-Carga retornou HTTP {resp_pos.status_code}: {resp_pos.text[:200]}")
+        else:
+            requests.post(
+                f"{SUPABASE_URL.rstrip('/')}/rest/v1/santiago_etl_execucoes",
+                headers=headers,
+                json=log_payload,
+                timeout=20,
+            )
+            requests.post(
+                f"{SUPABASE_URL.rstrip('/')}/rest/v1/santiago_snapshot_mensal?on_conflict=ano_mes,ilha",
+                headers=headers,
+                json=snaps,
+                timeout=20,
+            )
+            resp_pos = requests.post(
+                f"{SUPABASE_URL.rstrip('/')}/rest/v1/rpc/pos_carga_santiago",
+                headers={**headers, "Prefer": "return=representation"},
+                json={"p_inicio_carga": ts_inicio_carga if erros == 0 else None},
+                timeout=60,
+            )
+            if resp_pos.ok:
+                print(f"    -> Pós-Carga (Etapa 6): {resp_pos.text}")
     except Exception as exc_log:
         print(f"    [AVISO] Não foi possível gravar log/snapshot/pós-carga: {exc_log}")
 

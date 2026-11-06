@@ -287,6 +287,8 @@
       const prod = document.getElementById("f-produto") ? document.getElementById("f-produto").value : "";
       if (prod === "__ELETRICIDADE__") {
         params.append("produto", "in.(EB,EE,EM)");
+      } else if (prod === "AG") {
+        params.append("or", "(produto.eq.AG,divida_ag.gt.0)");
       } else if (prod) {
         params.append("produto", `eq.${prod}`);
       }
