@@ -277,7 +277,11 @@
             <td>${row.desc_uni || "—"}</td>
             <td>${row.localidade || "—"}</td>
             <td class="mono-cell" style="color:#E2E8F0;">${(row.pt || "—").trim()}</td>
-            <td style="font-weight:500;">${row.nome || "—"}</td>
+            <td style="font-weight:500;">
+              ${row.nome || "—"}
+              ${Number(row.qtd_clientes_distintos || 1) > 1 ? `<span class="badge" style="margin-left:5px; font-size:10px; padding:1px 5px; background:rgba(56,189,248,0.14); color:#38BDF8; border:1px solid rgba(56,189,248,0.35);" title="Local de consumo com ${row.qtd_clientes_distintos} titulares distintos (${row.qtd_contratos_hist || 1} contratos no histórico). Dívida outros titulares: ${fmtECV(row.divida_outros_titulares || 0)}">👥 ${row.qtd_clientes_distintos} tit.</span>` : ""}
+              ${Number(row.divida_outros_titulares || 0) > 0 ? `<span class="badge badge-warn" style="margin-left:3px; font-size:10px; padding:1px 5px;" title="Atenção: ${fmtECV(row.divida_outros_titulares)} da dívida deste CIL pertence a titular(es) anterior(es)">⚠️ Dív. Ant.</span>` : ""}
+            </td>
             <td>${estBadge}</td>
             <td>${renderizarBadgeCF1(row)}</td>
             <td>${renderizarBadgeCobranca(row)}</td>
@@ -443,6 +447,90 @@
 
     let ultimoDossieCliente = null;
 
+    function fmtDataOitoDigitos(s) {
+      if (!s) return "—";
+      const limpo = String(s).trim();
+      if (limpo.length === 8 && /^\d{8}$/.test(limpo) && limpo !== "00000000") {
+        return `${limpo.slice(0, 4)}-${limpo.slice(4, 6)}-${limpo.slice(6, 8)}`;
+      }
+      return limpo;
+    }
+
+    function nomeEmpresaCodigo(cod) {
+      const c = String(cod || "").trim().replace(/^0+/, "");
+      if (c === "17") return "17 • EDEC SA";
+      if (c === "21") return "21 • ELECTRA SA";
+      if (c === "7")  return "07 • EDEC Sul";
+      if (c === "70") return "70 • ELECTRA SARL";
+      return c || "—";
+    }
+
+    function renderizarSecaoHistoricoContratos(r) {
+      let hist = [];
+      if (Array.isArray(r.historico_contratos)) {
+        hist = r.historico_contratos;
+      } else if (typeof r.historico_contratos === "string" && r.historico_contratos.trim().startsWith("[")) {
+        try { hist = JSON.parse(r.historico_contratos); } catch (_) { hist = []; }
+      }
+      const qtdCtr = Number(r.qtd_contratos_hist || hist.length || 1);
+      const qtdCli = Number(r.qtd_clientes_distintos || 1);
+      const divTitAtual = Number(r.divida_titular_atual ?? r.valor ?? 0);
+      const divOutros = Number(r.divida_outros_titulares || 0);
+      const temOutros = divOutros > 0 || qtdCli > 1;
+
+      const linhasHtml = hist.map((h) => {
+        const ehAtual = Number(h.id) === Number(r.id_cliente);
+        const divH = Number(h.divida || 0);
+        const badgeTit = ehAtual
+          ? `<span class="badge badge-ok" style="font-size:9.5px; padding:1px 5px; margin-left:4px;">TITULAR ATUAL</span>`
+          : `<span class="badge badge-warn" style="font-size:9.5px; padding:1px 5px; margin-left:4px;">ANTERIOR</span>`;
+        const vig = `${fmtDataOitoDigitos(h.dt_ini)} → ${h.dt_baixa ? fmtDataOitoDigitos(h.dt_baixa) : "Ativo"}`;
+        return `
+          <tr style="border-bottom:1px solid rgba(148,163,184,0.12); background:${ehAtual ? 'rgba(16,185,129,0.05)' : 'transparent'};">
+            <td style="padding:6px 8px; font-family:var(--font-mono); font-size:11px; color:#93C5FD;">${nomeEmpresaCodigo(h.emp)}</td>
+            <td style="padding:6px 8px; font-family:var(--font-mono); font-size:11px;">${h.id || "—"}${badgeTit}</td>
+            <td style="padding:6px 8px; font-size:11.5px; font-weight:600; color:var(--text-primary);">${h.nome || "—"}</td>
+            <td style="padding:6px 8px; font-family:var(--font-mono); font-size:11px;">${h.prod || "—"}</td>
+            <td style="padding:6px 8px; font-size:11px; color:var(--text-secondary);">${h.est || "—"}</td>
+            <td style="padding:6px 8px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">${vig}</td>
+            <td style="padding:6px 8px; text-align:right; font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:${divH > 0 ? (ehAtual ? '#FBBF24' : '#F87171') : 'var(--text-muted)'};">
+              ${divH > 0 ? `${fmtECV(divH)} (${h.faturas || 0} fat.)` : "0 ECV"}
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      return `
+        <div class="dossier-section" style="border-color:${temOutros ? 'rgba(56,189,248,0.45)' : 'var(--border-dim)'}; background:${temOutros ? 'rgba(56,189,248,0.05)' : 'var(--bg-input)'};">
+          <h4 style="color:#38BDF8;">📜 2.5. Histórico de Contratos &amp; Titulares no CIL (Empresas 17, 21, 07, 70)</h4>
+          <div class="dossier-grid" style="margin-bottom:${hist.length ? '10px' : '0'};">
+            <div class="kv-item"><div class="k">Contratos no CIL</div><div class="v" style="color:#38BDF8;">${qtdCtr} contrato(s)</div></div>
+            <div class="kv-item"><div class="k">Titulares Distintos (ID)</div><div class="v" style="color:${qtdCli > 1 ? '#FBBF24' : '#34D399'};">${qtdCli} cliente(s)</div></div>
+            <div class="kv-item"><div class="k">Dívida Titular Atual (ID ${r.id_cliente || "—"})</div><div class="v" style="color:#FBBF24;">${fmtECV(divTitAtual)}</div></div>
+            <div class="kv-item"><div class="k">Dívida Outros Titulares (Anteriores)</div><div class="v" style="color:${divOutros > 0 ? '#F87171' : '#34D399'}; font-weight:700;">${fmtECV(divOutros)}</div></div>
+          </div>
+          ${hist.length ? `
+            <div style="overflow-x:auto; border:1px solid var(--border-dim); border-radius:6px; background:rgba(7,10,15,0.55);">
+              <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <thead>
+                  <tr style="border-bottom:1px solid var(--border-dim); font-size:10.5px; color:var(--text-muted); text-transform:uppercase;">
+                    <th style="padding:6px 8px;">Empresa</th>
+                    <th style="padding:6px 8px;">ID Conta</th>
+                    <th style="padding:6px 8px;">Titular / Cliente</th>
+                    <th style="padding:6px 8px;">Prod.</th>
+                    <th style="padding:6px 8px;">Estado</th>
+                    <th style="padding:6px 8px;">Vigência</th>
+                    <th style="padding:6px 8px; text-align:right;">Dívida Conta</th>
+                  </tr>
+                </thead>
+                <tbody>${linhasHtml}</tbody>
+              </table>
+            </div>
+          ` : ""}
+        </div>
+      `;
+    }
+
     function renderizarDossieObjeto(r) {
       if (!r) return;
       ultimoDossieCliente = r;
@@ -515,6 +603,8 @@
             <div class="kv-item"><div class="k">Pago de Dívida Antiga (≥ 3m)</div><div class="v">${fmtECV(r.cob_valor_atraso || 0)}</div></div>
           </div>
         </div>
+
+        ${renderizarSecaoHistoricoContratos(r)}
 
         <div class="dossier-section">
           <h4>3. Identificação Contratual e Comercial</h4>

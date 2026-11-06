@@ -1,9 +1,9 @@
 {
-  "gerado_em": "2026-11-06 10:37:57",
+  "gerado_em": "2026-11-06 11:44:22",
   "base_santiago": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago",
   "base_atual_script": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script",
-  "total_ficheiros": 33,
-  "tamanho_total_mb": 3856.11,
+  "total_ficheiros": 36,
+  "tamanho_total_mb": 3914.22,
   "validacao_ok": true,
   "erros": [],
   "fontes": [
@@ -15,6 +15,33 @@
       "tamanho_mb": 37.26,
       "modificado_em": "2026-11-01 07:24:46",
       "sha256_curto": "86bfdd7e0d7e308d"
+    },
+    {
+      "categoria": "CONTRATO",
+      "ficheiro": "TContratos_E021.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\CONTRATO\\TContratos_E021.20261101.txt",
+      "tamanho_bytes": 14894495,
+      "tamanho_mb": 14.2,
+      "modificado_em": "2026-11-01 07:31:34",
+      "sha256_curto": "cb8808d52dfa7da9"
+    },
+    {
+      "categoria": "CONTRATO",
+      "ficheiro": "TContratos_SUL_AG.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\CONTRATO\\TContratos_SUL_AG.20261101.txt",
+      "tamanho_bytes": 9685637,
+      "tamanho_mb": 9.24,
+      "modificado_em": "2026-11-01 07:31:48",
+      "sha256_curto": "268602df142b7b97"
+    },
+    {
+      "categoria": "CONTRATO",
+      "ficheiro": "TContratos_SUL_EN.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\CONTRATO\\TContratos_SUL_EN.20261101.txt",
+      "tamanho_bytes": 36354218,
+      "tamanho_mb": 34.67,
+      "modificado_em": "2026-11-01 07:31:57",
+      "sha256_curto": "2041046265c9566c"
     },
     {
       "categoria": "DIVIDA",

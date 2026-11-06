@@ -659,7 +659,12 @@
         if (elDivSubtipo) {
           elDivSubtipo.textContent = uni ? `${uni.toUpperCase()} (ECV)` : (ilha ? `${ilha.toUpperCase()} (ECV)` : "REGIÃO SUL (ECV)");
         }
-        document.getElementById("kpi-div-total-sub").textContent = `${fmtInt(qtdDevedores)} devedores (${fmtInt(totFat)} faturas)`;
+        const totTitAtual = Number(d.tot_divida_titular_atual || 0);
+        const totOutrosTit = Number(d.tot_divida_outros_titulares || 0);
+        const infoTitularesSub = totOutrosTit > 0
+          ? ` • Tit. Atual: ${formatarCurtoSim(totTitAtual)} | Antigos: ${formatarCurtoSim(totOutrosTit)}`
+          : "";
+        document.getElementById("kpi-div-total-sub").textContent = `${fmtInt(qtdDevedores)} devedores (${fmtInt(totFat)} fat.)${infoTitularesSub}`;
 
         // KPI 2: Inadimplência Crítica (Sem Amortização)
         document.getElementById("kpi-div-critica").textContent = fmtECV(semPagDiv);
@@ -965,9 +970,10 @@
         const badgeAcao = calcularAcaoRecomendada(r);
         const isAdS = (r.produto === "AG" || (r.nome && (r.nome.toUpperCase().includes("AGUAS DE SANTIAGO") || r.nome.toUpperCase().includes("ADS"))));
         const rowStyle = isAdS ? `style="background:rgba(6,182,212,0.08); border-left:4px solid #06B6D4;"` : "";
+        const badgesMulti = `${Number(r.qtd_clientes_distintos || 1) > 1 ? `<span class="badge" style="margin-left:4px; font-size:9.5px; padding:1px 4px; background:rgba(56,189,248,0.14); color:#38BDF8; border:1px solid rgba(56,189,248,0.35);" title="${r.qtd_clientes_distintos} titulares distintos neste CIL (${r.qtd_contratos_hist || 1} contratos). Dívida titular atual: ${fmtECV(r.divida_titular_atual ?? r.valor)} | Outros titulares: ${fmtECV(r.divida_outros_titulares || 0)}">👥 ${r.qtd_clientes_distintos} tit.</span>` : ""}${Number(r.divida_outros_titulares || 0) > 0 ? `<span class="badge badge-warn" style="margin-left:3px; font-size:9.5px; padding:1px 4px;" title="Dívida de outros titulares anteriores neste CIL: ${fmtECV(r.divida_outros_titulares)}">⚠️ Ant: ${fmtInt(r.divida_outros_titulares)}</span>` : ""}`;
         const nomeHtml = isAdS 
-          ? `<div style="font-weight:700; color:#E0F2FE;">${r.nome}</div><span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-size:9.5px; font-weight:700; margin-top:2px; display:inline-block;">💧 CONTA ESPECIAL AdS (ÁGUA)</span>`
-          : `<span style="font-weight:500;">${r.nome || '—'}</span>`;
+          ? `<div style="font-weight:700; color:#E0F2FE;">${r.nome}${badgesMulti}</div><span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-size:9.5px; font-weight:700; margin-top:2px; display:inline-block;">💧 CONTA ESPECIAL AdS (ÁGUA)</span>`
+          : `<span style="font-weight:500;">${r.nome || '—'}</span>${badgesMulti}`;
 
         return `
           <tr ${rowStyle}>

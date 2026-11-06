@@ -65,37 +65,67 @@ def carregar_contratos() -> pd.DataFrame:
     if not ficheiros:
         raise FileNotFoundError(f"Nenhum ficheiro encontrado em {pasta_contrato}")
 
-    # Colunas Power Query (1-based) -> Python (0-based):
-    # Column2(1)->UC, Column4(3)->NIB, Column6(5)->CIL, Column9(8)->ID,
-    # Column10(9)->TPCT, Column13(12)->NOME, Column15(14)->LOCALIDADE,
-    # Column17(16)->PRODUTO, Column18(17)->TARIFA, Column20(19)->ESTCTR
-    usecols = [1, 3, 5, 8, 9, 12, 14, 16, 17, 19]
-    names = ["UC", "NIB", "CIL", "ID", "TPCT", "NOME", "LOCALIDADE", "PRODUTO", "TARIFA", "ESTCTR"]
+    # Suporte dual para os 2 formatos de extração da pasta CONTRATO:
+    # 1) Formato Resumido (26 colunas - ex: 2Contratos_E017.*.txt)
+    usecols_26 = [0, 1, 3, 5, 8, 9, 12, 14, 16, 17, 19, 20, 22]
+    names_26 = ["EMP_CTR", "UC", "NIB", "CIL", "ID", "TPCT", "NOME", "LOCALIDADE", "PRODUTO", "TARIFA", "ESTCTR", "DT_INI", "DT_BAIXA"]
+
+    # 2) Formato Completo TCONTRATOS (97 colunas - ex: TContratos_E021, TContratos_SUL_AG, TContratos_SUL_EN)
+    usecols_97 = [1, 2, 3, 5, 6, 12, 14, 17, 20, 27, 54]
+    names_97 = ["EMP_CTR", "PRODUTO", "UC", "NIB", "CIL", "ESTCTR", "TARIFA", "DT_INI", "DT_BAIXA", "ID", "TPCT"]
 
     dfs = []
     for f in ficheiros:
-        df = pd.read_csv(
-            f,
-            sep="\t",
-            header=None,
-            usecols=usecols,
-            names=names,
-            encoding="utf-8",
-            quoting=3,  # QuoteStyle.None
-            dtype=str,
-            on_bad_lines="skip",
-        )
+        with open(f, "r", encoding="latin1", errors="ignore") as fh:
+            primeira_linha = fh.readline()
+        n_cols = len(primeira_linha.split("\t"))
+
+        if n_cols <= 35:
+            df = pd.read_csv(
+                f,
+                sep="\t",
+                header=None,
+                usecols=usecols_26,
+                names=names_26,
+                encoding="utf-8",
+                encoding_errors="replace",
+                quoting=3,
+                dtype=str,
+                on_bad_lines="skip",
+            )
+        else:
+            df = pd.read_csv(
+                f,
+                sep="\t",
+                header=None,
+                usecols=usecols_97,
+                names=names_97,
+                encoding="latin1",
+                quoting=3,
+                dtype=str,
+                on_bad_lines="skip",
+            )
+            df["NOME"] = None
+            df["LOCALIDADE"] = None
+            df = df[names_26]
         dfs.append(df)
 
     df_ctr = pd.concat(dfs, ignore_index=True)
+
+    # Normalização de Empresa e códigos de 5/6 dígitos (600 / 60) para 8 dígitos
+    df_ctr["EMP_CTR"] = df_ctr["EMP_CTR"].fillna("").astype(str).str.strip().str.lstrip("0")
+    for col in ["CIL", "NIB", "ID"]:
+        s = df_ctr[col].fillna("").astype(str).str.strip()
+        tam = s.str.len()
+        df_ctr[col] = np.where(tam == 5, "600" + s, np.where(tam == 6, "60" + s, s))
 
     # Tipagem inicial (Int64.Type e type text)
     for col in ["UC", "NIB", "CIL", "ID", "TPCT", "ESTCTR"]:
         df_ctr[col] = pd.to_numeric(df_ctr[col], errors="coerce").astype("Int64")
 
-    for col in ["NOME", "LOCALIDADE", "PRODUTO", "TARIFA"]:
+    for col in ["NOME", "LOCALIDADE", "PRODUTO", "TARIFA", "DT_INI", "DT_BAIXA"]:
         df_ctr[col] = df_ctr[col].fillna("").astype(str).str.strip()
-        df_ctr.loc[df_ctr[col] == "", col] = None
+        df_ctr.loc[df_ctr[col].isin(["", "0", "00000000"]), col] = None
 
     # ComCIL_ID = Text.From([CIL]) & "," & Text.From([ID])
     df_ctr["CIL_ID"] = df_ctr["CIL"].astype(str) + "," + df_ctr["ID"].astype(str)
@@ -103,6 +133,7 @@ def carregar_contratos() -> pd.DataFrame:
     # Inclusão dos Contratos Especiais de Água (E021 - Águas de Santiago S.A.)
     df_ads = pd.DataFrame([
         {
+            "EMP_CTR": "21",
             "UC": 10201000,
             "NIB": 60209538,
             "CIL": 60220187,
@@ -113,9 +144,12 @@ def carregar_contratos() -> pd.DataFrame:
             "PRODUTO": "AG",
             "TARIFA": "CD",
             "ESTCTR": 10,
+            "DT_INI": "20200101",
+            "DT_BAIXA": None,
             "CIL_ID": "60220187,60209538",
         },
         {
+            "EMP_CTR": "21",
             "UC": 10201000,
             "NIB": 60209538,
             "CIL": 60220188,
@@ -126,12 +160,14 @@ def carregar_contratos() -> pd.DataFrame:
             "PRODUTO": "AG",
             "TARIFA": "CD",
             "ESTCTR": 10,
+            "DT_INI": "20200101",
+            "DT_BAIXA": None,
             "CIL_ID": "60220188,60209538",
         },
     ])
     df_ctr = pd.concat([df_ctr, df_ads], ignore_index=True)
 
-    print(f"  [1/9] CONTRATO carregado: {len(df_ctr):,} linhas ({time.time() - t0:.2f}s)")
+    print(f"  [1/9] CONTRATO (Multi-Empresa 17/21/07/70) carregado: {len(df_ctr):,} linhas ({time.time() - t0:.2f}s)")
     return df_ctr
 
 
@@ -271,6 +307,32 @@ def carregar_dim_divida() -> pd.DataFrame:
         ]
         choices = ["EDEC SA", "ELECTRA SA", "EDEC Sul", "ELECTRA SARL"]
         dim_divida["empresa_predom"] = np.select(conds, choices, default="Sem Dívida")
+
+        # Agregação por (CIL, CLI_CONTA) e por (CIL, CLI_CONTA, EMP_ID) para rastreio de Dívida por Titular/Contrato
+        df_div["ID_CONTA"] = pd.to_numeric(df_div["CLI_CONTA"], errors="coerce").astype("Int64")
+        div_por_cil_id = (
+            df_div[df_div["ID_CONTA"].notna()]
+            .groupby(["CIL", "ID_CONTA"], as_index=False, sort=False)
+            .agg(
+                VAL_CONTA=("VAL_DIVIDA", "sum"),
+                FAT_CONTA=("NUMFACT", "count"),
+                NOME_CONTA=("NOME", "first"),
+                EMP_CONTA=("EMP_ID", "first"),
+                PROD_CONTA=("PRODUTO", "first"),
+            )
+        )
+        div_por_cil_id_emp = (
+            df_div[df_div["ID_CONTA"].notna()]
+            .groupby(["CIL", "ID_CONTA", "EMP_ID"], as_index=False, sort=False)
+            .agg(
+                VAL_CONTA=("VAL_DIVIDA", "sum"),
+                FAT_CONTA=("NUMFACT", "count"),
+                NOME_CONTA=("NOME", "first"),
+                PROD_CONTA=("PRODUTO", "first"),
+            )
+        )
+        dim_divida.attrs["div_por_cil_id"] = div_por_cil_id
+        dim_divida.attrs["div_por_cil_id_emp"] = div_por_cil_id_emp
 
         print(
             f"  [2/9] Dim_DIVIDA processada direto de Atual_script/DIVIDA: {len(dim_divida):,} CILs únicos "
@@ -874,10 +936,9 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
     dim_cf1 = carregar_dim_cf1_autos()
     dim_cob = carregar_dim_cobranca()
 
-    # 4. CRUZAMENTO COM UC E FILTRAGEM DO UNIVERSO EDEC (SANTIAGO, FOGO, MAIO, BRAVA)
+    # 4. CRUZAMENTO COM UC, ORDENAÇÃO DE TITULAR ATUAL E HISTÓRICO MULTI-CONTRATO POR CIL
     t0 = time.time()
-    if not manter_duplicados_cil:
-        df_ctr = df_ctr.drop_duplicates(subset=["CIL"], keep="first").copy()
+    div_por_cil_id = dim_divida.attrs.get("div_por_cil_id", pd.DataFrame())
 
     # Incorporar CILs presentes em DIVIDA (ex: clientes de Água AG ou contas históricas) que não estão em CONTRATO
     if "UC_DIV" in dim_divida.columns:
@@ -889,6 +950,7 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
             tpct_num = pd.to_numeric(div_orf["TPCT_DIV"].fillna("").astype(str).str.strip(), errors="coerce").astype("Int64")
             prod_s = div_orf["PRODUTO_DIV"].fillna("AG").astype(str).str.strip()
             df_extra = pd.DataFrame({
+                "EMP_CTR": np.where(prod_s == "AG", "21", "17"),
                 "UC": uc_num,
                 "NIB": id_num,
                 "CIL": div_orf["CIL"],
@@ -899,16 +961,138 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
                 "PRODUTO": prod_s,
                 "TARIFA": div_orf["TARIFA_DIV"].fillna("A1").astype(str).str.strip(),
                 "ESTCTR": pd.Series(30, index=div_orf.index, dtype="Int64"),
+                "DT_INI": None,
+                "DT_BAIXA": None,
                 "CIL_ID": div_orf["CIL"].astype(str) + "," + id_num.astype(str),
             })
             df_ctr = pd.concat([df_ctr, df_extra], ignore_index=True)
             print(f"  [3.5/9] Incorporados {len(df_extra):,} CILs exclusivos da pasta DIVIDA (Água AG / Histórico)")
 
-    df = df_ctr.merge(dim_uc, left_on="UC", right_on="COD_UNI", how="left")
-
+    df_ctr = df_ctr.merge(dim_uc, left_on="UC", right_on="COD_UNI", how="left")
     ilhas_edec = {"Santiago", "Fogo", "Maio", "Brava"}
-    df = df[df["ILHA"].isin(ilhas_edec)].copy()
-    print(f"  [4/9] Universo EDEC filtrado (Santiago, Fogo, Maio, Brava): {len(df):,} contratos ({time.time() - t0:.2f}s)")
+    df_ctr = df_ctr[df_ctr["ILHA"].isin(ilhas_edec)].copy()
+
+    # Enriquecer NOME (via E017 + DIVIDA) e LOCALIDADE (por CIL) para os contratos de 97 colunas (TContratos_*)
+    mapa_nome = {}
+    if len(div_por_cil_id) > 0:
+        sub_n_div = div_por_cil_id[div_por_cil_id["NOME_CONTA"].notna() & (div_por_cil_id["NOME_CONTA"].str.strip() != "")]
+        mapa_nome.update(dict(zip(sub_n_div["ID_CONTA"], sub_n_div["NOME_CONTA"].str.strip())))
+    sub_n_ctr = df_ctr[df_ctr["NOME"].notna() & (df_ctr["NOME"] != "")]
+    mapa_nome.update(dict(zip(sub_n_ctr["ID"], sub_n_ctr["NOME"])))
+
+    mask_sem_nome = df_ctr["NOME"].isna() | (df_ctr["NOME"] == "")
+    df_ctr.loc[mask_sem_nome, "NOME"] = df_ctr.loc[mask_sem_nome, "ID"].map(mapa_nome)
+    mask_ainda_sem_nome = df_ctr["NOME"].isna() | (df_ctr["NOME"] == "")
+    df_ctr.loc[mask_ainda_sem_nome, "NOME"] = "CLIENTE ID " + df_ctr.loc[mask_ainda_sem_nome, "ID"].astype(str)
+
+    sub_loc = df_ctr[df_ctr["LOCALIDADE"].notna() & (df_ctr["LOCALIDADE"] != "")]
+    mapa_loc = dict(zip(sub_loc["CIL"], sub_loc["LOCALIDADE"]))
+    mask_sem_loc = df_ctr["LOCALIDADE"].isna() | (df_ctr["LOCALIDADE"] == "")
+    df_ctr.loc[mask_sem_loc, "LOCALIDADE"] = df_ctr.loc[mask_sem_loc, "CIL"].map(mapa_loc)
+    mask_ainda_sem_loc = df_ctr["LOCALIDADE"].isna() | (df_ctr["LOCALIDADE"] == "")
+    df_ctr.loc[mask_ainda_sem_loc, "LOCALIDADE"] = df_ctr.loc[mask_ainda_sem_loc, "DESC_UNI"]
+
+    # Ordenar contratos por prioridade para eleger o Titular Atual de cada CIL:
+    # 1º Contrato Ativo (ESTCTR 10, 11, 12) vs Inativo/Baixado
+    # 2º Hierarquia de Empresa (17 EDEC SA -> 21 ELECTRA SA -> 7 EDEC Sul -> 70 ELECTRA SARL)
+    # 3º Data de Início mais recente (DT_INI descendente)
+    df_ctr["_prio_ativo"] = np.where(df_ctr["ESTCTR"].isin([10, 11, 12]), 0, 1)
+    df_ctr["_prio_emp"] = df_ctr["EMP_CTR"].map({"17": 1, "21": 2, "7": 3, "70": 4}).fillna(5)
+    df_ctr["_dt_ini_ord"] = -pd.to_numeric(df_ctr["DT_INI"], errors="coerce").fillna(0)
+    df_ctr = df_ctr.sort_values(
+        by=["CIL", "_prio_ativo", "_prio_emp", "_dt_ini_ord"],
+        ascending=[True, True, True, True],
+        kind="mergesort",
+    )
+
+    # Construir Histórico de Contratos e Titulares por CIL (1 CIL -> N Contratos / Clientes)
+    div_por_cil_id_emp = dim_divida.attrs.get("div_por_cil_id_emp", pd.DataFrame())
+    df_ctr_est = df_ctr.merge(dim_estctr, left_on="ESTCTR", right_on="Código", how="left")
+    if len(div_por_cil_id_emp) > 0:
+        df_ctr_est["_is_first_emp"] = ~df_ctr_est.duplicated(subset=["CIL", "ID", "EMP_CTR"], keep="first")
+        df_ctr_est = df_ctr_est.merge(
+            div_por_cil_id_emp[["CIL", "ID_CONTA", "EMP_ID", "VAL_CONTA", "FAT_CONTA"]],
+            left_on=["CIL", "ID", "EMP_CTR"],
+            right_on=["CIL", "ID_CONTA", "EMP_ID"],
+            how="left",
+        )
+        df_ctr_est["VAL_CONTA"] = np.where(df_ctr_est["_is_first_emp"], df_ctr_est["VAL_CONTA"].fillna(0.0), 0.0)
+        df_ctr_est["FAT_CONTA"] = np.where(df_ctr_est["_is_first_emp"], df_ctr_est["FAT_CONTA"].fillna(0), 0).astype("int64")
+
+        # Adicionar ao histórico eventuais contas de dívida (CIL, ID_CONTA, EMP_ID) cujo contrato antigo não conste nos TXT de CONTRATO
+        triplas_ctr = set(zip(df_ctr_est["CIL"], df_ctr_est["ID"], df_ctr_est["EMP_CTR"]))
+        cils_edec_set = set(df_ctr_est["CIL"].dropna())
+        div_extra_hist = div_por_cil_id_emp[
+            div_por_cil_id_emp["CIL"].isin(cils_edec_set)
+            & (~pd.Series(list(zip(div_por_cil_id_emp["CIL"], div_por_cil_id_emp["ID_CONTA"], div_por_cil_id_emp["EMP_ID"])), index=div_por_cil_id_emp.index).isin(triplas_ctr))
+        ].copy()
+        if len(div_extra_hist) > 0:
+            df_hist_extra = pd.DataFrame({
+                "CIL": div_extra_hist["CIL"],
+                "EMP_CTR": div_extra_hist["EMP_ID"],
+                "ID": div_extra_hist["ID_CONTA"],
+                "NOME": div_extra_hist["NOME_CONTA"].fillna("CONTA HISTÓRICA DÍVIDA"),
+                "PRODUTO": div_extra_hist["PROD_CONTA"].fillna("BT"),
+                "Descrição": "Conta Histórica c/ Dívida",
+                "DT_INI": None,
+                "DT_BAIXA": None,
+                "VAL_CONTA": div_extra_hist["VAL_CONTA"].fillna(0.0),
+                "FAT_CONTA": div_extra_hist["FAT_CONTA"].fillna(0).astype("int64"),
+            })
+            df_hist_all = pd.concat([
+                df_ctr_est[["CIL", "EMP_CTR", "ID", "NOME", "PRODUTO", "Descrição", "DT_INI", "DT_BAIXA", "VAL_CONTA", "FAT_CONTA"]],
+                df_hist_extra,
+            ], ignore_index=True)
+        else:
+            df_hist_all = df_ctr_est[["CIL", "EMP_CTR", "ID", "NOME", "PRODUTO", "Descrição", "DT_INI", "DT_BAIXA", "VAL_CONTA", "FAT_CONTA"]]
+    else:
+        df_ctr_est["VAL_CONTA"] = 0.0
+        df_ctr_est["FAT_CONTA"] = 0
+        df_hist_all = df_ctr_est[["CIL", "EMP_CTR", "ID", "NOME", "PRODUTO", "Descrição", "DT_INI", "DT_BAIXA", "VAL_CONTA", "FAT_CONTA"]]
+
+    from collections import defaultdict
+    hist_map = defaultdict(list)
+    clientes_set_map = defaultdict(set)
+    for cil_v, emp_v, id_v, nome_v, prod_v, est_v, dini_v, dbai_v, val_v, fat_v in zip(
+        df_hist_all["CIL"].tolist(),
+        df_hist_all["EMP_CTR"].tolist(),
+        df_hist_all["ID"].tolist(),
+        df_hist_all["NOME"].tolist(),
+        df_hist_all["PRODUTO"].tolist(),
+        df_hist_all["Descrição"].tolist(),
+        df_hist_all["DT_INI"].tolist(),
+        df_hist_all["DT_BAIXA"].tolist(),
+        df_hist_all["VAL_CONTA"].tolist(),
+        df_hist_all["FAT_CONTA"].tolist(),
+    ):
+        if pd.isna(cil_v):
+            continue
+        cil_int = int(cil_v)
+        id_int = int(id_v) if pd.notna(id_v) else None
+        if id_int is not None:
+            clientes_set_map[cil_int].add(id_int)
+        hist_map[cil_int].append({
+            "emp": str(emp_v or ""),
+            "id": id_int,
+            "nome": str(nome_v or ""),
+            "prod": str(prod_v or ""),
+            "est": str(est_v or ""),
+            "dt_ini": str(dini_v) if pd.notna(dini_v) and dini_v else None,
+            "dt_baixa": str(dbai_v) if pd.notna(dbai_v) and dbai_v else None,
+            "divida": round(float(val_v or 0.0), 2),
+            "faturas": int(fat_v or 0),
+        })
+
+    tot_linhas_ctr_edec = len(df_ctr)
+    if not manter_duplicados_cil:
+        df = df_ctr.drop_duplicates(subset=["CIL"], keep="first").copy()
+    else:
+        df = df_ctr.copy()
+
+    print(
+        f"  [4/9] Universo EDEC filtrado (Santiago, Fogo, Maio, Brava): {tot_linhas_ctr_edec:,} contratos totais -> "
+        f"{len(df):,} locais de consumo (CILs únicos) ({time.time() - t0:.2f}s)"
+    )
 
     # 5. ENRIQUECIMENTO DE DADOS (JOINS DEFENSIVOS 1:1 POR CIL)
     df = df.merge(dim_tpct, left_on="TPCT", right_on="COD_CLI", how="left")
@@ -930,6 +1114,30 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
             df[c_fat] = pd.to_numeric(df[c_fat], errors="coerce").fillna(0).astype("int64")
     if "empresa_predom" in df.columns:
         df["empresa_predom"] = df["empresa_predom"].fillna("Sem Dívida")
+
+    # Cálculo de Dívida do Titular Atual vs Outros Titulares (Histórico no CIL)
+    if len(div_por_cil_id) > 0:
+        df = df.merge(
+            div_por_cil_id[["CIL", "ID_CONTA", "VAL_CONTA"]].rename(columns={"VAL_CONTA": "_val_tit_atual"}),
+            left_on=["CIL", "ID"],
+            right_on=["CIL", "ID_CONTA"],
+            how="left",
+        )
+        val_tot_cil = pd.to_numeric(df["VALOR"], errors="coerce").fillna(0.0)
+        df["divida_titular_atual"] = np.minimum(val_tot_cil, pd.to_numeric(df["_val_tit_atual"], errors="coerce").fillna(0.0)).round(2)
+        df["divida_outros_titulares"] = np.maximum(0.0, val_tot_cil - df["divida_titular_atual"]).round(2)
+    else:
+        df["divida_titular_atual"] = pd.to_numeric(df["VALOR"], errors="coerce").fillna(0.0).round(2)
+        df["divida_outros_titulares"] = 0.0
+
+    cils_lista = df["CIL"].tolist()
+    df["qtd_contratos_hist"] = [max(1, len(hist_map.get(int(c), []))) if pd.notna(c) else 1 for c in cils_lista]
+    df["qtd_clientes_distintos"] = [max(1, len(clientes_set_map.get(int(c), set()))) if pd.notna(c) else 1 for c in cils_lista]
+    df["historico_contratos"] = [
+        json.dumps(hist_map.get(int(c), []), ensure_ascii=False) if pd.notna(c) else "[]"
+        for c in cils_lista
+    ]
+
     df = df.merge(dim_aparelho, on="CIL", how="left")
     df = df.merge(dim_anomalia, on="CIL", how="left")
     df = df.merge(dim_faturacao, on="CIL", how="left")
@@ -990,6 +1198,7 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
         "cob_valor_total", "cob_qtd_meses", "cob_ultimo_mes", "cob_maturidade_predom",
         "cob_valor_atraso", "status_cobranca",
         "divida_edec", "faturas_edec", "divida_electra", "faturas_electra", "divida_sul", "faturas_sul", "divida_sarl", "faturas_sarl", "divida_ag", "faturas_ag", "empresa_predom",
+        "qtd_contratos_hist", "qtd_clientes_distintos", "divida_titular_atual", "divida_outros_titulares", "historico_contratos",
         "Score_Risco", "Nivel_Risco", "Motivo_Risco", "Criterio",
     ]
     df = df[colunas_finais].copy()
@@ -998,9 +1207,12 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
     alto_cnt = (df["Nivel_Risco"] == "ALTO").sum()
     cf1_cnt = (df["cf1_qtd_autos"] > 0).sum()
     sem_pag_cnt = (df["status_cobranca"] == "Devedor Sem Pagamento 2026").sum()
+    multi_cli_cnt = (df["qtd_clientes_distintos"] > 1).sum()
+    div_outros_tot = df["divida_outros_titulares"].sum()
     print(
-        f"  [7/9] Joins e Score de Risco concluídos: {len(df):,} contratos de Santiago\n"
+        f"  [7/9] Joins e Score de Risco concluídos: {len(df):,} locais de consumo (CILs)\n"
         f"        -> Risco Crítico: {crit_cnt:,} | Alto: {alto_cnt:,}\n"
+        f"        -> CILs Multi-Cliente: {multi_cli_cnt:,} | Dívida Outros Titulares: {div_outros_tot:,.0f} ECV\n"
         f"        -> Clientes c/ Auto CF1: {cf1_cnt:,} | Devedores s/ Pagamento 2026: {sem_pag_cnt:,}\n"
         f"        -> Tempo Joins: {time.time() - t0:.2f}s | Total ETL: {time.time() - t_inicio:.2f}s"
     )
@@ -1055,6 +1267,14 @@ def preparar_registos_supabase(df: pd.DataFrame) -> list[dict]:
         "divida_ag": pd.to_numeric(df["divida_ag"], errors="coerce").fillna(0.0) if "divida_ag" in df.columns else 0.0,
         "faturas_ag": pd.to_numeric(df["faturas_ag"], errors="coerce").fillna(0).astype("Int64") if "faturas_ag" in df.columns else 0,
         "empresa_predom": df["empresa_predom"] if "empresa_predom" in df.columns else None,
+        "qtd_contratos_hist": pd.to_numeric(df["qtd_contratos_hist"], errors="coerce").fillna(1).astype("Int64") if "qtd_contratos_hist" in df.columns else 1,
+        "qtd_clientes_distintos": pd.to_numeric(df["qtd_clientes_distintos"], errors="coerce").fillna(1).astype("Int64") if "qtd_clientes_distintos" in df.columns else 1,
+        "divida_titular_atual": pd.to_numeric(df["divida_titular_atual"], errors="coerce").fillna(0.0) if "divida_titular_atual" in df.columns else 0.0,
+        "divida_outros_titulares": pd.to_numeric(df["divida_outros_titulares"], errors="coerce").fillna(0.0) if "divida_outros_titulares" in df.columns else 0.0,
+        "historico_contratos": [
+            (json.loads(x) if isinstance(x, str) and x.startswith("[") else (x if isinstance(x, list) else []))
+            for x in (df["historico_contratos"].tolist() if "historico_contratos" in df.columns else [[] for _ in range(len(df))])
+        ],
         "valor": pd.to_numeric(df["VALOR"], errors="coerce"),
         "qtd": pd.to_numeric(df["QTD"], errors="coerce").astype("Int64"),
         "da_inst": df["DA_INST"],
