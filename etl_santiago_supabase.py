@@ -850,6 +850,9 @@ def executar_transformacao(manter_duplicados_cil: bool = False) -> pd.DataFrame:
     print(" INICIANDO PIPELINE ETL - CONTRATOS SANTIAGO (EDEC)")
     print("=" * 72)
 
+    from etl.manifesto import gerar_e_validar_manifesto
+    gerar_e_validar_manifesto(BASE_SANTIAGO, BASE_ATUAL_SCRIPT)
+
     df_ctr = carregar_contratos()
     dim_tpct, dim_estctr, dim_uc = carregar_dimensoes_codigos()
     dim_divida = carregar_dim_divida()
@@ -1122,6 +1125,7 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
         print("=" * 72)
         return
     t0 = time.time()
+    ts_inicio_carga = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     print(f"  [9/9] A preparar envio de {len(df):,} registos para o Supabase (edec-app -> public.contratos_santiago)...")
     records = preparar_registos_supabase(df)
     total = len(records)
@@ -1222,8 +1226,17 @@ def sincronizar_supabase(df: pd.DataFrame, batch_size: int = 500, max_workers: i
             json=snaps,
             timeout=20,
         )
+        # Etapa 6: Executar pós-carga no Supabase (1.5 inativos, 2.2 santiago_divida_empresa, 2.4 santiago_kpis_cache)
+        resp_pos = requests.post(
+            f"{SUPABASE_URL.rstrip('/')}/rest/v1/rpc/pos_carga_santiago",
+            headers={**headers, "Prefer": "return=representation"},
+            json={"p_inicio_carga": ts_inicio_carga if erros == 0 else None},
+            timeout=60,
+        )
+        if resp_pos.ok:
+            print(f"    -> Pós-Carga (Etapa 6): {resp_pos.text}")
     except Exception as exc_log:
-        print(f"    [AVISO] Não foi possível gravar log/snapshot: {exc_log}")
+        print(f"    [AVISO] Não foi possível gravar log/snapshot/pós-carga: {exc_log}")
 
     print("=" * 72)
     print(f" SINCRONIZAÇÃO SUPABASE CONCLUÍDA EM {duracao:.2f}s!")

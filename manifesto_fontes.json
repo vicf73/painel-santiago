@@ -1,0 +1,308 @@
+{
+  "gerado_em": "2026-11-06 10:05:31",
+  "base_santiago": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago",
+  "base_atual_script": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script",
+  "total_ficheiros": 33,
+  "tamanho_total_mb": 3856.11,
+  "validacao_ok": true,
+  "erros": [],
+  "fontes": [
+    {
+      "categoria": "CONTRATO",
+      "ficheiro": "2Contratos_E017.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\CONTRATO\\2Contratos_E017.20261101.txt",
+      "tamanho_bytes": 39066070,
+      "tamanho_mb": 37.26,
+      "modificado_em": "2026-11-01 07:24:46",
+      "sha256_curto": "86bfdd7e0d7e308d"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "0Dividas_E017_Extraidos.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\0Dividas_E017_Extraidos.20261101.txt",
+      "tamanho_bytes": 65800862,
+      "tamanho_mb": 62.75,
+      "modificado_em": "2026-11-01 07:16:50",
+      "sha256_curto": "8705c10591cd9bd3"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "0Dividas_E021_Extraidos.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\0Dividas_E021_Extraidos.20261101.txt",
+      "tamanho_bytes": 11208860,
+      "tamanho_mb": 10.69,
+      "modificado_em": "2026-11-01 07:17:06",
+      "sha256_curto": "b47967988ee05022"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "0Dividas_Praia_E017_Extraidos.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\0Dividas_Praia_E017_Extraidos.20261101.txt",
+      "tamanho_bytes": 37530837,
+      "tamanho_mb": 35.79,
+      "modificado_em": "2026-11-01 07:18:43",
+      "sha256_curto": "17181b01800006cd"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "0Dividas_Praia_SUL_Extraidos_AG.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\0Dividas_Praia_SUL_Extraidos_AG.20261101.txt",
+      "tamanho_bytes": 42866228,
+      "tamanho_mb": 40.88,
+      "modificado_em": "2026-11-01 07:19:47",
+      "sha256_curto": "7a0210aab09190ad"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "0Dividas_Praia_SUL_Extraidos_EN.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\0Dividas_Praia_SUL_Extraidos_EN.20261101.txt",
+      "tamanho_bytes": 186766814,
+      "tamanho_mb": 178.11,
+      "modificado_em": "2026-11-01 07:21:33",
+      "sha256_curto": "71f5c76d14e85157"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "0Dividas_SUL_Extraidos_AG.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\0Dividas_SUL_Extraidos_AG.20261101.txt",
+      "tamanho_bytes": 1794,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-01 07:21:45",
+      "sha256_curto": "894db952f34be5f5"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "0Dividas_SUL_Extraidos_EN.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\0Dividas_SUL_Extraidos_EN.20261101.txt",
+      "tamanho_bytes": 105280313,
+      "tamanho_mb": 100.4,
+      "modificado_em": "2026-11-01 07:22:28",
+      "sha256_curto": "c300d08a37e1aa22"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "1Dividas_Praia_SARL_Extraidos_AG.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\1Dividas_Praia_SARL_Extraidos_AG.20261101.txt",
+      "tamanho_bytes": 37234737,
+      "tamanho_mb": 35.51,
+      "modificado_em": "2026-11-01 07:23:10",
+      "sha256_curto": "9703339a8c83063b"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "1Dividas_Praia_SARL_Extraidos_EN.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\1Dividas_Praia_SARL_Extraidos_EN.20261101.txt",
+      "tamanho_bytes": 93361291,
+      "tamanho_mb": 89.04,
+      "modificado_em": "2026-11-01 07:23:31",
+      "sha256_curto": "356e5218d342c3b9"
+    },
+    {
+      "categoria": "DIVIDA",
+      "ficheiro": "1Dividas_SARL_Extraidos_EN.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\DIVIDA\\1Dividas_SARL_Extraidos_EN.20261101.txt",
+      "tamanho_bytes": 37997053,
+      "tamanho_mb": 36.24,
+      "modificado_em": "2026-11-01 07:23:45",
+      "sha256_curto": "1a383b76d66a9994"
+    },
+    {
+      "categoria": "APARELHO",
+      "ficheiro": "3Aparelhos_E017.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\APARELHO\\3Aparelhos_E017.20261101.txt",
+      "tamanho_bytes": 26813276,
+      "tamanho_mb": 25.57,
+      "modificado_em": "2026-11-01 07:25:28",
+      "sha256_curto": "5490b7739c4f9efe"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_E017.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_E017.20260201.txt",
+      "tamanho_bytes": 236708580,
+      "tamanho_mb": 225.74,
+      "modificado_em": "2026-10-27 10:55:48",
+      "sha256_curto": "5eb48247753f6169"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_E017.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_E017.20260301.txt",
+      "tamanho_bytes": 223178919,
+      "tamanho_mb": 212.84,
+      "modificado_em": "2026-10-27 10:55:51",
+      "sha256_curto": "860c8aeaf4393de3"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_E017.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_E017.20260401.txt",
+      "tamanho_bytes": 262513785,
+      "tamanho_mb": 250.35,
+      "modificado_em": "2026-10-27 10:55:55",
+      "sha256_curto": "1202aedd678bcb2a"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_E017.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_E017.20260501.txt",
+      "tamanho_bytes": 240714537,
+      "tamanho_mb": 229.56,
+      "modificado_em": "2026-10-27 10:55:58",
+      "sha256_curto": "2339e6a7df677f5b"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_E017.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_E017.20260201.txt",
+      "tamanho_bytes": 85396558,
+      "tamanho_mb": 81.44,
+      "modificado_em": "2026-10-27 10:55:59",
+      "sha256_curto": "2b41587bf53adb67"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_E017.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_E017.20260301.txt",
+      "tamanho_bytes": 73702919,
+      "tamanho_mb": 70.29,
+      "modificado_em": "2026-10-27 10:56:00",
+      "sha256_curto": "d06637fb4ac41fbb"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_E017.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_E017.20260401.txt",
+      "tamanho_bytes": 87212432,
+      "tamanho_mb": 83.17,
+      "modificado_em": "2026-10-27 10:56:01",
+      "sha256_curto": "1448fed47f4534c8"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_E017.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_E017.20260501.txt",
+      "tamanho_bytes": 72773669,
+      "tamanho_mb": 69.4,
+      "modificado_em": "2026-10-27 10:56:02",
+      "sha256_curto": "28c01ba734cb5f07"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E017_Cob_TcxRecConc.20260601.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E017_Cob_TcxRecConc.20260601.txt",
+      "tamanho_bytes": 303939539,
+      "tamanho_mb": 289.86,
+      "modificado_em": "2026-10-27 10:55:04",
+      "sha256_curto": "92b810b982224c98"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E017_Cob_TcxRecConc.20260701.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E017_Cob_TcxRecConc.20260701.txt",
+      "tamanho_bytes": 324015311,
+      "tamanho_mb": 309.01,
+      "modificado_em": "2026-10-27 10:55:17",
+      "sha256_curto": "58e195eaa68a8af4"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E017_Cob_TcxRecConc.20260801.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E017_Cob_TcxRecConc.20260801.txt",
+      "tamanho_bytes": 348108020,
+      "tamanho_mb": 331.98,
+      "modificado_em": "2026-10-27 10:56:06",
+      "sha256_curto": "47b8ef9ba55cc98c"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E017_Cob_TcxRecConc.20260901.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E017_Cob_TcxRecConc.20260901.txt",
+      "tamanho_bytes": 324823831,
+      "tamanho_mb": 309.78,
+      "modificado_em": "2026-10-27 10:56:10",
+      "sha256_curto": "ac2e3d0c45f2d0bf"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E017_Cob_TcxRecConc.20261001.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E017_Cob_TcxRecConc.20261001.txt",
+      "tamanho_bytes": 344210793,
+      "tamanho_mb": 328.26,
+      "modificado_em": "2026-10-01 07:31:58",
+      "sha256_curto": "12363bb83bd0febe"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E017_Cob_TcxRecConc.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E017_Cob_TcxRecConc.20261101.txt",
+      "tamanho_bytes": 357746245,
+      "tamanho_mb": 341.17,
+      "modificado_em": "2026-11-01 07:29:36",
+      "sha256_curto": "152fa6396d091c32"
+    },
+    {
+      "categoria": "CODIGOS",
+      "ficheiro": "CODIGOS.xlsx",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\CODIGOS.xlsx",
+      "tamanho_bytes": 1311019,
+      "tamanho_mb": 1.25,
+      "modificado_em": "2026-11-05 08:47:40",
+      "sha256_curto": "11de09522a03f439"
+    },
+    {
+      "categoria": "ANOMALIA",
+      "ficheiro": "Anomalia de Leitura Setembro 2026.xlsx",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\Anomalia de Leitura Setembro 2026.xlsx",
+      "tamanho_bytes": 1369426,
+      "tamanho_mb": 1.31,
+      "modificado_em": "2026-10-09 10:24:00",
+      "sha256_curto": "a8fb60f1274062eb"
+    },
+    {
+      "categoria": "FATURACAO_T3",
+      "ficheiro": "Fat_piv.xlsx",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\Fat_piv.xlsx",
+      "tamanho_bytes": 25702290,
+      "tamanho_mb": 24.51,
+      "modificado_em": "2026-10-21 11:34:33",
+      "sha256_curto": "79faf87cd87c3fef"
+    },
+    {
+      "categoria": "GEOREF_PT",
+      "ficheiro": "CL_PT_15_10_26.xlsx",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\CL_PT_15_10_26.xlsx",
+      "tamanho_bytes": 2389298,
+      "tamanho_mb": 2.28,
+      "modificado_em": "2026-11-05 09:55:15",
+      "sha256_curto": "8efb5fd3372c0bb7"
+    },
+    {
+      "categoria": "IMTT",
+      "ficheiro": "IMTT.xlsx",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\IMTT.xlsx",
+      "tamanho_bytes": 29310,
+      "tamanho_mb": 0.03,
+      "modificado_em": "2026-10-13 08:48:46",
+      "sha256_curto": "a3d455bd7d9465cc"
+    },
+    {
+      "categoria": "CF1_AUTOS",
+      "ficheiro": "cf1_aut.xlsx",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\cf1_aut.xlsx",
+      "tamanho_bytes": 22502892,
+      "tamanho_mb": 21.46,
+      "modificado_em": "2026-10-20 09:42:23",
+      "sha256_curto": "70ffb59aed994b0a"
+    },
+    {
+      "categoria": "COBRANCA_2026",
+      "ficheiro": "COB_J.xlsx",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\COB_J.xlsx",
+      "tamanho_bytes": 21146947,
+      "tamanho_mb": 20.17,
+      "modificado_em": "2026-10-27 13:58:18",
+      "sha256_curto": "291116e69a452187"
+    }
+  ]
+}

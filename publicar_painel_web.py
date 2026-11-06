@@ -100,9 +100,23 @@ def publicar():
     else:
         r_repo.raise_for_status()
 
-    # 2. Enviar painel_santiago.html como index.html e painel_santiago.html
-    print("A enviar Painel Santiago (SCADA, Triagem, Dívida & Inadimplência)...")
+    # 2. Enviar config_santiago.js, módulos CSS/JS e painel_santiago.html
+    print("A enviar Painel Santiago modularizado (CSS, JS, SCADA, Triagem, Dívida)...")
     enviar_ficheiro(headers, CONFIG_JS_PATH, "config_santiago.js", "Atualização de config_santiago.js")
+    for rel_mod in [
+        "css/painel.css",
+        "js/api.js",
+        "js/contratos.js",
+        "js/mapa.js",
+        "js/auth.js",
+        "js/divida.js",
+        ".github/workflows/pages.yml",
+    ]:
+        caminho_mod = os.path.join(BASE_DIR, *rel_mod.split("/"))
+        try:
+            enviar_ficheiro(headers, caminho_mod, rel_mod, f"Atualização do módulo {rel_mod} (Etapa 8)")
+        except Exception as exc_mod:
+            print(f"[AVISO] Não foi possível publicar '{rel_mod}' via API ({exc_mod})")
     enviar_ficheiro(headers, PAINEL_PATH, "index.html", "Atualização do Painel Santiago (index.html)")
     enviar_ficheiro(headers, PAINEL_PATH, "painel_santiago.html", "Atualização do Painel Santiago (painel_santiago.html)")
 
