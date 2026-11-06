@@ -408,8 +408,8 @@
       } else if (tipo === "ads_especial") {
         document.getElementById("card-act-ads")?.classList.add("active");
         const p = document.getElementById("div-produto");
-        if (p) p.value = "AG";
-        atualizarBotoesProdutoDivida("AG");
+        if (p) p.value = "AG_ADS";
+        atualizarBotoesProdutoDivida("AG_ADS");
       }
 
       aplicarFiltrosDivida(1);
@@ -425,17 +425,15 @@
     function atualizarBotoesProdutoDivida(prod) {
       const bTodos = document.getElementById("btn-prod-todos");
       const bElet = document.getElementById("btn-prod-elet");
+      const bAguaAds = document.getElementById("btn-prod-agua-ads");
+      const bAguaOutros = document.getElementById("btn-prod-agua-outros");
       const bAgua = document.getElementById("btn-prod-agua");
 
-      if (bTodos) {
-        bTodos.className = "btn-prod-pill" + (prod === "" ? " active" : "");
-      }
-      if (bElet) {
-        bElet.className = "btn-prod-pill" + (prod === "__ELETRICIDADE__" ? " active" : "");
-      }
-      if (bAgua) {
-        bAgua.className = "btn-prod-pill" + (prod === "AG" ? " active-water" : "");
-      }
+      if (bTodos) bTodos.className = "btn-prod-pill" + (prod === "" ? " active" : "");
+      if (bElet) bElet.className = "btn-prod-pill" + (prod === "__ELETRICIDADE__" ? " active" : "");
+      if (bAguaAds) bAguaAds.className = "btn-prod-pill" + (prod === "AG_ADS" ? " active-water" : "");
+      if (bAguaOutros) bAguaOutros.className = "btn-prod-pill" + (prod === "AG_OUTROS" ? " active-water" : "");
+      if (bAgua) bAgua.className = "btn-prod-pill" + (prod === "AG" ? " active-water" : "");
     }
 
     function filtrarConcelhoDivida(concelho) {
@@ -482,6 +480,12 @@
       }
       if (prod === "__ELETRICIDADE__") {
         p.append("produto", "in.(EB,EE,EM)");
+      } else if (prod === "AG_ADS") {
+        p.append("or", "(cil.in.(60220187,60220188),id_cliente.eq.60209538)");
+      } else if (prod === "AG_OUTROS") {
+        p.append("cil", "not.in.(60220187,60220188)");
+        p.append("id_cliente", "neq.60209538");
+        p.append("or", "(produto.eq.AG,divida_ag.gt.0)");
       } else if (prod === "AG") {
         p.append("or", "(produto.eq.AG,divida_ag.gt.0)");
       } else if (prod) {
@@ -500,12 +504,13 @@
       }
       if (cob) p.append("status_cobranca", `eq.${cob}`);
 
-      // Faixas de Dívida
+      // Faixas de Dívida e Titularidade
       if (faixa === "grandes") p.append("valor", "gte.1000000");
       else if (faixa === "250k") p.append("valor", "gte.250000");
       else if (faixa === "50k") p.append("valor", "gte.50000");
       else if (faixa === "10k") p.append("valor", "gte.10000");
       else if (faixa === "ate10k") p.append("valor", "lte.10000");
+      else if (faixa === "outros_tit") p.append("divida_outros_titulares", "gt.0");
 
       // Fraude CF1
       if (cf1 === "com_cf1") {
@@ -610,6 +615,7 @@
         else if (faixa === "50k") faixaRpc = "gte50000";
         else if (faixa === "10k") faixaRpc = "gte10000";
         else if (faixa === "ate10k") faixaRpc = "ate10k";
+        else if (faixa === "outros_tit") faixaRpc = "outros_tit";
 
         const pDividaRpc = qtdFat ? `${faixaRpc}|${qtdFat}` : faixaRpc;
 
@@ -675,40 +681,71 @@
         document.getElementById("kpi-div-arrecadado").textContent = fmtECV(cobTotal2026);
         document.getElementById("kpi-div-arrecadado-sub").textContent = `${fmtInt(qtdAmort)} pagadores (2026)`;
 
-        // Atualizar Faixa Dinâmica de Produto & Destaque AdS
+        // Atualizar Faixa Dinâmica de Produto & Destaque AdS vs. Restantes Clientes Água + Titularidade CIL
         const porProd = d.por_produto || [];
         const itemAg = porProd.find(p => p.produto === "AG");
-        const divAg = itemAg ? Number(itemAg.soma_divida || 0) : 0;
-        const cntAg = itemAg ? Number(itemAg.qtd_devedores || itemAg.qtd_contratos || 0) : 0;
-        const fatAg = itemAg ? Number(itemAg.soma_faturas || 42) : 0;
-        const cobAg = itemAg ? Number(itemAg.soma_cob_2026 || 0) : 0;
+        const divAg = d.tot_divida_ag !== undefined ? Number(d.tot_divida_ag) : (itemAg ? Number(itemAg.soma_divida || 0) : 0);
+        const cntAg = d.devedores_ag !== undefined ? Number(d.devedores_ag) : (itemAg ? Number(itemAg.qtd_devedores || itemAg.qtd_contratos || 0) : 0);
+        const fatAg = d.tot_faturas_ag !== undefined ? Number(d.tot_faturas_ag) : (itemAg ? Number(itemAg.soma_faturas || 0) : 0);
+
+        const divAgAds = d.divida_ag_ads !== undefined ? Number(d.divida_ag_ads) : 0;
+        const cntAgAds = d.devedores_ag_ads !== undefined ? Number(d.devedores_ag_ads) : 0;
+        const fatAgAds = d.faturas_ag_ads !== undefined ? Number(d.faturas_ag_ads) : 0;
+
+        const divAgOutros = d.divida_ag_outros !== undefined ? Number(d.divida_ag_outros) : Math.max(0, divAg - divAgAds);
+        const cntAgOutros = d.devedores_ag_outros !== undefined ? Number(d.devedores_ag_outros) : Math.max(0, cntAg - cntAgAds);
+        const fatAgOutros = d.faturas_ag_outros !== undefined ? Number(d.faturas_ag_outros) : Math.max(0, fatAg - fatAgAds);
 
         const itensElet = porProd.filter(p => p.produto !== "AG");
-        const divElet = itensElet.reduce((s, p) => s + Number(p.soma_divida || 0), 0);
+        const divElet = d.tot_divida_en !== undefined ? Number(d.tot_divida_en) : itensElet.reduce((s, p) => s + Number(p.soma_divida || 0), 0);
         const cntElet = itensElet.reduce((s, p) => s + Number(p.qtd_devedores || p.qtd_contratos || 0), 0);
-        const fatElet = itensElet.reduce((s, p) => s + Number(p.soma_faturas || 0), 0);
+        const fatElet = d.tot_faturas_en !== undefined ? Number(d.tot_faturas_en) : itensElet.reduce((s, p) => s + Number(p.soma_faturas || 0), 0);
         const cobElet = itensElet.reduce((s, p) => s + Number(p.soma_cob_2026 || 0), 0);
 
         const elValElet = document.getElementById("prod-val-elet");
         const elDetElet = document.getElementById("prod-det-elet");
         const elPctElet = document.getElementById("prod-pct-elet");
+
         const elValAgua = document.getElementById("prod-val-agua");
         const elDetAgua = document.getElementById("prod-det-agua");
         const elPctAgua = document.getElementById("prod-pct-agua");
+
+        const elValAguaOutros = document.getElementById("prod-val-agua-outros");
+        const elDetAguaOutros = document.getElementById("prod-det-agua-outros");
+        const elPctAguaOutros = document.getElementById("prod-pct-agua-outros");
+
+        const elValOutrosTit = document.getElementById("prod-val-outros-tit");
+        const elDetOutrosTit = document.getElementById("prod-det-outros-tit");
+        const elPctOutrosTit = document.getElementById("prod-pct-outros-tit");
+
         const elPillTot = document.getElementById("pill-tot-div");
         const elPillElet = document.getElementById("pill-elet-div");
+        const elPillAguaAds = document.getElementById("pill-agua-ads-div");
+        const elPillAguaOutros = document.getElementById("pill-agua-outros-div");
         const elPillAgua = document.getElementById("pill-agua-div");
 
         if (elValElet) elValElet.textContent = fmtECV(divElet);
         if (elDetElet) elDetElet.textContent = `${fmtInt(cntElet)} devedores (${fmtInt(fatElet)} fat.) • ${fmtECV(cobElet)} cobrado em 2026`;
         if (elPctElet) elPctElet.textContent = totDiv > 0 ? `${((divElet / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
 
-        if (elValAgua) elValAgua.textContent = fmtECV(divAg);
-        if (elDetAgua) elDetAgua.textContent = `${fmtInt(cntAg)} devedores de Água (${fmtInt(fatAg)} faturas) • ${fmtECV(cobAg)} cobrado`;
-        if (elPctAgua) elPctAgua.textContent = totDiv > 0 ? `${((divAg / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
+        if (elValAgua) elValAgua.textContent = fmtECV(divAgAds);
+        if (elDetAgua) elDetAgua.textContent = `${fmtInt(cntAgAds)} CILs AdS (${fmtInt(fatAgAds)} fat.) • Emp. 21 + Emp. 07`;
+        if (elPctAgua) elPctAgua.textContent = totDiv > 0 ? `${((divAgAds / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
+
+        if (elValAguaOutros) elValAguaOutros.textContent = fmtECV(divAgOutros);
+        if (elDetAguaOutros) elDetAguaOutros.textContent = `${fmtInt(cntAgOutros)} clientes finais AG (${fmtInt(fatAgOutros)} fat.) • Domésticos, Autarquias e Empresas`;
+        if (elPctAguaOutros) elPctAguaOutros.textContent = totDiv > 0 ? `${((divAgOutros / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
+
+        const cilsDivOutros = Number(d.cils_divida_outros_titulares || 0);
+        const cilsMultiCli = Number(d.cils_multi_cliente || 0);
+        if (elValOutrosTit) elValOutrosTit.textContent = fmtECV(totOutrosTit);
+        if (elDetOutrosTit) elDetOutrosTit.textContent = `${fmtInt(cilsDivOutros)} CILs c/ dívida anterior (${fmtInt(cilsMultiCli)} CILs multi-titular) • Tit. Atual: ${fmtECV(totTitAtual)}`;
+        if (elPctOutrosTit) elPctOutrosTit.textContent = totDiv > 0 ? `${((totOutrosTit / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
 
         if (elPillTot) elPillTot.textContent = fmtECV(totDiv);
         if (elPillElet) elPillElet.textContent = fmtECV(divElet);
+        if (elPillAguaAds) elPillAguaAds.textContent = fmtECV(divAgAds);
+        if (elPillAguaOutros) elPillAguaOutros.textContent = fmtECV(divAgOutros);
         if (elPillAgua) elPillAgua.textContent = fmtECV(divAg);
         if (typeof atualizarBotoesProdutoDivida === "function") atualizarBotoesProdutoDivida(prod || "");
 
@@ -890,8 +927,9 @@
       const cf1Qtd = Number(r.cf1_qtd_autos || 0);
       const cf1Jur = r.cf1_estado_juridico || "";
 
-      // 0. Caso Estratégico Especial AdS (Água)
-      if (r.produto === "AG" || (r.nome && (r.nome.toUpperCase().includes("AGUAS DE SANTIAGO") || r.nome.toUpperCase().includes("ADS")))) {
+      // 0. Caso Estratégico Especial AdS (Águas de Santiago S.A. - CILs 60220187 e 60220188)
+      const isAdS = (Number(r.cil) === 60220187 || Number(r.cil) === 60220188 || Number(r.id_cliente) === 60209538 || (r.nome && r.nome.toUpperCase().includes("AGUAS DE SANTIAGO")));
+      if (isAdS) {
         return `<span class="badge" style="background:#083344; color:#38BDF8; border:1px solid #0284C7; font-weight:700;" title="Protocolo Governamental de Encontro de Contas AdS">💧 Protocolo Especial AdS</span>`;
       }
 
@@ -949,6 +987,7 @@
         if (Number(r.divida_electra || 0) > 0) compEmp.push(`<span style="color:#FBBF24; background:rgba(251,191,36,0.12); padding:1px 4px; border-radius:3px;" title="21 - ELECTRA SA: ${fmtInt(r.divida_electra)} ECV (${r.faturas_electra || 0} fat.)">ELECTRA: ${fmtInt(r.divida_electra)}</span>`);
         if (Number(r.divida_sul || 0) > 0) compEmp.push(`<span style="color:#A78BFA; background:rgba(167,139,250,0.12); padding:1px 4px; border-radius:3px;" title="07 - EDEC Sul: ${fmtInt(r.divida_sul)} ECV (${r.faturas_sul || 0} fat.)">Sul: ${fmtInt(r.divida_sul)}</span>`);
         if (Number(r.divida_sarl || 0) > 0) compEmp.push(`<span style="color:#F472B6; background:rgba(244,114,182,0.12); padding:1px 4px; border-radius:3px;" title="70 - ELECTRA SARL: ${fmtInt(r.divida_sarl)} ECV (${r.faturas_sarl || 0} fat.)">SARL: ${fmtInt(r.divida_sarl)}</span>`);
+        if (Number(r.divida_ag || 0) > 0 && Number(r.divida_en || 0) > 0) compEmp.push(`<span style="color:#38BDF8; background:rgba(14,165,233,0.15); padding:1px 4px; border-radius:3px;" title="Parcela Água AG: ${fmtInt(r.divida_ag)} ECV (${r.faturas_ag || 0} fat.)">🚰 AG: ${fmtInt(r.divida_ag)}</span>`);
         const subEmpHtml = compEmp.length ? `<div style="font-family:var(--font-mono); font-size:9.5px; margin-top:3px; display:flex; gap:3px; justify-content:flex-end; flex-wrap:wrap;">${compEmp.join("")}</div>` : "";
 
         const badgeDiv = (isGrande
@@ -968,7 +1007,8 @@
           : `<span style="color:var(--text-muted); font-size:11px;">—</span>`;
 
         const badgeAcao = calcularAcaoRecomendada(r);
-        const isAdS = (r.produto === "AG" || (r.nome && (r.nome.toUpperCase().includes("AGUAS DE SANTIAGO") || r.nome.toUpperCase().includes("ADS"))));
+        const isAdS = (Number(r.cil) === 60220187 || Number(r.cil) === 60220188 || Number(r.id_cliente) === 60209538 || (r.nome && r.nome.toUpperCase().includes("AGUAS DE SANTIAGO")));
+        const isAguaOutro = !isAdS && (r.produto === "AG" || Number(r.divida_ag || 0) > 0);
         const rowStyle = isAdS ? `style="background:rgba(6,182,212,0.08); border-left:4px solid #06B6D4;"` : "";
         const badgesMulti = `${Number(r.qtd_clientes_distintos || 1) > 1 ? `<span class="badge" style="margin-left:4px; font-size:9.5px; padding:1px 4px; background:rgba(56,189,248,0.14); color:#38BDF8; border:1px solid rgba(56,189,248,0.35);" title="${r.qtd_clientes_distintos} titulares distintos neste CIL (${r.qtd_contratos_hist || 1} contratos). Dívida titular atual: ${fmtECV(r.divida_titular_atual ?? r.valor)} | Outros titulares: ${fmtECV(r.divida_outros_titulares || 0)}">👥 ${r.qtd_clientes_distintos} tit.</span>` : ""}${Number(r.divida_outros_titulares || 0) > 0 ? `<span class="badge badge-warn" style="margin-left:3px; font-size:9.5px; padding:1px 4px;" title="Dívida de outros titulares anteriores neste CIL: ${fmtECV(r.divida_outros_titulares)}">⚠️ Ant: ${fmtInt(r.divida_outros_titulares)}</span>` : ""}`;
         const nomeHtml = isAdS 
@@ -983,7 +1023,7 @@
             <td><span class="badge" style="background:#131C2B; border:1px solid var(--border-bright);">${r.desc_uni || '—'}</span></td>
             <td style="color:var(--text-secondary); max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${r.localidade || ''} • PT: ${r.pt || '-'}">${r.localidade || '—'}${r.pt ? ' <span style="color:var(--accent-cyan); font-family:var(--font-mono); font-size:10px;">(' + r.pt + ')</span>' : ''}</td>
             <td>${r.grup_tp_cli || '—'}</td>
-            <td>${r.produto === 'AG' ? '<span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-weight:700; padding:2px 8px;">💧 AG (Água)</span>' : `<span class="badge" style="font-family:var(--font-mono);">${r.produto || '—'}</span>`}</td>
+            <td>${isAdS ? '<span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-weight:700; padding:2px 8px;">💧 AdS (Água)</span>' : (isAguaOutro ? '<span class="badge" style="background:rgba(14,165,233,0.18); color:#38BDF8; border:1px solid #0EA5E9; font-weight:600; padding:2px 8px;">🚰 AG (Água)</span>' : `<span class="badge" style="font-family:var(--font-mono);">${r.produto || '—'}</span>`)}</td>
             <td style="text-align:right; font-family:var(--font-mono); ${qtdFat > 12 ? 'color:#F87171; font-weight:700;' : ''}">${fmtInt(qtdFat)}</td>
             <td style="text-align:right;">${badgeDiv}</td>
             <td style="text-align:right; font-family:var(--font-mono); color:#34D399;">${pago2026 > 0 ? fmtInt(pago2026) + ' ECV' : '<span style="color:var(--text-muted);">0</span>'}</td>
