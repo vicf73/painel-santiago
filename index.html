@@ -833,63 +833,125 @@
         </div>
       </section>
 
-      <!-- SEGREGAÇÃO POR PRODUTO & DESTAQUE ESTRATÉGICO ADS (ÁGUA VS ENERGIA) -->
+      <!-- SEGREGAÇÃO POR PRODUTO, DISCRIMINAÇÃO ADS VS RESTANTES ÁGUA & TITULARIDADE NO CIL -->
       <section style="background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:14px 18px; margin-bottom:18px;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:16px;">⚡💧</span>
+            <span style="font-size:16px;">⚡💧👥</span>
             <span style="font-family:var(--font-display); font-size:13.5px; font-weight:700; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.04em;">
-              Segmentação da Carteira por Produto &amp; Impacto AdS
+              Segmentação por Produto (AdS vs. Restantes Água) &amp; Histórico de Titulares no CIL
             </span>
-            <span class="badge" style="background:rgba(6,182,212,0.18); color:#22D3EE; border:1px solid #06B6D4; font-size:10px; font-weight:700;">ÁGUA &amp; ELETRICIDADE</span>
+            <span class="badge" style="background:rgba(6,182,212,0.18); color:#22D3EE; border:1px solid #06B6D4; font-size:10px; font-weight:700;">ELETRICIDADE • AdS • CLIENTES ÁGUA • MULTI-TITULAR</span>
           </div>
           <!-- Botões de Filtro Rápido de Produto -->
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
             <button class="btn-prod-pill active" id="btn-prod-todos" onclick="selecionarProdutoDivida('')">
-              🌐 Todos os Produtos (<span id="pill-tot-div">8.595.747.001 ECV</span>)
+              🌐 Todos (<span id="pill-tot-div">13.548.243.579 ECV</span>)
             </button>
             <button class="btn-prod-pill" id="btn-prod-elet" onclick="selecionarProdutoDivida('__ELETRICIDADE__')">
-              ⚡ Eletricidade EB/EE/EM (<span id="pill-elet-div">7.053.511.151 ECV</span>)
+              ⚡ Eletricidade (<span id="pill-elet-div">8.102.944.044 ECV</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-prod-agua-ads" onclick="selecionarProdutoDivida('AG_ADS')">
+              💧 AdS Especial (<span id="pill-agua-ads-div">4.102.843.957 ECV</span>)
+            </button>
+            <button class="btn-prod-pill" id="btn-prod-agua-outros" onclick="selecionarProdutoDivida('AG_OUTROS')">
+              🚰 Restantes Água AG (<span id="pill-agua-outros-div">1.342.455.578 ECV</span>)
             </button>
             <button class="btn-prod-pill" id="btn-prod-agua" onclick="selecionarProdutoDivida('AG')">
-              💧 Água AdS Especial (<span id="pill-agua-div">1.542.235.850 ECV</span>)
+              🌊 Total Água (<span id="pill-agua-div">5.445.299.535 ECV</span>)
             </button>
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
-          <!-- Card Eletricidade -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-bright); border-radius:6px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="selecionarProdutoDivida('__ELETRICIDADE__')" title="Clique para filtrar apenas Eletricidade (EB, EE, EM)">
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
+          <!-- Card 1: Eletricidade -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-bright); border-radius:6px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="selecionarProdutoDivida('__ELETRICIDADE__')" title="Clique para filtrar apenas Eletricidade (EB, EE, EM)">
             <div>
-              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#FBBF24; font-weight:700;">
-                <span>⚡ ELETRICIDADE (EB, EE, EM)</span>
-                <span class="badge badge-warn" style="font-size:9.5px;" id="prod-pct-elet">82.1% da Dívida</span>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; color:#FBBF24; font-weight:700;">
+                <span>⚡ ELETRICIDADE (EB/EE/EM)</span>
+                <span class="badge badge-warn" style="font-size:9px;" id="prod-pct-elet">59.8%</span>
               </div>
-              <div style="font-family:var(--font-display); font-size:18px; font-weight:800; color:var(--text-primary); margin:4px 0;" id="prod-val-elet">
-                7.053.511.151 ECV
+              <div style="font-family:var(--font-display); font-size:16.5px; font-weight:800; color:var(--text-primary); margin:4px 0;" id="prod-val-elet">
+                8.102.944.044 ECV
               </div>
-              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary);" id="prod-det-elet">
-                95.509 devedores (2.393.410 fat.) • 2.541.070.380 ECV cobrado em 2026
+              <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="prod-det-elet">
+                103.504 devedores (2.707.770 fat.) • Rede Elétrica
               </div>
             </div>
-            <div style="font-size:16px; color:var(--text-muted); font-family:var(--font-mono);">➔</div>
+            <div style="font-size:14px; color:var(--text-muted); font-family:var(--font-mono);">➔</div>
           </div>
 
-          <!-- Card Água AdS Especial -->
-          <div style="background:rgba(6,182,212,0.06); border:1px solid rgba(6,182,212,0.4); border-radius:6px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="selecionarProdutoDivida('AG')" title="Clique para isolar Águas de Santiago (AdS)">
+          <!-- Card 2: Conta Especial AdS (Águas de Santiago) -->
+          <div style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.45); border-radius:6px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="selecionarProdutoDivida('AG_ADS')" title="Clique para isolar exclusivamente os 2 CILs da Águas de Santiago S.A. (AdS - CIL 60220187 e 60220188)">
             <div>
-              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#22D3EE; font-weight:700;">
-                <span>💧 ÁGUA (AdS - ÁGUAS DE SANTIAGO)</span>
-                <span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-size:9.5px;" id="prod-pct-agua">17.9% da Dívida</span>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; color:#22D3EE; font-weight:700;">
+                <span>💧 CONTA ESPECIAL AdS</span>
+                <span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border:1px solid #06B6D4; font-size:9px;" id="prod-pct-agua">30.3% (75.3% Água)</span>
               </div>
-              <div style="font-family:var(--font-display); font-size:18px; font-weight:800; color:#38BDF8; margin:4px 0;" id="prod-val-agua">
-                1.542.235.850 ECV
+              <div style="font-family:var(--font-display); font-size:16.5px; font-weight:800; color:#38BDF8; margin:4px 0;" id="prod-val-agua">
+                4.102.843.957 ECV
               </div>
-              <div style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary);" id="prod-det-agua">
-                2 contratos especiais (42 faturas) • 0 ECV cobrado (100% estagnada)
+              <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="prod-det-agua">
+                2 CILs AdS (112 fat.: 1,67B E021 + 2,43B Sul 07)
               </div>
             </div>
-            <div style="font-size:16px; color:#22D3EE; font-family:var(--font-mono); font-weight:700;">➔</div>
+            <div style="font-size:14px; color:#22D3EE; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
+
+          <!-- Card 3: Restantes Devedores de Água (Clientes Finais AG) -->
+          <div style="background:rgba(14,165,233,0.06); border:1px solid rgba(56,189,248,0.35); border-radius:6px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="selecionarProdutoDivida('AG_OUTROS')" title="Clique para filtrar os restantes 11.477 clientes devedores de Água (excluindo AdS)">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; color:#7DD3FC; font-weight:700;">
+                <span>🚰 RESTANTES CLIENTES ÁGUA</span>
+                <span class="badge" style="background:rgba(56,189,248,0.18); color:#7DD3FC; border:1px solid rgba(56,189,248,0.4); font-size:9px;" id="prod-pct-agua-outros">9.9% (24.7% Água)</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:16.5px; font-weight:800; color:#E0F2FE; margin:4px 0;" id="prod-val-agua-outros">
+                1.342.455.578 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="prod-det-agua-outros">
+                11.477 clientes AG (418.790 fat. • Dom/Aut/Priv)
+              </div>
+            </div>
+            <div style="font-size:14px; color:#7DD3FC; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
+
+          <!-- Card 4: Dívida de Outros Titulares (Contratos Anteriores no CIL) -->
+          <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.4); border-radius:6px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('div-faixa').value='outros_tit'; aplicarFiltrosDivida(1);" title="Clique para filtrar os CILs onde existe dívida acumulada em nome de titulares/contratos anteriores">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; color:#FBBF24; font-weight:700;">
+                <span>👥 DÍVIDA OUTROS TITULARES</span>
+                <span class="badge badge-warn" style="font-size:9px;" id="prod-pct-outros-tit">8.6% da Carteira</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:16.5px; font-weight:800; color:#FBBF24; margin:4px 0;" id="prod-val-outros-tit">
+                1.167.912.094 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="prod-det-outros-tit">
+                7.503 CILs c/ dív. anterior (17.164 CILs multi-tit.)
+              </div>
+            </div>
+            <div style="font-size:14px; color:#FBBF24; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
+        </div>
+
+        <!-- SÍNTESE ANALÍTICA EXECUTIVA: DISCRIMINAÇÃO ÁGUA (AdS vs. RESTANTES AG) & HISTÓRICO DE TITULARIDADE NO CIL -->
+        <div style="margin-top:12px; padding:10px 14px; background:rgba(15,23,42,0.75); border:1px solid var(--border-dim); border-left:3px solid #22D3EE; border-radius:6px; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; font-size:11.5px; line-height:1.45;">
+          <div>
+            <div style="font-family:var(--font-mono); font-size:10px; font-weight:700; color:#22D3EE; text-transform:uppercase; margin-bottom:4px;">
+              💧 Análise Discriminada de Água (Total AG: 5.445.299.535 ECV | 40,19% da Carteira)
+            </div>
+            <div style="color:var(--text-secondary);">
+              • <strong style="color:#38BDF8; cursor:pointer;" onclick="selecionarProdutoDivida('AG_ADS')">Conta Especial AdS (Águas de Santiago S.A.):</strong> <strong>4.102.843.957 ECV</strong> (<strong>75,35%</strong> da Água | <strong>30,28%</strong> da Dívida Total) em apenas <strong>2 CILs</strong> (<code>60220187</code> e <code>60220188</code>, 112 faturas: 1,67B na Emp. 21 + 2,43B na Emp. 07).<br>
+              • <strong style="color:#7DD3FC; cursor:pointer;" onclick="selecionarProdutoDivida('AG_OUTROS')">Restantes Clientes de Água (AG Clientes Finais):</strong> <strong>1.342.455.578 ECV</strong> (<strong>24,65%</strong> da Água | <strong>9,91%</strong> da Dívida Total) em <strong>11.477 CILs</strong> (418.790 faturas na Praia/Stª Catarina): <strong>Domésticos</strong> (964,7M / 10.533 CILs), <strong>Autarquias</strong> (240,2M / 100 CILs — ex: CM Rib. Grande 127,5M), <strong>Empresas Privadas</strong> (123,2M / 762 CILs) e <strong>Estado/Emp. Públicas</strong> (24,2M / 82 CILs).
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono); font-size:10px; font-weight:700; color:#FBBF24; text-transform:uppercase; margin-bottom:4px;">
+              👥 Análise Multi-Contrato e Titularidade no Local de Consumo (1 CIL ➔ N Contratos / Clientes)
+            </div>
+            <div style="color:var(--text-secondary);">
+              • <strong>Cobertura de Contratos (Empresas 17, 21, 07 e 70):</strong> <strong>301.472 contratos históricos</strong> mapeados em <strong>121.811 CILs</strong> (apenas 6 CILs órfãos residuais).<br>
+              • <strong>Titular Atual vs. Outros Titulares Anteriores:</strong> <strong>12.380.331.485 ECV (91,38%)</strong> pertencem ao titular atual do CIL, enquanto <strong style="color:#FBBF24; cursor:pointer;" onclick="document.getElementById('div-faixa').value='outros_tit'; aplicarFiltrosDivida(1);">1.167.912.094 ECV (8,62%)</strong> estão em nome de <strong>titulares/contratos anteriores</strong> distribuídos por <strong>7.503 CILs</strong> (num universo de <strong>17.164 CILs multi-titular</strong>).
+            </div>
           </div>
         </div>
       </section>
@@ -1069,11 +1131,11 @@
           <div class="action-card action-water" id="card-act-ads" onclick="ativarAcaoGestao('ads_especial')">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
               <span style="font-family:var(--font-mono); font-size:10.5px; font-weight:700; color:#22D3EE; text-transform:uppercase; letter-spacing:0.05em;">💧 Ação 5: Protocolo AdS</span>
-              <span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border-color:#06B6D4; font-size:9.5px; padding:1px 6px;">1.54B ECV • ÁGUA</span>
+              <span class="badge" style="background:rgba(6,182,212,0.25); color:#22D3EE; border-color:#06B6D4; font-size:9.5px; padding:1px 6px;">4.10B ECV • AdS</span>
             </div>
             <div style="font-family:var(--font-display); font-size:13px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">Águas de Santiago (AdS)</div>
             <div style="font-size:11px; color:var(--text-secondary); line-height:1.4; margin-bottom:8px;">
-              2 grandes contas do produto Água com 1.542 Milhões ECV estagnados (42 fat.). Exige conciliação executiva e encontro de contas estatal.
+              2 contas especiais AdS com 4.102,8 M ECV (112 fat.: 1,67B E021 + 2,43B Sul 07), discriminadas dos 1.342,5 M ECV dos restantes 11.477 clientes de Água.
             </div>
             <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11px; color:#22D3EE; font-weight:600;">
               <span>Isolar Contratos AdS</span> ➔
@@ -1403,7 +1465,9 @@
             <select id="div-produto" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
               <option value="">Todos os Produtos (Energia + Água)</option>
               <option value="__ELETRICIDADE__">⚡ Eletricidade (EB, EE, EM)</option>
-              <option value="AG">💧 Água (AdS - Águas de Santiago)</option>
+              <option value="AG_ADS">💧 Conta Especial AdS (Águas de Santiago)</option>
+              <option value="AG_OUTROS">🚰 Restantes Devedores de Água (Clientes AG)</option>
+              <option value="AG">🌊 Total Água (AdS + Clientes AG)</option>
               <option value="EB">EB - Baixa Tensão Normal</option>
               <option value="EE">EE - Especial / BTE</option>
               <option value="EM">EM - Média Tensão</option>
@@ -1412,7 +1476,7 @@
 
           <!-- Faixa de Dívida -->
           <div class="field-group">
-            <label>Faixa de Valor da Dívida</label>
+            <label>Faixa de Valor / Titularidade</label>
             <select id="div-faixa" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
               <option value="todas">Qualquer Valor (> 0 ECV)</option>
               <option value="grandes">🔥 Grandes Devedores (&gt; 1.000.000 ECV)</option>
@@ -1420,6 +1484,7 @@
               <option value="50k">&gt; 50.000 ECV</option>
               <option value="10k">&gt; 10.000 ECV</option>
               <option value="ate10k">Até 10.000 ECV</option>
+              <option value="outros_tit">⚠️ Com Dívida de Titular Anterior no CIL</option>
             </select>
           </div>
 
