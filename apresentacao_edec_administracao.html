@@ -1176,28 +1176,28 @@
                         Diagnóstico de Dívida, Concentração Pareto & <span>Plano Diretor de Recuperação</span>
                     </h1>
                     <p class="cover-lead">
-                        Análise consolidada ao vivo da carteira comercial da <strong>Região Sul (<span id="ca-scope-label-inline">4 Ilhas: Santiago, Fogo, Maio e Brava</span>)</strong>, integrando a segregação estrutural entre <strong>Eletricidade e Água (AdS)</strong>, a concentração <strong>Pareto 80/20 dos Top Devedores</strong>, o passivo do <strong>Setor Público</strong> e o combate às <strong>Perdas Não Técnicas (CF1 & Desvios)</strong>.
+                        Análise consolidada ao vivo da carteira comercial da <strong>Região Sul (<span id="ca-scope-label-inline">4 Ilhas: Santiago, Fogo, Maio e Brava</span>)</strong>, integrando a discriminação entre <strong>Eletricidade (8,10 B), Conta Especial AdS (4,10 B) e Restantes Clientes de Água AG (1,34 B)</strong>, a rastreabilidade histórica de <strong>Múltiplos Contratos/Titulares por CIL (1,17 B em ex-titulares)</strong>, o passivo do <strong>Setor Público</strong> e o combate às <strong>Perdas Não Técnicas (CF1 & Desvios)</strong>.
                     </p>
 
                     <div class="cover-Island-pills" id="islandBreakdownPills">
                         <div class="island-pill active" onclick="selecionarIlhaRapida('')">
                             <span class="i-name">🌍 Região Sul (Total)</span>
-                            <span class="i-val" id="pill-total-val">8,60 B ECV</span>
+                            <span class="i-val" id="pill-total-val">13,55 B ECV</span>
                         </div>
                         <div class="island-pill" onclick="selecionarIlhaRapida('SANTIAGO')">
-                            <span class="i-name">🏝️ Santiago (89,6%)</span>
-                            <span class="i-val" id="pill-santiago-val">7,70 B ECV</span>
+                            <span class="i-name">🏝️ Santiago (93,4%)</span>
+                            <span class="i-val" id="pill-santiago-val">12,65 B ECV</span>
                         </div>
                         <div class="island-pill" onclick="selecionarIlhaRapida('FOGO')">
-                            <span class="i-name">🌋 Fogo (7,1%)</span>
+                            <span class="i-name">🌋 Fogo (4,5%)</span>
                             <span class="i-val" id="pill-fogo-val">612,0 M ECV</span>
                         </div>
                         <div class="island-pill" onclick="selecionarIlhaRapida('MAIO')">
-                            <span class="i-name">🏖️ Maio (1,8%)</span>
+                            <span class="i-name">🏖️ Maio (1,2%)</span>
                             <span class="i-val" id="pill-maio-val">158,1 M ECV</span>
                         </div>
                         <div class="island-pill" onclick="selecionarIlhaRapida('BRAVA')">
-                            <span class="i-name">🌺 Brava (1,5%)</span>
+                            <span class="i-name">🌺 Brava (0,9%)</span>
                             <span class="i-val" id="pill-brava-val">125,9 M ECV</span>
                         </div>
                     </div>
@@ -1207,10 +1207,10 @@
                             Iniciar Apresentação Executiva ▶
                         </button>
                         <button class="tb-btn" style="padding:10px 16px; font-size:0.84rem;" onclick="goToSlide(2)">
-                            🎯 Ver Concentração Top Devedores (Pareto)
+                            🎯 Ver Segregação AdS vs Água AG & Titularidade CIL
                         </button>
                         <button class="tb-btn" style="padding:10px 16px; font-size:0.84rem;" onclick="goToSlide(5)">
-                            💰 Ver Impacto Financeiro (+1,83 B ECV)
+                            💰 Ver Impacto Financeiro (+2,30 B ECV)
                         </button>
                     </div>
                 </div>
@@ -1221,28 +1221,36 @@
                     </div>
 
                     <div class="cover-stat-row">
-                        <span style="font-size:0.84rem; color:var(--text-secondary);">Universo de Devedores Ativos (Dívida &gt; 0)</span>
-                        <strong class="mono" style="font-size:1.05rem; color:var(--text-primary);" id="ca-capa-contratos">95.511 contas</strong>
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">Devedores Ativos (301.472 Contratos Históricos)</span>
+                        <strong class="mono" style="font-size:1.0rem; color:var(--text-primary);" id="ca-capa-contratos">103.524 contas</strong>
                     </div>
                     <div class="cover-stat-row">
-                        <span style="font-size:0.84rem; color:var(--text-secondary);">Stock Total de Dívida Acumulada</span>
-                        <strong class="mono" style="font-size:1.15rem; color:var(--accent-red);" id="ca-capa-divida">8,60 B ECV</strong>
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">Stock Total de Dívida Acumulada</span>
+                        <strong class="mono" style="font-size:1.12rem; color:var(--accent-red);" id="ca-capa-divida">13,55 B ECV</strong>
                     </div>
                     <div class="cover-stat-row">
-                        <span style="font-size:0.84rem; color:var(--text-secondary);">Concentração Pareto (&gt; 250k ECV)</span>
-                        <strong class="mono" style="font-size:1.02rem; color:var(--accent-orange);" id="ca-capa-pareto">6,67 B ECV (77,6%)</strong>
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">💧 Conta Especial Água AdS (2 CILs • 112 fat.)</span>
+                        <strong class="mono" style="font-size:0.98rem; color:var(--accent-purple);" id="ca-capa-ads">4,10 B ECV (30,3%)</strong>
                     </div>
                     <div class="cover-stat-row">
-                        <span style="font-size:0.84rem; color:var(--text-secondary);">Passivo do Setor Público (Estado/Autarquias/EP)</span>
-                        <strong class="mono" style="font-size:1.02rem; color:var(--accent-blue);" id="ca-capa-publico">2,61 B ECV (30,4%)</strong>
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">🚰 Restantes Clientes Água AG (11.477 CILs)</span>
+                        <strong class="mono" style="font-size:0.98rem; color:var(--accent-teal);" id="ca-capa-ag-outros">1,34 B ECV (9,9%)</strong>
                     </div>
                     <div class="cover-stat-row">
-                        <span style="font-size:0.84rem; color:var(--text-secondary);">Faturação Especial Água (AdS — 2 contratos)</span>
-                        <strong class="mono" style="font-size:1.02rem; color:var(--accent-purple);" id="ca-capa-ads">1,54 B ECV (17,9%)</strong>
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">👥 Dívida Outros Titulares no CIL (7.503 CILs)</span>
+                        <strong class="mono" style="font-size:0.98rem; color:var(--accent-orange);" id="ca-capa-outros-tit">1,17 B ECV (8,6%)</strong>
                     </div>
                     <div class="cover-stat-row">
-                        <span style="font-size:0.84rem; color:var(--text-secondary);">Meta de Recuperação Direta (Horizonte 12 Meses)</span>
-                        <strong class="mono" style="font-size:1.15rem; color:var(--accent-green);" id="ca-capa-meta">+ 1,83 B ECV</strong>
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">🏛️ Passivo Setor Público (Estado/Autarquias/EP)</span>
+                        <strong class="mono" style="font-size:0.98rem; color:var(--accent-blue);" id="ca-capa-publico">2,88 B ECV (21,2%)</strong>
+                    </div>
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">🎯 Concentração Pareto (&gt; 250k ECV)</span>
+                        <strong class="mono" style="font-size:0.98rem; color:var(--accent-orange);" id="ca-capa-pareto">11,01 B ECV (81,3%)</strong>
+                    </div>
+                    <div class="cover-stat-row">
+                        <span style="font-size:0.82rem; color:var(--text-secondary);">Meta de Recuperação Direta (Horizonte 12 Meses)</span>
+                        <strong class="mono" style="font-size:1.1rem; color:var(--accent-green);" id="ca-capa-meta">+ 2,30 B ECV</strong>
                     </div>
                 </div>
             </div>
@@ -1256,7 +1264,7 @@
                 <div>
                     <div class="slide-kicker">STORY POINT 02 • FOTOGRAFIA EXECUTIVA DA CARTEIRA</div>
                     <h2 class="slide-title">Raio-X Consolidado: Os 8 Indicadores-Chave de Desempenho (BANs)</h2>
-                    <p class="slide-subtitle">Indicadores extraídos em tempo real da base comercial unificada, destacando a estagnação de pagamento e a concentração extrema.</p>
+                    <p class="slide-subtitle">Indicadores extraídos em tempo real da base unificada, discriminando AdS vs. Restantes Clientes de Água e Titular Atual vs. Outros Titulares no CIL.</p>
                 </div>
                 <div class="slide-scope-badge">
                     <div class="lbl">ÂMBITO ATIVO</div>
@@ -1270,10 +1278,10 @@
                     <div>
                         <div class="ban-header">
                             <span class="ban-label">1. Dívida Total Acumulada</span>
-                            <span class="ban-tag tag-red" id="ca-k1-faturas">2,39M faturas</span>
+                            <span class="ban-tag tag-red" id="ca-k1-faturas">2,81M faturas</span>
                         </div>
-                        <div class="ban-value c-red" id="ca-k1-divida">8,60 B ECV</div>
-                        <div class="ban-sub">Distribuída por <strong id="ca-k1-clientes">95.511</strong> clientes com saldo devedor (Ticket médio: <strong id="ca-k1-ticket">89.997 ECV</strong>).</div>
+                        <div class="ban-value c-red" id="ca-k1-divida">13,55 B ECV</div>
+                        <div class="ban-sub">Distribuída por <strong id="ca-k1-clientes">103.524</strong> CILs devedores (Ticket médio: <strong id="ca-k1-ticket">130.871 ECV</strong> • <span id="ca-k1-tit-sub">Tit. Atual: 12,38 B | Antigos: 1,17 B</span>).</div>
                     </div>
                     <div class="ban-progress"><div class="ban-progress-fill" style="width:100%; background:var(--tableau-red);"></div></div>
                 </div>
@@ -1283,12 +1291,12 @@
                     <div>
                         <div class="ban-header">
                             <span class="ban-label">2. Dívida Crítica Estagnada (Cob=0)</span>
-                            <span class="ban-tag tag-orange" id="ca-k2-pct">79,1% do Total</span>
+                            <span class="ban-tag tag-orange" id="ca-k2-pct">85,8% do Total</span>
                         </div>
-                        <div class="ban-value c-orange" id="ca-k2-sempag">6,80 B ECV</div>
-                        <div class="ban-sub">Concentrada em <strong id="ca-k2-cli-sempag">32.599</strong> devedores que <strong>não efetuaram qualquer pagamento</strong> em 2026.</div>
+                        <div class="ban-value c-orange" id="ca-k2-sempag">11,62 B ECV</div>
+                        <div class="ban-sub">Concentrada em <strong id="ca-k2-cli-sempag">40.233</strong> devedores que <strong>não efetuaram qualquer pagamento</strong> em 2026.</div>
                     </div>
-                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k2-bar" style="width:79.1%; background:var(--tableau-orange);"></div></div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k2-bar" style="width:85.8%; background:var(--tableau-orange);"></div></div>
                 </div>
 
                 <!-- KPI 3 -->
@@ -1296,51 +1304,51 @@
                     <div>
                         <div class="ban-header">
                             <span class="ban-label">3. Cobrança Realizada 2026</span>
-                            <span class="ban-tag tag-green" id="ca-k3-taxa">22,8% Eficácia</span>
+                            <span class="ban-tag tag-green" id="ca-k3-taxa">15,8% Eficácia</span>
                         </div>
                         <div class="ban-value c-green" id="ca-k3-cobranca">2,54 B ECV</div>
-                        <div class="ban-sub">Arrecadada junto a <strong id="ca-k3-pagadores">62.912</strong> clientes em amortização ativa (<strong id="ca-k3-pct-pag">65,9%</strong> dos devedores).</div>
+                        <div class="ban-sub">Arrecadada junto a <strong id="ca-k3-pagadores">63.291</strong> clientes em amortização ativa (<strong id="ca-k3-pct-pag">61,1%</strong> dos devedores).</div>
                     </div>
-                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k3-bar" style="width:22.8%; background:var(--tableau-green);"></div></div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k3-bar" style="width:15.8%; background:var(--tableau-green);"></div></div>
                 </div>
 
-                <!-- KPI 4: NOVO - CONCENTRAÇÃO TOP DEVEDORES PARETO -->
+                <!-- KPI 4: CONCENTRAÇÃO TOP DEVEDORES PARETO -->
                 <div class="tb-card">
                     <div>
                         <div class="ban-header">
                             <span class="ban-label">4. Concentração Top Devedores</span>
-                            <span class="ban-tag tag-blue" id="ca-k4-pct">77,6% da Dívida</span>
+                            <span class="ban-tag tag-blue" id="ca-k4-pct">81,3% da Dívida</span>
                         </div>
-                        <div class="ban-value c-blue" id="ca-k4-val">6,67 B ECV</div>
-                        <div class="ban-sub">Apenas <strong id="ca-k4-qtd">5.136</strong> contas (&gt;250k ECV, <strong id="ca-k4-pct-cli">5,4%</strong> da base) concentram quase 4/5 de toda a dívida.</div>
+                        <div class="ban-value c-blue" id="ca-k4-val">11,01 B ECV</div>
+                        <div class="ban-sub">Apenas <strong id="ca-k4-qtd">6.535</strong> contas (&gt;250k ECV, <strong id="ca-k4-pct-cli">6,3%</strong> da base) concentram mais de 4/5 de toda a dívida.</div>
                     </div>
-                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k4-bar" style="width:77.6%; background:var(--tableau-blue);"></div></div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k4-bar" style="width:81.3%; background:var(--tableau-blue);"></div></div>
                 </div>
 
-                <!-- KPI 5: NOVO - SETOR PÚBLICO -->
+                <!-- KPI 5: SETOR PÚBLICO -->
                 <div class="tb-card b-teal">
                     <div>
                         <div class="ban-header">
                             <span class="ban-label">5. Passivo do Setor Público</span>
-                            <span class="ban-tag tag-blue" id="ca-k5-pct">30,4% da Dívida</span>
+                            <span class="ban-tag tag-blue" id="ca-k5-pct">21,2% da Dívida</span>
                         </div>
-                        <div class="ban-value" style="color:var(--accent-teal);" id="ca-k5-val">2,61 B ECV</div>
-                        <div class="ban-sub">Retido em <strong id="ca-k5-qtd">1.856</strong> contratos de Autarquias, Administração Central e Empresas Públicas.</div>
+                        <div class="ban-value" style="color:var(--accent-teal);" id="ca-k5-val">2,88 B ECV</div>
+                        <div class="ban-sub">Retido em <strong id="ca-k5-qtd">2.038</strong> contratos de Autarquias (incl. 240,2M AG), Estado Central (incl. 24,2M AG) e Empresas Públicas.</div>
                     </div>
-                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k5-bar" style="width:30.4%; background:var(--tableau-teal);"></div></div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k5-bar" style="width:21.2%; background:var(--tableau-teal);"></div></div>
                 </div>
 
-                <!-- KPI 6: NOVO - IMPACTO ÁGUA AdS vs ELETRICIDADE -->
+                <!-- KPI 6: DISCRIMINAÇÃO ÁGUA (AdS vs RESTANTES CLIENTES AG) -->
                 <div class="tb-card b-purple">
                     <div>
                         <div class="ban-header">
-                            <span class="ban-label">6. Faturação Água (AdS) vs Energia</span>
-                            <span class="ban-tag tag-purple" id="ca-k6-pct">17,9% Água AdS</span>
+                            <span class="ban-label">6. Água: AdS vs Restantes AG</span>
+                            <span class="ban-tag tag-purple" id="ca-k6-pct">30,3% AdS + 9,9% AG</span>
                         </div>
-                        <div class="ban-value c-purple" id="ca-k6-val">1,54 B ECV</div>
-                        <div class="ban-sub">Apenas <strong id="ca-k6-qtd">2</strong> contratos especiais de Água (AdS) c/ <strong>0 ECV cobrado</strong> vs <strong id="ca-k6-el">7,05 B ECV</strong> em Eletricidade.</div>
+                        <div class="ban-value c-purple" id="ca-k6-val">4,10 B AdS</div>
+                        <div class="ban-sub"><strong id="ca-k6-qtd">2</strong> CILs AdS (<strong>4,10 B</strong>) + <strong id="ca-k6-ag-outros-qtd">11.477</strong> Clientes AG (<strong id="ca-k6-ag-outros-val">1,34 B</strong>) vs <strong id="ca-k6-el">8,10 B ECV</strong> em Energia.</div>
                     </div>
-                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k6-bar" style="width:17.9%; background:var(--tableau-purple);"></div></div>
+                    <div class="ban-progress"><div class="ban-progress-fill" id="ca-k6-bar" style="width:40.2%; background:var(--tableau-purple);"></div></div>
                 </div>
 
                 <!-- KPI 7: PNT & FRAUDE CF1 -->
@@ -1370,48 +1378,77 @@
                 </div>
             </div>
 
-            <!-- COMPOSIÇÃO EXECUTIVA POR EMPRESA CREDORA -->
-            <div style="margin-top:14px; background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:6px; padding:12px 16px;">
+            <!-- COMPOSIÇÃO EXECUTIVA POR EMPRESA CREDORA + DISCRIMINAÇÃO ÁGUA & TITULARIDADE CIL -->
+            <div style="margin-top:12px; background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:6px; padding:12px 16px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <div style="font-weight:700; font-size:0.85rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-                        <span>🏢</span> Composição da Carteira por Empresa Credora (Faturação Atual vs Legada)
+                    <div style="font-weight:700; font-size:0.83rem; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+                        <span>🏢</span> Composição por Empresa Credora & Segregação AdS / Clientes Água / Titularidade no CIL
                     </div>
-                    <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text-muted);">Segregação Contábil Oficial da Dívida</span>
+                    <span style="font-family:var(--font-mono); font-size:0.71rem; color:var(--text-muted);">301.472 Contratos Históricos Mapeados em 121.811 CILs</span>
                 </div>
                 <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;">
                     <div style="background:var(--bg-card-alt); border-left:3px solid #60A5FA; border-radius:4px; padding:8px 12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:0.75rem; color:#60A5FA; font-weight:700;">🏢 17 - EDEC SA</span>
-                            <span class="ban-tag" style="background:rgba(96,165,250,0.15); color:#60A5FA; font-size:0.68rem;" id="ca-emp-pct-17">--</span>
+                            <span style="font-size:0.74rem; color:#60A5FA; font-weight:700;">🏢 17 - EDEC SA</span>
+                            <span class="ban-tag" style="background:rgba(96,165,250,0.15); color:#60A5FA; font-size:0.68rem;" id="ca-emp-pct-17">10,8%</span>
                         </div>
-                        <div style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-17">-- ECV</div>
-                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-17">-- devedores (-- fat.) • Faturação Atual</div>
+                        <div style="font-size:1.02rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-17">1,46 B ECV</div>
+                        <div style="font-size:0.71rem; color:var(--text-secondary);" id="ca-emp-sub-17">63.012 devedores (286.645 fat.) • Faturação Atual</div>
                     </div>
                     <div style="background:var(--bg-card-alt); border-left:3px solid #FBBF24; border-radius:4px; padding:8px 12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:0.75rem; color:#FBBF24; font-weight:700;">⚡ 21 - ELECTRA SA</span>
-                            <span class="ban-tag tag-orange" style="font-size:0.68rem;" id="ca-emp-pct-21">--</span>
+                            <span style="font-size:0.74rem; color:#FBBF24; font-weight:700;">⚡ 21 - ELECTRA SA</span>
+                            <span class="ban-tag tag-orange" style="font-size:0.68rem;" id="ca-emp-pct-21">13,7%</span>
                         </div>
-                        <div style="font-size:1.05rem; font-weight:800; color:#FBBF24; margin:2px 0;" id="ca-emp-val-21">-- ECV</div>
-                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-21">-- devedores (-- fat.) • Contrato Especial AdS</div>
+                        <div style="font-size:1.02rem; font-weight:800; color:#FBBF24; margin:2px 0;" id="ca-emp-val-21">1,86 B ECV</div>
+                        <div style="font-size:0.71rem; color:var(--text-secondary);" id="ca-emp-sub-21">5 devedores (61 fat.) • Inclui 1,67 B AdS</div>
                     </div>
                     <div style="background:var(--bg-card-alt); border-left:3px solid #A78BFA; border-radius:4px; padding:8px 12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:0.75rem; color:#A78BFA; font-weight:700;">📍 07 - EDEC SUL</span>
-                            <span class="ban-tag" style="background:rgba(167,139,250,0.15); color:#A78BFA; font-size:0.68rem;" id="ca-emp-pct-7">--</span>
+                            <span style="font-size:0.74rem; color:#A78BFA; font-weight:700;">📍 07 - EDEC SUL</span>
+                            <span class="ban-tag" style="background:rgba(167,139,250,0.15); color:#A78BFA; font-size:0.68rem;" id="ca-emp-pct-7">58,4%</span>
                         </div>
-                        <div style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-7">-- ECV</div>
-                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-7">-- devedores (-- fat.) • Dívida Sul Histórica</div>
+                        <div style="font-size:1.02rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-7">7,91 B ECV</div>
+                        <div style="font-size:0.71rem; color:var(--text-secondary);" id="ca-emp-sub-7">84.996 devedores • Inclui 2,43 B AdS + 1,10 B AG</div>
                     </div>
                     <div style="background:var(--bg-card-alt); border-left:3px solid #F472B6; border-radius:4px; padding:8px 12px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <span style="font-size:0.75rem; color:#F472B6; font-weight:700;">🏛️ 70 - ELECTRA SARL</span>
-                            <span class="ban-tag" style="background:rgba(244,114,182,0.15); color:#F472B6; font-size:0.68rem;" id="ca-emp-pct-70">--</span>
+                            <span style="font-size:0.74rem; color:#F472B6; font-weight:700;">🏛️ 70 - ELECTRA SARL</span>
+                            <span class="ban-tag" style="background:rgba(244,114,182,0.15); color:#F472B6; font-size:0.68rem;" id="ca-emp-pct-70">17,1%</span>
                         </div>
-                        <div style="font-size:1.05rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-70">-- ECV</div>
-                        <div style="font-size:0.72rem; color:var(--text-secondary);" id="ca-emp-sub-70">-- devedores (-- fat.) • Dívida Antiga Legada</div>
+                        <div style="font-size:1.02rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-emp-val-70">2,32 B ECV</div>
+                        <div style="font-size:0.71rem; color:var(--text-secondary);" id="ca-emp-sub-70">32.685 devedores • Inclui 240,8 M AG Legado</div>
                     </div>
                 </div>
+
+                <!-- Nova Grelha de 3 Cartões: AdS vs Restantes Água AG vs Outros Titulares no CIL -->
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:8px;">
+                    <div style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.35); border-left:3px solid #06B6D4; border-radius:4px; padding:7px 11px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.73rem; color:#06B6D4; font-weight:800;">💧 CONTA ESPECIAL AdS (ÁGUA)</span>
+                            <span class="ban-tag" style="background:rgba(6,182,212,0.18); color:#06B6D4; font-size:0.66rem;" id="ca-s2-ads-pct">30,3% Total | 75,3% Água</span>
+                        </div>
+                        <div style="font-size:0.96rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-s2-ads-val">4.102.843.957 ECV</div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="ca-s2-ads-sub">2 CILs (60220187/88 • 112 fat.): 1,67 B Emp. 21 + 2,43 B Emp. 07</div>
+                    </div>
+                    <div style="background:rgba(14,165,233,0.06); border:1px solid rgba(14,165,233,0.3); border-left:3px solid #0EA5E9; border-radius:4px; padding:7px 11px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.73rem; color:#0EA5E9; font-weight:800;">🚰 RESTANTES CLIENTES DE ÁGUA (AG)</span>
+                            <span class="ban-tag" style="background:rgba(14,165,233,0.16); color:#0EA5E9; font-size:0.66rem;" id="ca-s2-ag-outros-pct">9,9% Total | 24,7% Água</span>
+                        </div>
+                        <div style="font-size:0.96rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-s2-ag-outros-val">1.342.455.578 ECV</div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="ca-s2-ag-outros-sub">11.477 CILs (418.790 fat.): Domésticos 964,7M • Autarquias 240,2M • Priv. 123,2M</div>
+                    </div>
+                    <div style="background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.35); border-left:3px solid #F59E0B; border-radius:4px; padding:7px 11px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:0.73rem; color:#D97706; font-weight:800;">👥 TITULAR ATUAL vs OUTROS TITULARES NO CIL</span>
+                            <span class="ban-tag tag-orange" style="font-size:0.66rem;" id="ca-s2-outros-tit-pct">8,6% em Ex-Titulares</span>
+                        </div>
+                        <div style="font-size:0.96rem; font-weight:800; color:var(--text-primary); margin:2px 0;" id="ca-s2-outros-tit-val">1.167.912.094 ECV (Outros Tit.)</div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);" id="ca-s2-outros-tit-sub">7.503 CILs c/ dívida anterior (17.164 CILs multi-titular) • Tit. Atual: 12,38 B (91,4%)</div>
+                    </div>
+                </div>
+
                 <!-- Faixa de Evolução Histórica 2026 (Etapa 4: santiago_snapshot_mensal) -->
                 <div id="ca-snap-evolucao-row" style="margin-top:8px; padding-top:8px; border-top:1px dashed var(--border-subtle); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-family:var(--font-mono); font-size:0.72rem; color:var(--text-secondary);">
                     <span>📈 <strong>Evolução 2026 (Fev ➔ Set):</strong> A sincronizar histórico mensal...</span>
@@ -1426,12 +1463,12 @@
             <div class="slide-header-box">
                 <div>
                     <div class="slide-kicker">STORY POINT 03 • SEGMENTAÇÃO ESTRUTURAL TABLEAU</div>
-                    <h2 class="slide-title">Análise de Concentração Pareto (80/20), Segregação de Produto & Top Concelhos</h2>
-                    <p class="slide-subtitle">Onde está concentrado o dinheiro: 5,4% dos clientes detêm 77,6% da dívida; Setor Público + Água AdS + Grandes Privados representam 78,6% do stock.</p>
+                    <h2 class="slide-title">Concentração Pareto (80/20), Discriminação AdS vs. Restantes Água AG & Titularidade CIL</h2>
+                    <p class="slide-subtitle">6,3% dos clientes detêm 81,3% da dívida; Água divide-se entre AdS (4,10 B em 2 CILs) e Clientes Finais AG (1,34 B em 11.477 CILs); 1,17 B (8,6%) pertence a titulares anteriores.</p>
                 </div>
                 <div class="slide-scope-badge">
                     <div class="lbl">PARETO &gt; 1M ECV</div>
-                    <div class="val" id="ca-s3-milionarios">754 Contas = 4,76 B ECV (55,3%)</div>
+                    <div class="val" id="ca-s3-milionarios">897 Contas = 8,66 B ECV (63,9%)</div>
                 </div>
             </div>
 
@@ -1441,72 +1478,82 @@
                     <div>
                         <div class="worksheet-title">
                             <span>📊 Decomposição Estrutural por Segmento Macro</span>
-                            <span class="meta">Peso % sobre o Stock Total</span>
+                            <span class="meta">Peso % sobre o Stock Total (13,55 B)</span>
                         </div>
                         <div class="tb-bar-list">
                             <div class="tb-bar-row">
-                                <span class="tb-bar-label" title="Estado Central, Câmaras Municipais e Empresas Públicas">🏛️ Setor Público (1.856)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-pub" style="width:30.4%; background:var(--tableau-blue);"></div></div>
-                                <span class="tb-bar-val" id="val-seg-pub">2,61 B (30,4%)</span>
+                                <span class="tb-bar-label" title="2 Contratos Especiais Águas de Santiago S.A. (CIL 60220187 e 60220188)">💧 Água — Conta AdS (2 CILs)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-ads" style="width:30.3%; background:var(--tableau-purple);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-ads">4,10 B (30,3%)</span>
                             </div>
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label" title="Clientes Privados e Comerciais com dívida individual > 250.000 ECV">🏢 Grandes Privados &gt;250k</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-priv" style="width:30.2%; background:var(--tableau-orange);"></div></div>
-                                <span class="tb-bar-val" id="val-seg-priv">2,60 B (30,2%)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-priv" style="width:30.9%; background:var(--tableau-orange);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-priv">4,18 B (30,9%)</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label" title="Estado Central, Câmaras Municipais e Empresas Públicas (Energia + Água)">🏛️ Setor Público (2.038)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-pub" style="width:21.2%; background:var(--tableau-blue);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-pub">2,88 B (21,2%)</span>
                             </div>
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label" title="Carteira Massiva Doméstica e PME com dívida < 250.000 ECV">🏠 Carteira Massiva &lt;250k</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-massa" style="width:21.4%; background:var(--tableau-green);"></div></div>
-                                <span class="tb-bar-val" id="val-seg-massa">1,84 B (21,4%)</span>
-                            </div>
-                            <div class="tb-bar-row">
-                                <span class="tb-bar-label" title="2 Contratos Especiais Águas de Santiago (AdS) sem amortização">💧 Água AdS (2 Contratos)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-ads" style="width:17.9%; background:var(--tableau-purple);"></div></div>
-                                <span class="tb-bar-val" id="val-seg-ads">1,54 B (17,9%)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-seg-massa" style="width:18.7%; background:var(--tableau-green);"></div></div>
+                                <span class="tb-bar-val" id="val-seg-massa">2,53 B (18,7%)</span>
                             </div>
                         </div>
 
-                        <div class="worksheet-title" style="margin-top:20px;">
-                            <span>⚡ Segregação por Produto Comercial</span>
-                            <span class="meta">Eletricidade vs Água</span>
+                        <div class="worksheet-title" style="margin-top:16px;">
+                            <span>⚡ Produto Comercial (AdS vs. Água AG) & Titularidade CIL</span>
+                            <span class="meta">Energia vs. AdS vs. Clientes AG vs. Ex-Titulares</span>
                         </div>
                         <div class="tb-bar-list">
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">⚡ Eletricidade (EB/EM/EE)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-el" style="width:82.1%; background:var(--tableau-teal);"></div></div>
-                                <span class="tb-bar-val" id="val-prod-el">7,05 B (82,1%)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-el" style="width:59.8%; background:var(--tableau-teal);"></div></div>
+                                <span class="tb-bar-val" id="val-prod-el">8,10 B (59,8%)</span>
                             </div>
                             <div class="tb-bar-row">
-                                <span class="tb-bar-label">🚰 Água AdS (Produto AG)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-ag" style="width:17.9%; background:var(--tableau-red);"></div></div>
-                                <span class="tb-bar-val" id="val-prod-ag">1,54 B (17,9%)</span>
+                                <span class="tb-bar-label" title="75,35% de toda a dívida de Água (1,67 B Emp. 21 + 2,43 B Emp. 07)">💧 Água AdS (2 Contas)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-ag-ads" style="width:30.3%; background:#06B6D4;"></div></div>
+                                <span class="tb-bar-val" id="val-prod-ag-ads">4,10 B (30,3%)</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label" title="24,65% da dívida de Água: Domésticos (964,7M), Autarquias (240,2M), Privados (123,2M), Estado (24,2M)">🚰 Restantes Água AG (11.477)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-prod-ag-outros" style="width:9.9%; background:#0EA5E9;"></div></div>
+                                <span class="tb-bar-val" id="val-prod-ag-outros">1,34 B (9,9%)</span>
+                            </div>
+                            <div class="tb-bar-row">
+                                <span class="tb-bar-label" title="Dívida deixada por contratos/titulares anteriores em 7.503 CILs (de 17.164 CILs multi-titular)">👥 Outros Titulares CIL (7.503)</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-tit-outros" style="width:8.6%; background:#F59E0B;"></div></div>
+                                <span class="tb-bar-val" id="val-tit-outros">1,17 B (8,6%)</span>
                             </div>
                         </div>
 
-                        <div class="worksheet-title" style="margin-top:20px;">
+                        <div class="worksheet-title" style="margin-top:16px;">
                             <span>🏢 Segregação por Empresa Credora</span>
                             <span class="meta">Origem Contábil da Dívida</span>
                         </div>
                         <div class="tb-bar-list">
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">🏢 17 - EDEC SA (Faturação Atual)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-17" style="width:15.5%; background:#60A5FA;"></div></div>
-                                <span class="tb-bar-val" id="val-emp-17">--</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-17" style="width:10.8%; background:#60A5FA;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-17">1,46 B (10,8%)</span>
                             </div>
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">⚡ 21 - ELECTRA SA (AdS Especial)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-21" style="width:20.1%; background:#FBBF24;"></div></div>
-                                <span class="tb-bar-val" id="val-emp-21">--</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-21" style="width:13.7%; background:#FBBF24;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-21">1,86 B (13,7%)</span>
                             </div>
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">📍 07 - EDEC Sul (Histórico Sul)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-7" style="width:51.6%; background:#A78BFA;"></div></div>
-                                <span class="tb-bar-val" id="val-emp-7">--</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-7" style="width:58.4%; background:#A78BFA;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-7">7,91 B (58,4%)</span>
                             </div>
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">🏛️ 70 - ELECTRA SARL (Dívida Legada)</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-70" style="width:24.2%; background:#F472B6;"></div></div>
-                                <span class="tb-bar-val" id="val-emp-70">--</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" id="bar-emp-70" style="width:17.1%; background:#F472B6;"></div></div>
+                                <span class="tb-bar-val" id="val-emp-70">2,32 B (17,1%)</span>
                             </div>
                         </div>
                     </div>
@@ -1522,13 +1569,13 @@
                         <div class="tb-bar-list" id="chartTopConcelhosCA">
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">1. PRAIA</span>
-                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:69.5%; background:var(--tableau-red);"></div></div>
-                                <span class="tb-bar-val">5,97 B ECV</span>
+                                <div class="tb-bar-track"><div class="tb-bar-fill" style="width:80.5%; background:var(--tableau-red);"></div></div>
+                                <span class="tb-bar-val">10,91 B ECV</span>
                             </div>
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">2. SANTA CATARINA</span>
                                 <div class="tb-bar-track"><div class="tb-bar-fill" style="width:18.0%; background:var(--tableau-orange);"></div></div>
-                                <span class="tb-bar-val">535,1 M ECV</span>
+                                <span class="tb-bar-val">543,0 M ECV</span>
                             </div>
                             <div class="tb-bar-row">
                                 <span class="tb-bar-label">3. SÃO FILIPE (FOGO)</span>
@@ -1552,8 +1599,12 @@
                             </div>
                         </div>
 
-                        <div style="margin-top:16px; padding:12px; background:var(--bg-card-alt); border:1px solid var(--border-subtle); border-radius:6px; font-size:0.79rem; color:var(--text-secondary);">
-                            🎯 <strong>Insight Operacional para Piquetes (Roteamento por PT):</strong> Os 10 Postos de Transformação (PTs) mais críticos na Praia (<em>PT 526 Achada Grande Trás, PT 622 Estação Água, PT 181 Fazenda, PT 96 Zona Industrial Tira Chapéu</em>) concentram mais de <strong>3,35 B ECV</strong>, permitindo corte cirúrgico com deslocação mínima.
+                        <div style="margin-top:14px; padding:12px; background:var(--bg-card-alt); border:1px solid var(--border-subtle); border-radius:6px; font-size:0.78rem; color:var(--text-secondary); line-height:1.45;">
+                            💧 <strong>Raio-X Analítico dos Restantes Clientes de Água (1,34 B ECV em 11.477 CILs):</strong><br>
+                            • <strong>Domésticos (Praia):</strong> <strong>964,7 M ECV</strong> (71,9% da carteira AG comercial) em <strong>10.533 CILs</strong> (389.750 faturas).<br>
+                            • <strong>Autarquias (Praia):</strong> <strong>240,2 M ECV</strong> (17,9%) em <strong>100 CILs</strong> (ex: CM Ribeira Grande de Santiago c/ 127,5 M, CM Praia, ADA).<br>
+                            • <strong>Empresas Privadas:</strong> <strong>123,2 M ECV</strong> (9,2%) em <strong>762 CILs</strong> (Praia + 7,8 M em Stª Catarina).<br>
+                            • <strong>Estado & Emp. Públicas:</strong> <strong>24,2 M ECV</strong> (1,8%) em <strong>82 CILs</strong> (Assembleia Nacional, IMP, Ministérios).
                         </div>
                     </div>
                 </div>
@@ -1568,7 +1619,7 @@
                 <div>
                     <div class="slide-kicker">STORY POINT 04 • DIAGNÓSTICO DE CAUSA-RAIZ</div>
                     <h2 class="slide-title">As 4 Grandes Vulnerabilidades Comerciais Identificadas</h2>
-                    <p class="slide-subtitle">Fatores críticos que explicam o congelamento de 79,1% da carteira e a perda contínua de caixa na Região Sul.</p>
+                    <p class="slide-subtitle">Fatores críticos que explicam o congelamento de 85,8% da carteira, o passivo de Água (AdS vs. Clientes Finais) e a dívida de ex-titulares nos CILs.</p>
                 </div>
                 <div class="slide-scope-badge">
                     <div class="lbl">RISCO CRÍTICO + ALTO</div>
@@ -1581,14 +1632,14 @@
                 <div class="tb-card b-red">
                     <div>
                         <div class="ban-header">
-                            <span class="ban-label">VULNERABILIDADE 01 • PASSIVO INSTITUCIONAL & ÁGUA AdS</span>
-                            <span class="ban-tag tag-red">48,3% do Stock Total</span>
+                            <span class="ban-label">VULNERABILIDADE 01 • PASSIVO INSTITUCIONAL, AdS (4,10 B) & ÁGUA AG (1,34 B)</span>
+                            <span class="ban-tag tag-red">51,5% Público + AdS | 9,9% Água Clientes</span>
                         </div>
-                        <h3 style="font-size:1.05rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
-                            Bloqueio de Liquidez no Setor Público (2,61 B) e Águas de Santiago (1,54 B)
+                        <h3 style="font-size:1.02rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
+                            Dupla Realidade da Água: Conta Especial AdS (4,10 B) vs. Carteira Comercial AG (1,34 B) + Estado (2,88 B)
                         </h3>
-                        <p class="ban-sub" style="margin-bottom:10px;">
-                            Quase metade da dívida total da Região Sul (<strong id="v1-soma-pub-ads">4,15 B ECV</strong>) reside em entidades públicas (Câmaras Municipais, Estado Central, Empresas Públicas) e nos 2 contratos especiais de Água (AdS). Estes saldos distorcem os indicadores comerciais e exigem <strong>protocolo governamental de encontro de contas e compensação cruzada</strong>, fora da alçada dos piquetes convencionais.
+                        <p class="ban-sub" style="margin-bottom:8px;">
+                            A dívida de Água (<strong>5,45 B ECV</strong>) divide-se em dois blocos distintos que exigem tratamento separado: <strong>(1) AdS — Águas de Santiago S.A.</strong> concentra <strong>4,10 B ECV (75,35% da Água | 30,28% do Total)</strong> em apenas <strong>2 CILs</strong> (1,67 B na Emp. 21 + 2,43 B na Emp. 07), somando <strong id="v1-soma-pub-ads">6,98 B ECV</strong> junto com o Setor Público (2,88 B); e <strong>(2) Restantes 11.477 Clientes de Água (AG)</strong> acumulam <strong>1,34 B ECV (9,91% do Total)</strong> em faturas históricas (Emp. 07 e 70) de Domésticos (964,7 M), Autarquias (240,2 M) e Empresas (123,2 M).
                         </p>
                     </div>
                 </div>
@@ -1597,14 +1648,14 @@
                 <div class="tb-card b-orange">
                     <div>
                         <div class="ban-header">
-                            <span class="ban-label">VULNERABILIDADE 02 • HIPERCONCENTRAÇÃO PARETO PRIVADA</span>
-                            <span class="ban-tag tag-orange">77,6% em 5,4% dos Clientes</span>
+                            <span class="ban-label">VULNERABILIDADE 02 • PARETO PRIVADO & SUCESSÃO DE TITULARIDADE NO CIL</span>
+                            <span class="ban-tag tag-orange">8,6% (1,17 B) em Outros Titulares</span>
                         </div>
-                        <h3 style="font-size:1.05rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
-                            Inadimplência Crónica em Grandes Contas Privadas (&gt; 250k ECV)
+                        <h3 style="font-size:1.02rem; font-weight:800; margin-bottom:8px; color:var(--text-primary);">
+                            Concentração Privada (&gt;250k ECV) e Passivo Oculto de Titulares Anteriores no Mesmo CIL (1,17 B ECV)
                         </h3>
-                        <p class="ban-sub" style="margin-bottom:10px;">
-                            Excluindo o Estado e a AdS, existem <strong>2,60 B ECV</strong> retidos em grandes devedores privados e comerciais com dívidas superiores a 250.000 ECV (incluindo <strong>754 contas milionárias &gt; 1M ECV</strong>). A ausência de cortes blindados em Média Tensão e grandes consumidores de Baixa Tensão permite que clientes de alta capacidade contributiva acumulem mais de 24 faturas vencidas.
+                        <p class="ban-sub" style="margin-bottom:8px;">
+                            Além dos <strong>4,18 B ECV</strong> retidos em grandes devedores privados (&gt;250k ECV), o cruzamento dos <strong>301.472 contratos históricos (Empresas 17, 21, 07 e 70)</strong> revelou que <strong>17.164 CILs (14,1%)</strong> já tiveram múltiplos clientes (IDs) e que em <strong>7.503 CILs</strong> existem <strong>1.167,9 M ECV (8,62% da dívida total)</strong> deixados por <strong>titulares/inquilinos anteriores</strong>, enquanto o titular atual responde por <strong>12,38 B ECV (91,38%)</strong>.
                         </p>
                     </div>
                 </div>
@@ -1651,7 +1702,7 @@
                 <div>
                     <div class="slide-kicker">STORY POINT 05 • PLANO DIRETOR DE INTERVENÇÃO</div>
                     <h2 class="slide-title">Plano de Choque Operacional: 5 Eixos Estratégicos Mensurados</h2>
-                    <p class="slide-subtitle">Ações cirúrgicas orientadas por dados (Data-Driven Operations) utilizando o Painel SCADA e Roteamento por PT.</p>
+                    <p class="slide-subtitle">Ações cirúrgicas orientadas por dados (Data-Driven Operations) discriminando Protocolo AdS, Cobrança Clientes Água e Bloqueio de Sucessão no CIL.</p>
                 </div>
                 <div class="slide-scope-badge">
                     <div class="lbl">HORIZONTE DE EXECUÇÃO</div>
@@ -1664,12 +1715,12 @@
                 <div class="action-row" style="border-left-color:var(--tableau-blue);">
                     <div class="action-num">1</div>
                     <div class="action-body">
-                        <h4>Mesa de Encontro de Contas: Setor Público (2,61 B) & Protocolo AdS Água (1,54 B)</h4>
-                        <p>Negociação institucional ao nível do CA e Ministério das Finanças para compensação de dívida de Autarquias/Estado (conversão de 30% do passivo) e regularização contabilística/financeira dos 2 contratos especiais AdS.</p>
+                        <h4>Mesa de Encontro de Contas: Setor Público (2,88 B) & Protocolo Autónomo AdS Água (4,10 B em 2 CILs)</h4>
+                        <p>Negociação institucional com o Ministério das Finanças e ANMCV para compensação cruzada de Autarquias/Estado (incluindo os 264,4 M de Água pública) e protocolo separado para os 2 CILs da Águas de Santiago S.A. (1,67 B Emp. 21 + 2,43 B Emp. 07).</p>
                     </div>
                     <div class="action-impact">
                         <div class="lbl">IMPACTO DIRETO ESTIMADO</div>
-                        <div class="val" id="eixo1-val">+ 783,7 M ECV</div>
+                        <div class="val" id="eixo1-val">+ 863,0 M ECV</div>
                     </div>
                 </div>
 
@@ -1677,12 +1728,12 @@
                 <div class="action-row" style="border-left-color:var(--tableau-orange);">
                     <div class="action-num" style="background:rgba(242,142,43,0.15); color:var(--accent-orange);">2</div>
                     <div class="action-body">
-                        <h4>Piquetes Diários de Corte em Cluster por PT — Grandes Devedores Privados (&gt;250k ECV)</h4>
-                        <p>Despacho diário de listas de corte georreferenciadas por Posto de Transformação (5.136 contas Pareto) com exigência de entrada mínima de 30% e plano de amortização automática bloqueado no sistema.</p>
+                        <h4>Piquetes Diários por PT (Grandes Privados &gt;250k), Cobrança Clientes Água AG (1,34 B) & Trava de Sucessão CIL (1,17 B)</h4>
+                        <p>Despacho diário por PT nas contas Pareto (&gt;250k), campanha de regularização dos 11.477 clientes finais de Água AG e bloqueio no sistema de novos contratos em CILs com dívida de titulares anteriores (7.503 CILs) sem auditoria de vínculo familiar/comercial.</p>
                     </div>
                     <div class="action-impact">
                         <div class="lbl">RECUPERAÇÃO 25% PRIVADOS</div>
-                        <div class="val" id="eixo2-val">+ 649,8 M ECV</div>
+                        <div class="val" id="eixo2-val">+ 1,05 B ECV</div>
                     </div>
                 </div>
 
@@ -1716,8 +1767,8 @@
                 <div class="action-row" style="border-left-color:var(--tableau-green);">
                     <div class="action-num" style="background:rgba(89,161,79,0.15); color:var(--accent-green);">5</div>
                     <div class="action-body">
-                        <h4>Campanha Digital de Acordos Flexíveis para a Carteira Massiva em Amortização (62.912 Clientes)</h4>
-                        <p>Notificação via SMS/WhatsApp e Balcão Digital para clientes que já demonstram vontade de pagar (Cob 2026 &gt; 0), oferecendo isenção de juros de mora mediante liquidação ou débito direto.</p>
+                        <h4>Campanha Digital de Acordos Flexíveis para a Carteira Massiva em Amortização (63.291 Clientes)</h4>
+                        <p>Notificação via SMS/WhatsApp e Balcão Digital para clientes que já demonstram vontade de pagar (Cob 2026 &gt; 0) e clientes domésticos de Água AG (10.533 contas), oferecendo isenção de juros mediante acordo formal.</p>
                     </div>
                     <div class="action-impact">
                         <div class="lbl">INCREMENTO DE EFICÁCIA</div>
@@ -1833,11 +1884,11 @@
                     <div>
                         <div class="ban-header">
                             <span class="ban-label">DELIBERAÇÃO 01</span>
-                            <span class="ban-tag tag-blue">Institucional & AdS</span>
+                            <span class="ban-tag tag-blue">Institucional, AdS & Água AG</span>
                         </div>
-                        <h3 style="font-size:0.98rem; font-weight:800; margin-bottom:8px;">Mandato para Encontro de Contas Público e Dossier AdS</h3>
+                        <h3 style="font-size:0.98rem; font-weight:800; margin-bottom:8px;">Encontro de Contas Público, Protocolo AdS (4,10 B) & Carteira Água (1,34 B)</h3>
                         <p class="ban-sub">
-                            Aprovar a constituição imediata da comissão executiva junto ao Ministério das Finanças, ANMCV e Águas de Santiago (AdS) para conciliação e abatimento cruzado dos <strong>2,61 B ECV</strong> do Setor Público e tratamento autónomo dos <strong>1,54 B ECV</strong> da AdS.
+                            Aprovar comissão executiva junto ao Ministério das Finanças, ANMCV e Águas de Santiago (AdS) para conciliação dos <strong>2,88 B ECV</strong> do Setor Público (incl. 264,4 M de Água pública), tratamento autónomo dos <strong>4,10 B ECV</strong> dos 2 CILs da AdS e plano de cobrança dedicada para os <strong>11.477 clientes finais de Água AG (1,34 B ECV)</strong>.
                         </p>
                     </div>
                 </div>
@@ -1846,11 +1897,11 @@
                     <div>
                         <div class="ban-header">
                             <span class="ban-label">DELIBERAÇÃO 02</span>
-                            <span class="ban-tag tag-orange">Operações Pareto PT</span>
+                            <span class="ban-tag tag-orange">Pareto PT & Sucessão CIL</span>
                         </div>
-                        <h3 style="font-size:0.98rem; font-weight:800; margin-bottom:8px;">Diretiva de Corte Blindado por PT (&gt; 250k ECV)</h3>
+                        <h3 style="font-size:0.98rem; font-weight:800; margin-bottom:8px;">Corte Blindado por PT (&gt; 250k) & Trava de Sucessão de Titulares no CIL</h3>
                         <p class="ban-sub">
-                            Autorizar o despacho semanal obrigatório pelo Painel SCADA das listas de corte georreferenciadas por Posto de Transformação (5.136 contas Pareto), vedando religações sem liquidação mínima de <strong>30% da dívida</strong> e termo de confissão.
+                            Autorizar o despacho semanal obrigatório por PT (6.535 contas Pareto &gt;250k) e instituir trava de auditoria na abertura de novos contratos nos <strong>7.503 CILs</strong> onde titulares anteriores deixaram <strong>1,17 B ECV</strong> em aberto, exigindo liquidação mínima de <strong>30%</strong> em caso de continuidade familiar/comercial.
                         </p>
                     </div>
                 </div>
@@ -2102,9 +2153,11 @@
                 const divPrivGrandes = Number(d.divida_grandes_priv) || 0;
                 const divMassa = Number(d.divida_massa) || 0;
 
-                // Segregação Eletricidade vs Água (AG)
-                let divAgua = 0, qtdAgua = 0, divEletr = 0;
-                if (Array.isArray(d.por_produto)) {
+                // Segregação Eletricidade vs Água (AdS vs Restantes Clientes AG) & Titularidade CIL
+                let divAgua = Number(d.tot_divida_ag) || 0;
+                let qtdAgua = Number(d.devedores_ag) || 0;
+                let divEletr = Number(d.tot_divida_en) || 0;
+                if (divAgua === 0 && Array.isArray(d.por_produto)) {
                     d.por_produto.forEach(p => {
                         const codProd = String(p.produto || p.prod || '').toUpperCase();
                         if (codProd === 'AG') {
@@ -2115,11 +2168,20 @@
                         }
                     });
                 }
-                if (divAgua === 0 && Number(d.tot_divida_ag) > 0) {
-                    divAgua = Number(d.tot_divida_ag);
-                    qtdAgua = Number(d.devedores_ag) || 0;
-                    divEletr = Math.max(0, totDiv - divAgua);
-                }
+                if (divEletr === 0) divEletr = Math.max(0, totDiv - divAgua);
+
+                const divAgAds = d.divida_ag_ads !== undefined ? Number(d.divida_ag_ads) : 0;
+                const qtdAgAds = d.devedores_ag_ads !== undefined ? Number(d.devedores_ag_ads) : 0;
+                const fatAgAds = d.faturas_ag_ads !== undefined ? Number(d.faturas_ag_ads) : 0;
+
+                const divAgOutros = d.divida_ag_outros !== undefined ? Number(d.divida_ag_outros) : Math.max(0, divAgua - divAgAds);
+                const qtdAgOutros = d.devedores_ag_outros !== undefined ? Number(d.devedores_ag_outros) : Math.max(0, qtdAgua - qtdAgAds);
+                const fatAgOutros = d.faturas_ag_outros !== undefined ? Number(d.faturas_ag_outros) : 0;
+
+                const divTitAtual = d.tot_divida_titular_atual !== undefined ? Number(d.tot_divida_titular_atual) : totDiv;
+                const divOutrosTit = d.tot_divida_outros_titulares !== undefined ? Number(d.tot_divida_outros_titulares) : 0;
+                const cilsDivOutros = Number(d.cils_divida_outros_titulares) || 0;
+                const cilsMultiCli = Number(d.cils_multi_cliente) || 0;
 
                 const pctSemPag = totDiv > 0 ? ((divSemPag / totDiv) * 100) : 0;
                 const taxaRec = (totDiv + cob2026) > 0 ? ((cob2026 / (totDiv + cob2026)) * 100) : 0;
@@ -2131,19 +2193,28 @@
                 const pctPriv = totDiv > 0 ? ((divPrivGrandes / totDiv) * 100) : 0;
                 const pctMassa = totDiv > 0 ? ((divMassa / totDiv) * 100) : 0;
                 const pctAgua = totDiv > 0 ? ((divAgua / totDiv) * 100) : 0;
+                const pctAgAds = totDiv > 0 ? ((divAgAds / totDiv) * 100) : 0;
+                const pctAgOutros = totDiv > 0 ? ((divAgOutros / totDiv) * 100) : 0;
+                const pctOutrosTit = totDiv > 0 ? ((divOutrosTit / totDiv) * 100) : 0;
+                const pctTitAtual = totDiv > 0 ? ((divTitAtual / totDiv) * 100) : 0;
                 const pctEletr = totDiv > 0 ? ((divEletr / totDiv) * 100) : 0;
+                const pctAdsWithinAg = divAgua > 0 ? ((divAgAds / divAgua) * 100) : 0;
+                const pctOutrosWithinAg = divAgua > 0 ? ((divAgOutros / divAgua) * 100) : 0;
 
                 // SLIDE 1 & 2 UPDATES
                 setTxt('ca-capa-contratos', fmtInt(totCli) + ' contas');
                 setTxt('ca-capa-divida', fmtECV(totDiv));
                 setTxt('ca-capa-pareto', fmtECV(div250k) + ' (' + pctPareto.toFixed(1).replace('.', ',') + '%)');
                 setTxt('ca-capa-publico', fmtECV(divPub) + ' (' + pctPub.toFixed(1).replace('.', ',') + '%)');
-                setTxt('ca-capa-ads', fmtECV(divAgua) + ' (' + pctAgua.toFixed(1).replace('.', ',') + '%)');
+                setTxt('ca-capa-ads', fmtECV(divAgAds) + ' (' + pctAgAds.toFixed(1).replace('.', ',') + '%)');
+                setTxt('ca-capa-ag-outros', fmtECV(divAgOutros) + ' (' + pctAgOutros.toFixed(1).replace('.', ',') + '%)');
+                setTxt('ca-capa-outros-tit', fmtECV(divOutrosTit) + ' (' + pctOutrosTit.toFixed(1).replace('.', ',') + '%)');
 
                 setTxt('ca-k1-divida', fmtECV(totDiv));
                 setTxt('ca-k1-clientes', fmtInt(totCli));
                 setTxt('ca-k1-faturas', (totFat >= 1e6 ? (totFat / 1e6).toFixed(2).replace('.', ',') + 'M' : fmtInt(totFat)) + ' faturas');
                 setTxt('ca-k1-ticket', fmtInt(Math.round(Number(d.media_divida) || 0)) + ' ECV');
+                setTxt('ca-k1-tit-sub', 'Tit. Atual: ' + fmtECV(divTitAtual).replace(' ECV', '') + ' | Antigos: ' + fmtECV(divOutrosTit).replace(' ECV', ''));
 
                 setTxt('ca-k2-sempag', fmtECV(divSemPag));
                 setTxt('ca-k2-pct', pctSemPag.toFixed(1).replace('.', ',') + '% do Total');
@@ -2171,12 +2242,27 @@
                 const k5Bar = document.getElementById('ca-k5-bar');
                 if (k5Bar) k5Bar.style.width = Math.min(100, pctPub) + '%';
 
-                setTxt('ca-k6-val', fmtECV(divAgua));
-                setTxt('ca-k6-pct', pctAgua.toFixed(1).replace('.', ',') + '% Água AdS');
-                setTxt('ca-k6-qtd', fmtInt(qtdAgua));
+                setTxt('ca-k6-val', fmtECV(divAgAds).replace(' ECV', '') + ' AdS');
+                setTxt('ca-k6-pct', pctAgAds.toFixed(1).replace('.', ',') + '% AdS + ' + pctAgOutros.toFixed(1).replace('.', ',') + '% AG');
+                setTxt('ca-k6-qtd', fmtInt(qtdAgAds));
+                setTxt('ca-k6-ag-outros-qtd', fmtInt(qtdAgOutros));
+                setTxt('ca-k6-ag-outros-val', fmtECV(divAgOutros).replace(' ECV', ''));
                 setTxt('ca-k6-el', fmtECV(divEletr));
                 const k6Bar = document.getElementById('ca-k6-bar');
                 if (k6Bar) k6Bar.style.width = Math.min(100, pctAgua) + '%';
+
+                // Faixa Inferior Slide 2: AdS vs Restantes Água AG vs Outros Titulares CIL
+                setTxt('ca-s2-ads-val', fmtECV(divAgAds));
+                setTxt('ca-s2-ads-pct', pctAgAds.toFixed(1).replace('.', ',') + '% Total | ' + pctAdsWithinAg.toFixed(1).replace('.', ',') + '% Água');
+                setTxt('ca-s2-ads-sub', fmtInt(qtdAgAds) + ' CILs AdS (' + fmtInt(fatAgAds) + ' fat.) • Protocolo Especial');
+
+                setTxt('ca-s2-ag-outros-val', fmtECV(divAgOutros));
+                setTxt('ca-s2-ag-outros-pct', pctAgOutros.toFixed(1).replace('.', ',') + '% Total | ' + pctOutrosWithinAg.toFixed(1).replace('.', ',') + '% Água');
+                setTxt('ca-s2-ag-outros-sub', fmtInt(qtdAgOutros) + ' clientes AG (' + fmtInt(fatAgOutros) + ' fat.) • Domésticos, Autarquias e Empresas');
+
+                setTxt('ca-s2-outros-tit-val', fmtECV(divOutrosTit) + ' (Outros Tit.)');
+                setTxt('ca-s2-outros-tit-pct', pctOutrosTit.toFixed(1).replace('.', ',') + '% em Ex-Titulares');
+                setTxt('ca-s2-outros-tit-sub', fmtInt(cilsDivOutros) + ' CILs c/ dívida anterior (' + fmtInt(cilsMultiCli) + ' CILs multi-titular) • Tit. Atual: ' + fmtECV(divTitAtual).replace(' ECV', '') + ' (' + pctTitAtual.toFixed(1).replace('.', ',') + '%)');
 
                 const desvFat = Number(d.com_desvio_fat) || 0;
                 const cf1Qtd = Number(d.com_cf1) || 0;
@@ -2200,17 +2286,21 @@
                 setTxt('val-seg-pub', fmtECV(divPub).replace(' ECV', '') + ' (' + pctPub.toFixed(1).replace('.', ',') + '%)');
                 setTxt('val-seg-priv', fmtECV(divPrivGrandes).replace(' ECV', '') + ' (' + pctPriv.toFixed(1).replace('.', ',') + '%)');
                 setTxt('val-seg-massa', fmtECV(divMassa).replace(' ECV', '') + ' (' + pctMassa.toFixed(1).replace('.', ',') + '%)');
-                setTxt('val-seg-ads', fmtECV(divAgua).replace(' ECV', '') + ' (' + pctAgua.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-seg-ads', fmtECV(divAgAds).replace(' ECV', '') + ' (' + pctAgAds.toFixed(1).replace('.', ',') + '%)');
 
                 const bPub = document.getElementById('bar-seg-pub'); if (bPub) bPub.style.width = Math.min(100, pctPub) + '%';
                 const bPriv = document.getElementById('bar-seg-priv'); if (bPriv) bPriv.style.width = Math.min(100, pctPriv) + '%';
                 const bMassa = document.getElementById('bar-seg-massa'); if (bMassa) bMassa.style.width = Math.min(100, pctMassa) + '%';
-                const bAds = document.getElementById('bar-seg-ads'); if (bAds) bAds.style.width = Math.min(100, pctAgua) + '%';
+                const bAds = document.getElementById('bar-seg-ads'); if (bAds) bAds.style.width = Math.min(100, pctAgAds) + '%';
 
                 setTxt('val-prod-el', fmtECV(divEletr).replace(' ECV', '') + ' (' + pctEletr.toFixed(1).replace('.', ',') + '%)');
-                setTxt('val-prod-ag', fmtECV(divAgua).replace(' ECV', '') + ' (' + pctAgua.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-prod-ag-ads', fmtECV(divAgAds).replace(' ECV', '') + ' (' + pctAgAds.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-prod-ag-outros', fmtECV(divAgOutros).replace(' ECV', '') + ' (' + pctAgOutros.toFixed(1).replace('.', ',') + '%)');
+                setTxt('val-tit-outros', fmtECV(divOutrosTit).replace(' ECV', '') + ' (' + pctOutrosTit.toFixed(1).replace('.', ',') + '%)');
                 const bEl = document.getElementById('bar-prod-el'); if (bEl) bEl.style.width = Math.min(100, pctEletr) + '%';
-                const bAg = document.getElementById('bar-prod-ag'); if (bAg) bAg.style.width = Math.min(100, pctAgua) + '%';
+                const bAgAds = document.getElementById('bar-prod-ag-ads'); if (bAgAds) bAgAds.style.width = Math.min(100, pctAgAds) + '%';
+                const bAgOut = document.getElementById('bar-prod-ag-outros'); if (bAgOut) bAgOut.style.width = Math.min(100, pctAgOutros) + '%';
+                const bTitOut = document.getElementById('bar-tit-outros'); if (bTitOut) bTitOut.style.width = Math.min(100, pctOutrosTit) + '%';
 
                 // Atualização dos Indicadores de Dívida por Empresa Credora
                 const div17 = Number(d.tot_divida_edec) || 0;
@@ -2261,7 +2351,7 @@
                 const b7 = document.getElementById('bar-emp-7'); if (b7) b7.style.width = Math.min(100, pct7) + '%';
                 const b70 = document.getElementById('bar-emp-70'); if (b70) b70.style.width = Math.min(100, pct70) + '%';
 
-                setTxt('v1-soma-pub-ads', fmtECV(divPub + divAgua));
+                setTxt('v1-soma-pub-ads', fmtECV(divPub + divAgAds));
 
                 // Top Concelhos dinâmico
                 if (Array.isArray(d.por_concelho) && d.por_concelho.length > 0) {
