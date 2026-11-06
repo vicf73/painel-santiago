@@ -482,6 +482,8 @@
       }
       if (prod === "__ELETRICIDADE__") {
         p.append("produto", "in.(EB,EE,EM)");
+      } else if (prod === "AG") {
+        p.append("or", "(produto.eq.AG,divida_ag.gt.0)");
       } else if (prod) {
         p.append("produto", `eq.${prod}`);
       }
@@ -697,7 +699,7 @@
         if (elPctElet) elPctElet.textContent = totDiv > 0 ? `${((divElet / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
 
         if (elValAgua) elValAgua.textContent = fmtECV(divAg);
-        if (elDetAgua) elDetAgua.textContent = `${fmtInt(cntAg)} contratos especiais (${fmtInt(fatAg)} faturas) • ${fmtECV(cobAg)} cobrado`;
+        if (elDetAgua) elDetAgua.textContent = `${fmtInt(cntAg)} devedores de Água (${fmtInt(fatAg)} faturas) • ${fmtECV(cobAg)} cobrado`;
         if (elPctAgua) elPctAgua.textContent = totDiv > 0 ? `${((divAg / totDiv) * 100).toFixed(1)}% da Dívida` : "0%";
 
         if (elPillTot) elPillTot.textContent = fmtECV(totDiv);
