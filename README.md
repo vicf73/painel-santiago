@@ -9,5 +9,5 @@ Plataforma unificada de telemetria comercial. auditoria de perdas não técnicas
 
 ## 🔐 Segurança & Conectividade
 - **Autenticação Obrigatória:** Protegido por **Supabase Auth** e políticas **Row-Level Security (RLS)** com controlo hierárquico de acessos (RBAC) e restrição geográfica por ilha.
-- **Base Consolidada em Tempo Real:** `120.137` contratos sincronizados na Região Sul (`95.729` em Santiago).
-- **Última publicação:** `06/11/2026 11:15`
+- **Base Consolidada em Tempo Real:** `121.811` contratos sincronizados na Região Sul (`95.729` em Santiago).
+- **Última publicação:** `06/11/2026 12:06`
