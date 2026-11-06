@@ -2102,17 +2102,23 @@
                 const divPrivGrandes = Number(d.divida_grandes_priv) || 0;
                 const divMassa = Number(d.divida_massa) || 0;
 
-                // Segregação Eletricidade vs Água AdS
+                // Segregação Eletricidade vs Água (AG)
                 let divAgua = 0, qtdAgua = 0, divEletr = 0;
                 if (Array.isArray(d.por_produto)) {
                     d.por_produto.forEach(p => {
-                        if ((p.prod || '').toUpperCase() === 'AG') {
+                        const codProd = String(p.produto || p.prod || '').toUpperCase();
+                        if (codProd === 'AG') {
                             divAgua += Number(p.soma_divida) || 0;
-                            qtdAgua += Number(p.cnt) || 0;
+                            qtdAgua += Number(p.qtd_devedores || p.qtd_contratos || p.cnt) || 0;
                         } else {
                             divEletr += Number(p.soma_divida) || 0;
                         }
                     });
+                }
+                if (divAgua === 0 && Number(d.tot_divida_ag) > 0) {
+                    divAgua = Number(d.tot_divida_ag);
+                    qtdAgua = Number(d.devedores_ag) || 0;
+                    divEletr = Math.max(0, totDiv - divAgua);
                 }
 
                 const pctSemPag = totDiv > 0 ? ((divSemPag / totDiv) * 100) : 0;
@@ -2175,15 +2181,15 @@
                 const desvFat = Number(d.com_desvio_fat) || 0;
                 const cf1Qtd = Number(d.com_cf1) || 0;
                 const cf1Div = Number(d.cf1_divida_total) || 0;
-                const cf1Mp = Number(d.cf1_enviados_mp) || 0;
+                const cf1Mp = Number(d.cf1_enviado_mp ?? d.cf1_enviados_mp) || 0;
                 setTxt('ca-k7-desvio', fmtInt(desvFat));
                 setTxt('ca-k7-cf1', fmtInt(cf1Qtd) + ' Autos CF1');
                 setTxt('ca-k7-div-cf1', fmtECV(cf1Div));
                 setTxt('ca-k7-mp', fmtInt(cf1Mp));
 
                 const contAntigos = Number(d.contador_antigo) || 0;
-                const semLeit = Number(d.sem_leitura) || 0;
-                const riscoAlto = (Number(d.score_critico) || 0) + (Number(d.score_alto) || 0);
+                const semLeit = Number(d.leitura_antiga ?? d.sem_leitura) || 0;
+                const riscoAlto = (Number(d.risco_critico ?? d.score_critico) || 0) + (Number(d.risco_alto ?? d.score_alto) || 0);
                 setTxt('ca-k8-antigos', fmtInt(contAntigos));
                 setTxt('ca-k8-semleit', fmtInt(semLeit));
                 setTxt('ca-k8-risco', fmtInt(riscoAlto) + ' Risco Alto');
