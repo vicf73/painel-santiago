@@ -535,7 +535,10 @@
       if (!r) return;
       ultimoDossieCliente = r;
 
-      const badgeAdS = (r.produto === "AG" || (r.nome && r.nome.includes("AGUAS DE SANTIAGO"))) ? " • 💧 CONTA ESPECIAL AdS (ÁGUA)" : "";
+      const ehAdS = (Number(r.cil) === 60220187 || Number(r.cil) === 60220188 || Number(r.id_cliente) === 60209538 || (r.nome && r.nome.toUpperCase().includes("AGUAS DE SANTIAGO")));
+      const badgeAdS = ehAdS
+        ? " • 💧 CONTA ESPECIAL AdS (ÁGUA)"
+        : ((r.produto === "AG" || Number(r.divida_ag || 0) > 0) ? " • 🚰 CLIENTE DE ÁGUA (AG)" : "");
       document.getElementById("d-badge-uc").textContent = `${r.desc_uni || "SANTIAGO"} • ${r.grup_tp_cli || "—"}${badgeAdS}`;
       document.getElementById("d-nome").textContent = r.nome || "CLIENTE SEM NOME";
       document.getElementById("d-sub").textContent = `CIL: ${r.cil} | NIB: ${r.nib || "—"} | CIL_ID: ${r.cil_id || "—"}`;
