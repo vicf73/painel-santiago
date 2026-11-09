@@ -324,7 +324,7 @@
       </div>
 
       <div class="kpi-card amber">
-        <div class="kpi-label"><span>DÍVIDA TOTAL ACUMULADA</span><span>ECV</span></div>
+        <div class="kpi-label"><span id="lbl-kpi-divida-mod1">DÍVIDA TOTAL ACUMULADA</span><span>ECV</span></div>
         <div class="kpi-value" id="kpi-divida">--</div>
         <div class="kpi-sub" id="kpi-divida-sub">-- clientes com dívida</div>
       </div>
@@ -566,7 +566,9 @@
           <select id="f-produto" class="select-ctrl" onchange="aplicarFiltros(1)">
             <option value="">Todos os Produtos (Energia + Água)</option>
             <option value="__ELETRICIDADE__">⚡ Eletricidade (EB, EE, EM)</option>
-            <option value="AG">💧 Água (AdS - Águas de Santiago)</option>
+            <option value="AG_ADS">💧 Conta Especial AdS (Águas de Santiago)</option>
+            <option value="AG_OUTROS">🚰 Restantes Clientes de Água (AG)</option>
+            <option value="AG">🌊 Total Água (AdS + Clientes AG)</option>
             <option value="EB">EB • Baixa Tensão Normal</option>
             <option value="EE">EE • Especial / BTE</option>
             <option value="EM">EM • Média Tensão</option>
@@ -603,11 +605,16 @@
         </div>
 
         <div class="field-group">
-          <label>Filtro de Dívida (ECV) / Idade</label>
+          <label>Filtro de Dívida (ECV) / Prescrição</label>
           <div style="display:flex; gap:6px;">
             <select id="f-divida" class="select-ctrl" onchange="aplicarFiltros(1)">
               <option value="">Dívida: Todas</option>
               <option value="gt0">Dívida &gt; 0</option>
+              <option value="prescrita">⏳ Prescrita (&gt; 5 Anos)</option>
+              <option value="exigivel">✅ Exigível (≤ 5 Anos)</option>
+              <option value="baixa_divida">🔌 Baixa p/ Dívida (EST 25)</option>
+              <option value="outros_tit">👥 Outros Clientes (CIL+ID)</option>
+              <option value="cil_99999999">🗂️ CIL 99999999 (Isolado)</option>
               <option value="gt10000">&gt; 10.000 ECV</option>
               <option value="gt50000">&gt; 50.000 ECV</option>
               <option value="gt100000">&gt; 100.000 ECV</option>
@@ -786,14 +793,14 @@
       <section class="kpi-strip" style="margin-bottom:18px;">
         <div class="kpi-card amber">
           <div class="kpi-label"><span>DÍVIDA TOTAL CARTEIRA</span><span id="lbl-kpi-div-subtipo">REGIÃO SUL (ECV)</span></div>
-          <div class="kpi-value" id="kpi-div-total">8.595.747.001 ECV</div>
-          <div class="kpi-sub" id="kpi-div-total-sub">95.511 devedores (2.393.452 faturas)</div>
+          <div class="kpi-value" id="kpi-div-total">13.548.243.579 ECV</div>
+          <div class="kpi-sub" id="kpi-div-total-sub">103.524 devedores (3.009.600 fat.) • Presc. &gt;5a: 6,83 B (50,4%)</div>
         </div>
 
         <div class="kpi-card red">
           <div class="kpi-label"><span>INADIMPLÊNCIA CRÍTICA</span><span>SEM AMORTIZAÇÃO</span></div>
-          <div class="kpi-value" id="kpi-div-critica">6.796.466.283 ECV</div>
-          <div class="kpi-sub" id="kpi-div-critica-sub">32.599 clientes (79.1% estagnada)</div>
+          <div class="kpi-value" id="kpi-div-critica">11.748.962.861 ECV</div>
+          <div class="kpi-sub" id="kpi-div-critica-sub">40.612 clientes (86.7% estagnada)</div>
         </div>
 
         <div class="kpi-card emerald">
@@ -804,20 +811,20 @@
 
         <div class="kpi-card cyan">
           <div class="kpi-label"><span>TAXA DE RECUPERAÇÃO</span><span>EFICÁCIA 2026</span></div>
-          <div class="kpi-value" id="kpi-div-taxa-recup">22.8%</div>
+          <div class="kpi-value" id="kpi-div-taxa-recup">15.8%</div>
           <div class="kpi-sub" id="kpi-div-taxa-recup-sub">Cobrança 2026 vs Carteira Total</div>
         </div>
 
         <div class="kpi-card purple">
           <div class="kpi-label"><span>TICKET MÉDIO DEVEDOR</span><span>EXPOSIÇÃO / CLIENTE</span></div>
-          <div class="kpi-value" id="kpi-div-ticket-medio">89.997 ECV</div>
-          <div class="kpi-sub" id="kpi-div-ticket-medio-sub">Média: 25.1 fat./cliente</div>
+          <div class="kpi-value" id="kpi-div-ticket-medio">130.871 ECV</div>
+          <div class="kpi-sub" id="kpi-div-ticket-medio-sub">Média: 29.1 fat./cliente</div>
         </div>
 
         <div class="kpi-card amber" style="cursor:pointer;" onclick="document.getElementById('div-faixa').value='250k'; aplicarFiltrosDivida(1);" title="Clique para filtrar os Grandes Devedores (&gt; 250.000 ECV)">
           <div class="kpi-label"><span>CONCENTRAÇÃO TOP DEVEDORES</span><span>PARETO 80/20</span></div>
-          <div class="kpi-value" id="kpi-div-grandes">6.670.746.683 ECV</div>
-          <div class="kpi-sub" id="kpi-div-grandes-sub">5.136 contas &gt;250k (77.6% da dívida) • 754 &gt;1M</div>
+          <div class="kpi-value" id="kpi-div-grandes">11.494.688.817 ECV</div>
+          <div class="kpi-sub" id="kpi-div-grandes-sub">5.541 contas &gt;250k (84.8% da dívida) • 989 &gt;1M</div>
         </div>
 
         <div class="kpi-card red" style="cursor:pointer;" onclick="ativarAcaoGestao('fraude_cf1')" title="Clique para filtrar Devedores com Auto de Fraude CF1">
@@ -915,42 +922,122 @@
             <div style="font-size:14px; color:#7DD3FC; font-family:var(--font-mono); font-weight:700;">➔</div>
           </div>
 
-          <!-- Card 4: Dívida de Outros Titulares (Contratos Anteriores no CIL) -->
-          <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.4); border-radius:6px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('div-faixa').value='outros_tit'; aplicarFiltrosDivida(1);" title="Clique para filtrar os CILs onde existe dívida acumulada em nome de titulares/contratos anteriores">
+          <!-- Card 4: Dívida de Outros Titulares (Contratos Anteriores no CIL + ID) -->
+          <div style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.4); border-radius:6px; padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('div-faixa').value='outros_tit'; aplicarFiltrosDivida(1);" title="Clique para filtrar os CILs onde existe dívida acumulada em nome de titulares/contratos anteriores (CIL + ID != Titular EDEC 17)">
             <div>
               <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10.5px; color:#FBBF24; font-weight:700;">
-                <span>👥 DÍVIDA OUTROS TITULARES</span>
-                <span class="badge badge-warn" style="font-size:9px;" id="prod-pct-outros-tit">8.6% da Carteira</span>
+                <span>👥 OUTROS CLIENTES (CIL+ID)</span>
+                <span class="badge badge-warn" style="font-size:9px;" id="prod-pct-outros-tit">8.3% (95.9% Presc.)</span>
               </div>
               <div style="font-family:var(--font-display); font-size:16.5px; font-weight:800; color:#FBBF24; margin:4px 0;" id="prod-val-outros-tit">
-                1.167.912.094 ECV
+                1.124.876.917 ECV
               </div>
               <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="prod-det-outros-tit">
-                7.503 CILs c/ dív. anterior (17.164 CILs multi-tit.)
+                9.996 CILs c/ dív. ant. • 1.078,6M Presc. &gt;5a (+ 34,5M CIL 99999999)
               </div>
             </div>
             <div style="font-size:14px; color:#FBBF24; font-family:var(--font-mono); font-weight:700;">➔</div>
           </div>
         </div>
 
-        <!-- SÍNTESE ANALÍTICA EXECUTIVA: DISCRIMINAÇÃO ÁGUA (AdS vs. RESTANTES AG) & HISTÓRICO DE TITULARIDADE NO CIL -->
-        <div style="margin-top:12px; padding:10px 14px; background:rgba(15,23,42,0.75); border:1px solid var(--border-dim); border-left:3px solid #22D3EE; border-radius:6px; display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px; font-size:11.5px; line-height:1.45;">
+        <!-- FAIXA DE INDICADORES DE PRESCRIÇÃO (> 5 ANOS), EXIGIBILIDADE, BAIXA POR DÍVIDA (ESTCTR 25) E CONTA ISOLADA 99999999 -->
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-top:12px;">
+          <!-- Card P1: Dívida Prescrita (> 5 Anos) -->
+          <div style="background:rgba(244,63,94,0.07); border:1px solid rgba(244,63,94,0.4); border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('div-faixa').value='prescrita'; aplicarFiltrosDivida(1);" title="Clique para filtrar os CILs com Faturas Prescritas (&gt; 5 anos, emissão anterior a Nov/2021)">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10px; color:#FB7185; font-weight:700;">
+                <span>⏳ DÍVIDA PRESCRITA (&gt; 5 ANOS)</span>
+                <span class="badge" style="background:rgba(244,63,94,0.2); color:#FB7185; border:1px solid rgba(244,63,94,0.4); font-size:9px;" id="ind-pct-prescrita">50.4% da Carteira</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:15.5px; font-weight:800; color:#FDA4AF; margin:3px 0;" id="ind-val-prescrita">
+                6.825.450.741 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);" id="ind-det-prescrita">
+                42.288 CILs (2.148.957 fat. &lt; Nov/2021) • 07 Sul + 70 SARL
+              </div>
+            </div>
+            <div style="font-size:13px; color:#FB7185; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
+
+          <!-- Card P2: Dívida Exigível (<= 5 Anos) -->
+          <div style="background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.4); border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('div-faixa').value='exigivel'; aplicarFiltrosDivida(1);" title="Clique para filtrar os CILs com Dívida Exigível / Não Prescrita (≤ 5 anos, emissão a partir de Nov/2021)">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10px; color:#34D399; font-weight:700;">
+                <span>✅ DÍVIDA EXIGÍVEL (≤ 5 ANOS)</span>
+                <span class="badge badge-ok" style="font-size:9px;" id="ind-pct-exigivel">49.6% da Carteira</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:15.5px; font-weight:800; color:#6EE7B7; margin:3px 0;" id="ind-val-exigivel">
+                6.722.792.838 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);" id="ind-det-exigivel">
+                860.643 fat. recentes • EDEC 17 (1,53B • 100%) + AdS (3,81B)
+              </div>
+            </div>
+            <div style="font-size:13px; color:#34D399; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
+
+          <!-- Card P3: Contas em Baixa por Dívida (ESTCTR 25) -->
+          <div style="background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.4); border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('div-faixa').value='baixa_divida'; aplicarFiltrosDivida(1);" title="Clique para filtrar os CILs com contrato(s) em Baixa por Dívida (ESTCTR = 25)">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10px; color:#C084FC; font-weight:700;">
+                <span>🔌 BAIXA POR DÍVIDA (EST 25)</span>
+                <span class="badge badge-purple" style="font-size:9px;" id="ind-pct-baixa-div">28.7% (89.1% Presc.)</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:15.5px; font-weight:800; color:#E9D5FF; margin:3px 0;" id="ind-val-baixa-div">
+                3.883.174.004 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);" id="ind-det-baixa-div">
+                26.760 CILs c/ baixa p/ dívida • 3,46 B ECV prescritos &gt;5a
+              </div>
+            </div>
+            <div style="font-size:13px; color:#C084FC; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
+
+          <!-- Card P4: Conta Técnica Isolada (CIL 99999999) -->
+          <div style="background:rgba(148,163,184,0.08); border:1px solid rgba(148,163,184,0.4); border-radius:6px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('div-faixa').value='cil_99999999'; aplicarFiltrosDivida(1);" title="Clique para inspecionar a Conta Técnica Isolada CIL 99999999 (468 clientes sem local de consumo definido)">
+            <div>
+              <div style="display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10px; color:#CBD5E1; font-weight:700;">
+                <span>🗂️ CIL 99999999 (ISOLADO)</span>
+                <span class="badge" style="background:#1E293B; color:#E2E8F0; border:1px solid #475569; font-size:9px;" id="ind-pct-99999999">468 Clientes s/ Local</span>
+              </div>
+              <div style="font-family:var(--font-display); font-size:15.5px; font-weight:800; color:#F1F5F9; margin:3px 0;" id="ind-val-99999999">
+                34.488.555 ECV
+              </div>
+              <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-secondary);" id="ind-det-99999999">
+                478 fat. (27,97 M / 81,1% presc. &gt;5a) • Isolado de rankings
+              </div>
+            </div>
+            <div style="font-size:13px; color:#CBD5E1; font-family:var(--font-mono); font-weight:700;">➔</div>
+          </div>
+        </div>
+
+        <!-- SÍNTESE ANALÍTICA EXECUTIVA: DISCRIMINAÇÃO ÁGUA, ALOCAÇÃO CIL+ID (PRIORIDADE EDEC 17) E PRESCRIÇÃO (> 5 ANOS) -->
+        <div style="margin-top:12px; padding:10px 14px; background:rgba(15,23,42,0.75); border:1px solid var(--border-dim); border-left:3px solid #22D3EE; border-radius:6px; display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:12px; font-size:11.5px; line-height:1.45;">
           <div>
             <div style="font-family:var(--font-mono); font-size:10px; font-weight:700; color:#22D3EE; text-transform:uppercase; margin-bottom:4px;">
               💧 Análise Discriminada de Água (Total AG: 5.445.299.535 ECV | 40,19% da Carteira)
             </div>
             <div style="color:var(--text-secondary);">
-              • <strong style="color:#38BDF8; cursor:pointer;" onclick="selecionarProdutoDivida('AG_ADS')">Conta Especial AdS (Águas de Santiago S.A.):</strong> <strong>4.102.843.957 ECV</strong> (<strong>75,35%</strong> da Água | <strong>30,28%</strong> da Dívida Total) em apenas <strong>2 CILs</strong> (<code>60220187</code> e <code>60220188</code>, 112 faturas: 1,67B na Emp. 21 + 2,43B na Emp. 07).<br>
-              • <strong style="color:#7DD3FC; cursor:pointer;" onclick="selecionarProdutoDivida('AG_OUTROS')">Restantes Clientes de Água (AG Clientes Finais):</strong> <strong>1.342.455.578 ECV</strong> (<strong>24,65%</strong> da Água | <strong>9,91%</strong> da Dívida Total) em <strong>11.477 CILs</strong> (418.790 faturas na Praia/Stª Catarina): <strong>Domésticos</strong> (964,7M / 10.533 CILs), <strong>Autarquias</strong> (240,2M / 100 CILs — ex: CM Rib. Grande 127,5M), <strong>Empresas Privadas</strong> (123,2M / 762 CILs) e <strong>Estado/Emp. Públicas</strong> (24,2M / 82 CILs).
+              • <strong style="color:#38BDF8; cursor:pointer;" onclick="selecionarProdutoDivida('AG_ADS')">Conta Especial AdS (Águas de Santiago S.A.):</strong> <strong>4.102.843.957 ECV</strong> (<strong>75,35%</strong> da Água | <strong>30,28%</strong> da Dívida Total) em <strong>2 CILs</strong> (<code>60220187</code> e <code>60220188</code>, 112 fat.: 1,67B na Emp. 21 + 2,43B na Emp. 07 • <strong>3,81B exigível ≤5a</strong> e 296,0M &gt;5a).<br>
+              • <strong style="color:#7DD3FC; cursor:pointer;" onclick="selecionarProdutoDivida('AG_OUTROS')">Restantes Clientes de Água (AG Clientes Finais):</strong> <strong>1.342.455.578 ECV</strong> (<strong>24,65%</strong> da Água | <strong>9,91%</strong> da Dívida Total) em <strong>11.477 CILs</strong> (418.790 fat. antigas de <code>07 ELECTRA Sul</code> e <code>70 ELECTRA SARL</code> — <strong>~100% prescritas &gt; 5 anos</strong>): Domésticos (964,7M), Autarquias (240,2M), Privados (123,2M) e Estado (24,2M).
             </div>
           </div>
           <div>
             <div style="font-family:var(--font-mono); font-size:10px; font-weight:700; color:#FBBF24; text-transform:uppercase; margin-bottom:4px;">
-              👥 Análise Multi-Contrato e Titularidade no Local de Consumo (1 CIL ➔ N Contratos / Clientes)
+              👥 Alocação por CIL + ID_CLIENTE (Prioridade Contrato 17 - EDEC SA)
             </div>
             <div style="color:var(--text-secondary);">
-              • <strong>Cobertura de Contratos (Empresas 17, 21, 07 e 70):</strong> <strong>301.472 contratos históricos</strong> mapeados em <strong>121.811 CILs</strong> (apenas 6 CILs órfãos residuais).<br>
-              • <strong>Titular Atual vs. Outros Titulares Anteriores:</strong> <strong>12.380.331.485 ECV (91,38%)</strong> pertencem ao titular atual do CIL, enquanto <strong style="color:#FBBF24; cursor:pointer;" onclick="document.getElementById('div-faixa').value='outros_tit'; aplicarFiltrosDivida(1);">1.167.912.094 ECV (8,62%)</strong> estão em nome de <strong>titulares/contratos anteriores</strong> distribuídos por <strong>7.503 CILs</strong> (num universo de <strong>17.164 CILs multi-titular</strong>).
+              • <strong>Regra de Ouro (CIL + ID):</strong> A dívida é sempre vinculada ao par <code>CIL + ID_CLIENTE</code> (cada cliente assume a sua dívida). O titular de referência do CIL é o do contrato <strong>17 - EDEC SA</strong> (<code>116.151 CILs</code> + <code>2 AdS</code>; <code>5.652 CILs</code> legados AG).<br>
+              • <strong>Titular EDEC (17) vs. Consumidores Anteriores:</strong> <strong>12.388.870.436 ECV (91,44%)</strong> pertencem ao titular atual (5,72B presc. em 07/70 + 6,67B exigível), enquanto <strong style="color:#FBBF24; cursor:pointer;" onclick="document.getElementById('div-faixa').value='outros_tit'; aplicarFiltrosDivida(1);">1.124.876.917 ECV (8,30%)</strong> são de <strong>outros clientes (CIL+ID)</strong> em <strong>9.996 CILs</strong> (sendo <strong>1.078,6M / 95,88% prescritos &gt;5 anos</strong>!), além do <strong style="color:#E2E8F0; cursor:pointer;" onclick="document.getElementById('div-faixa').value='cil_99999999'; aplicarFiltrosDivida(1);">CIL 99999999 isolado (34,49M / 468 clientes)</strong>.
+            </div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-mono); font-size:10px; font-weight:700; color:#FB7185; text-transform:uppercase; margin-bottom:4px;">
+              ⏳ Prescrição (&gt; 5 Anos) &amp; Baixa por Dívida (História Societária: 70 ➔ 07 ➔ 17)
+            </div>
+            <div style="color:var(--text-secondary);">
+              • <strong>Sem Mistura entre Ficheiros:</strong> <strong>70 - ELECTRA SARL</strong> (<code>2,54 B</code>, <strong>~100% prescrita &gt;5a</strong>) e <strong>07 - ELECTRA Sul</strong> (<code>7,80 B</code>, <strong>4,28 B / 54,9% prescrita &gt;5a</strong>) já não emitem contratos nem faturas; a <strong>17 - EDEC SA</strong> (<code>1,53 B</code>, <strong>0% prescrita</strong>) concentra os contratos ativos, a faturação atual e as cobranças de toda a carteira.<br>
+              • <strong style="color:#C084FC; cursor:pointer;" onclick="document.getElementById('div-faixa').value='baixa_divida'; aplicarFiltrosDivida(1);">Contas em Baixa por Dívida (ESTCTR 25):</strong> <strong>3.883.174.004 ECV (28,66%)</strong> em <strong>26.760 CILs</strong>, dos quais <strong>3.458.875.443 ECV (89,07%) já estão prescritos (&gt; 5 anos)</strong>.
             </div>
           </div>
         </div>
@@ -978,7 +1065,7 @@
               ⚡ 21 - ELECTRA SA (<span id="pill-emp-21">--</span>)
             </button>
             <button class="btn-prod-pill" id="btn-emp-7" onclick="selecionarEmpresaDivida('7')">
-              📍 07 - EDEC Sul (<span id="pill-emp-7">--</span>)
+              📍 07 - ELECTRA Sul (<span id="pill-emp-7">--</span>)
             </button>
             <button class="btn-prod-pill" id="btn-emp-70" onclick="selecionarEmpresaDivida('70')">
               🏛️ 70 - ELECTRA SARL (<span id="pill-emp-70">--</span>)
@@ -988,43 +1075,43 @@
 
         <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
           <!-- Card 1: EDEC SA (17) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(96,165,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('17')" title="Filtrar clientes com faturas em atraso da EDEC SA (Código 17)">
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(96,165,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('17')" title="Filtrar clientes com faturas em atraso da EDEC SA (Código 17 - Contratos Ativos, Faturação Atual e Cobranças)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <span style="font-family:var(--font-mono); font-size:11px; color:#60A5FA; font-weight:700;">🏢 17 - EDEC SA</span>
-              <span class="badge" style="background:rgba(96,165,250,0.18); color:#60A5FA; border:1px solid rgba(96,165,250,0.4); font-size:9.5px;" id="emp-pct-17">--</span>
+              <span class="badge" style="background:rgba(96,165,250,0.18); color:#60A5FA; border:1px solid rgba(96,165,250,0.4); font-size:9.5px;" id="emp-pct-17">11.3% (0% Presc.)</span>
             </div>
-            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-17">-- ECV</div>
-            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-17">-- devedores (-- fat.) • Faturação Atual</div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-17">1.534.592.254 ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-17">66.153 devedores (422.259 fat.) • Faturação &amp; Cobrança Atual</div>
           </div>
 
           <!-- Card 2: ELECTRA SA (21) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(251,191,36,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('21')" title="Filtrar clientes com dívida ELECTRA SA (Código 21, inclui Contrato Especial AdS)">
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(251,191,36,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('21')" title="Filtrar clientes com dívida ELECTRA SA (Código 21, Contrato Especial AdS)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <span style="font-family:var(--font-mono); font-size:11px; color:#FBBF24; font-weight:700;">⚡ 21 - ELECTRA SA</span>
-              <span class="badge badge-warn" style="font-size:9.5px;" id="emp-pct-21">--</span>
+              <span class="badge badge-warn" style="font-size:9.5px;" id="emp-pct-21">12.4% (0% Presc.)</span>
             </div>
-            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:#FBBF24; margin:2px 0;" id="emp-val-21">-- ECV</div>
-            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-21">-- devedores (-- fat.) • Contrato Especial AdS</div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:#FBBF24; margin:2px 0;" id="emp-val-21">1.674.373.567 ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-21">1 devedor (46 fat.) • Contrato Especial AdS</div>
           </div>
 
-          <!-- Card 3: EDEC Sul (07) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(167,139,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('7')" title="Filtrar clientes com dívida EDEC Sul (Código 07)">
+          <!-- Card 3: ELECTRA Sul (07) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(167,139,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('7')" title="Filtrar clientes com dívida ELECTRA Sul (Código 07 - Legado Regional Sul)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-family:var(--font-mono); font-size:11px; color:#A78BFA; font-weight:700;">📍 07 - EDEC SUL</span>
-              <span class="badge" style="background:rgba(167,139,250,0.18); color:#A78BFA; border:1px solid rgba(167,139,250,0.4); font-size:9.5px;" id="emp-pct-7">--</span>
+              <span style="font-family:var(--font-mono); font-size:11px; color:#A78BFA; font-weight:700;">📍 07 - ELECTRA SUL</span>
+              <span class="badge" style="background:rgba(167,139,250,0.18); color:#A78BFA; border:1px solid rgba(167,139,250,0.4); font-size:9.5px;" id="emp-pct-7">57.6% (54.9% Presc.)</span>
             </div>
-            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-7">-- ECV</div>
-            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-7">-- devedores (-- fat.) • Dívida Sul Histórica</div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-7">7.798.766.855 ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-7">45.948 dev. (1.748.966 fat.) • 4,28B Presc. &gt;5a</div>
           </div>
 
           <!-- Card 4: ELECTRA SARL (70) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(244,114,182,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('70')" title="Filtrar clientes com dívida legada ELECTRA SARL (Código 70)">
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(244,114,182,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('70')" title="Filtrar clientes com dívida legada ELECTRA SARL (Código 70 - Legado Antigo)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <span style="font-family:var(--font-mono); font-size:11px; color:#F472B6; font-weight:700;">🏛️ 70 - ELECTRA SARL</span>
-              <span class="badge" style="background:rgba(244,114,182,0.18); color:#F472B6; border:1px solid rgba(244,114,182,0.4); font-size:9.5px;" id="emp-pct-70">--</span>
+              <span class="badge" style="background:rgba(244,114,182,0.18); color:#F472B6; border:1px solid rgba(244,114,182,0.4); font-size:9.5px;" id="emp-pct-70">18.8% (~100% Presc.)</span>
             </div>
-            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-70">-- ECV</div>
-            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-70">-- devedores (-- fat.) • Dívida Antiga Legada</div>
+            <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-70">2.540.510.903 ECV</div>
+            <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-70">22.393 dev. (838.329 fat.) • 2,55B Presc. &gt;5a</div>
           </div>
         </div>
 
@@ -1033,7 +1120,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-family:var(--font-display); font-size:12.5px; font-weight:800; color:var(--text-primary);">
-                📈 EVOLUÇÃO HISTÓRICA 2026 POR EMPRESA CREDORA (Fev/2026 ➔ Set/2026)
+                📈 EVOLUÇÃO HISTÓRICA 2026 POR EMPRESA CREDORA (Fev/2026 ➔ Nov/2026 • Base Homogénea)
               </span>
               <span class="badge" style="background:rgba(16,185,129,0.15); color:#34D399; border:1px solid rgba(16,185,129,0.35); font-size:10px;" id="snap-scope-badge">Região Sul (4 Ilhas)</span>
             </div>
@@ -1452,10 +1539,10 @@
             <label>Empresa Credora</label>
             <select id="div-empresa" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
               <option value="">Todas as Empresas</option>
-              <option value="17">🏢 17 - EDEC SA</option>
-              <option value="21">⚡ 21 - ELECTRA SA</option>
-              <option value="7">📍 07 - EDEC Sul</option>
-              <option value="70">🏛️ 70 - ELECTRA SARL</option>
+              <option value="17">🏢 17 - EDEC SA (Atual)</option>
+              <option value="21">⚡ 21 - ELECTRA SA (AdS)</option>
+              <option value="7">📍 07 - ELECTRA Sul (Legado)</option>
+              <option value="70">🏛️ 70 - ELECTRA SARL (Legado)</option>
             </select>
           </div>
 
@@ -1474,17 +1561,21 @@
             </select>
           </div>
 
-          <!-- Faixa de Dívida -->
+          <!-- Faixa de Dívida / Prescrição / Titularidade -->
           <div class="field-group">
-            <label>Faixa de Valor / Titularidade</label>
+            <label>Valor / Prescrição / Titularidade</label>
             <select id="div-faixa" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
-              <option value="todas">Qualquer Valor (> 0 ECV)</option>
+              <option value="todas">Qualquer Valor (&gt; 0 ECV)</option>
+              <option value="prescrita">⏳ Com Dívida Prescrita (&gt; 5 Anos)</option>
+              <option value="exigivel">✅ Com Dívida Exigível (≤ 5 Anos)</option>
+              <option value="baixa_divida">🔌 Com Baixa por Dívida (ESTCTR 25)</option>
+              <option value="outros_tit">👥 Com Dívida de Outro Cliente (CIL+ID)</option>
+              <option value="cil_99999999">🗂️ Conta Técnica Isolada (CIL 99999999)</option>
               <option value="grandes">🔥 Grandes Devedores (&gt; 1.000.000 ECV)</option>
               <option value="250k">&gt; 250.000 ECV</option>
               <option value="50k">&gt; 50.000 ECV</option>
               <option value="10k">&gt; 10.000 ECV</option>
               <option value="ate10k">Até 10.000 ECV</option>
-              <option value="outros_tit">⚠️ Com Dívida de Titular Anterior no CIL</option>
             </select>
           </div>
 
