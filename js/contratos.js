@@ -241,9 +241,14 @@
       }
 
       tbody.innerHTML = linhas.map((row, idx) => {
-        const estBadge = row.est_ctr === "Contrato em Vigor"
-          ? `<span class="badge badge-ok">${row.est_ctr}</span>`
-          : `<span class="badge badge-warn">${row.est_ctr || "—"}</span>`;
+        const isCilIsolado = Number(row.cil) === 99999999;
+        const estBadge = isCilIsolado
+          ? `<span class="badge" style="background:#1E293B; color:#E2E8F0; border:1px solid #64748B;">🗂️ CIL 99999999 Isolado</span>`
+          : (row.est_ctr === "Contrato em Vigor"
+              ? `<span class="badge badge-ok">${row.est_ctr}</span>`
+              : (row.est_ctr && row.est_ctr.includes("Baixa por D")
+                  ? `<span class="badge badge-purple">🔌 ${row.est_ctr}</span>`
+                  : `<span class="badge badge-warn">${row.est_ctr || "—"}</span>`));
 
         const matLeitBadge = row.mat_leitura === "< 5 meses"
           ? `<span class="badge badge-ok" title="Última leitura: ${row.data_leitura || '—'}">&lt; 5m</span>`
@@ -259,8 +264,21 @@
           ? `<span class="badge badge-danger">Desv_Fat</span>`
           : `<span style="color:var(--text-muted);">Normal</span>`;
 
+        const divPrescRow = row.divida_prescrita !== undefined
+          ? Number(row.divida_prescrita || 0)
+          : (Number(row.divida_sarl || 0) + (Number(row.qtd || 0) > 12 ? Math.round(Number(row.divida_sul || 0) * 0.55) : 0));
+        const divExigRow = row.divida_exigivel !== undefined
+          ? Number(row.divida_exigivel || 0)
+          : Math.max(0, Number(row.valor || 0) - divPrescRow);
+        const filtroDivAtivo = document.getElementById("f-divida")?.value || "";
+        const prescBadge = filtroDivAtivo === "exigivel"
+          ? `<div style="font-size:9.5px; color:#34D399; font-family:var(--font-mono);" title="Saldo exigível (<= 5 anos): ${fmtECV(divExigRow)}">✅ ≤5a: ${fmtInt(divExigRow)}</div>`
+          : (divPrescRow > 0
+              ? `<div style="font-size:9.5px; color:#FB7185; font-family:var(--font-mono);" title="Dívida prescrita (> 5 anos, antes de Nov/2021)">⏳ >5a: ${fmtInt(divPrescRow)}</div>`
+              : (divExigRow > 0 ? `<div style="font-size:9.5px; color:#34D399; font-family:var(--font-mono);" title="100% Exigível (<= 5 anos)">✅ ≤5a: ${fmtInt(divExigRow)}</div>` : ""));
+
         const valorFmt = row.valor > 0
-          ? `<strong style="color:#FBBF24;">${Number(row.valor).toLocaleString("pt-PT", { maximumFractionDigits: 0 })}</strong>`
+          ? `<strong style="color:#FBBF24;">${Number(row.valor).toLocaleString("pt-PT", { maximumFractionDigits: 0 })}</strong>${prescBadge}`
           : `<span style="color:var(--text-muted);">0</span>`;
 
         const prio = calcularPrioridadeVistoria(row);
@@ -269,7 +287,7 @@
           : `<span style="color:var(--text-muted); font-size:11px;">—</span>`;
 
         return `
-          <tr onclick="abrirDossie(${idx})">
+          <tr onclick="abrirDossie(${idx})" ${isCilIsolado ? 'style="background:rgba(148,163,184,0.08); border-left:3px solid #94A3B8;"' : ''}>
             <td style="white-space:nowrap;">${prio.badge}</td>
             <td class="num-right">${perdaBadge}</td>
             <td>${badgeRisco(row.score_risco, row.nivel_risco)}</td>
@@ -278,9 +296,9 @@
             <td>${row.localidade || "—"}</td>
             <td class="mono-cell" style="color:#E2E8F0;">${(row.pt || "—").trim()}</td>
             <td style="font-weight:500;">
-              ${row.nome || "—"}
-              ${Number(row.qtd_clientes_distintos || 1) > 1 ? `<span class="badge" style="margin-left:5px; font-size:10px; padding:1px 5px; background:rgba(56,189,248,0.14); color:#38BDF8; border:1px solid rgba(56,189,248,0.35);" title="Local de consumo com ${row.qtd_clientes_distintos} titulares distintos (${row.qtd_contratos_hist || 1} contratos no histórico). Dívida outros titulares: ${fmtECV(row.divida_outros_titulares || 0)}">👥 ${row.qtd_clientes_distintos} tit.</span>` : ""}
-              ${Number(row.divida_outros_titulares || 0) > 0 ? `<span class="badge badge-warn" style="margin-left:3px; font-size:10px; padding:1px 5px;" title="Atenção: ${fmtECV(row.divida_outros_titulares)} da dívida deste CIL pertence a titular(es) anterior(es)">⚠️ Dív. Ant.</span>` : ""}
+              ${isCilIsolado ? "CONTA TÉCNICA S/ CIL DEFINIDO (468 CLIENTES)" : (row.nome || "—")}
+              ${isCilIsolado ? `<span class="badge" style="margin-left:5px; font-size:10px; padding:1px 5px; background:#1E293B; color:#E2E8F0; border:1px solid #64748B;">🗂️ 468 Clientes s/ Local</span>` : (Number(row.qtd_clientes_distintos || 1) > 1 ? `<span class="badge" style="margin-left:5px; font-size:10px; padding:1px 5px; background:rgba(56,189,248,0.14); color:#38BDF8; border:1px solid rgba(56,189,248,0.35);" title="Local de consumo com ${row.qtd_clientes_distintos} titulares distintos (${row.qtd_contratos_hist || 1} contratos no histórico). Dívida outros titulares (CIL+ID): ${fmtECV(row.divida_outros_titulares || 0)}">👥 ${row.qtd_clientes_distintos} tit.</span>` : "")}
+              ${!isCilIsolado && Number(row.divida_outros_titulares || 0) > 0 ? `<span class="badge badge-warn" style="margin-left:3px; font-size:10px; padding:1px 5px;" title="Atenção: ${fmtECV(row.divida_outros_titulares)} da dívida deste CIL pertence a titular(es) anterior(es) (CIL+ID != Titular EDEC 17)">⚠️ Dív. Ant.</span>` : ""}
             </td>
             <td>${estBadge}</td>
             <td>${renderizarBadgeCF1(row)}</td>
@@ -458,10 +476,10 @@
 
     function nomeEmpresaCodigo(cod) {
       const c = String(cod || "").trim().replace(/^0+/, "");
-      if (c === "17") return "17 • EDEC SA";
-      if (c === "21") return "21 • ELECTRA SA";
-      if (c === "7")  return "07 • EDEC Sul";
-      if (c === "70") return "70 • ELECTRA SARL";
+      if (c === "17") return "17 • EDEC SA (Atual)";
+      if (c === "21") return "21 • ELECTRA SA (AdS)";
+      if (c === "7")  return "07 • ELECTRA Sul (Legado)";
+      if (c === "70") return "70 • ELECTRA SARL (Legado)";
       return c || "—";
     }
 
@@ -472,29 +490,59 @@
       } else if (typeof r.historico_contratos === "string" && r.historico_contratos.trim().startsWith("[")) {
         try { hist = JSON.parse(r.historico_contratos); } catch (_) { hist = []; }
       }
+      const ehCil99 = Number(r.cil) === 99999999;
       const qtdCtr = Number(r.qtd_contratos_hist || hist.length || 1);
       const qtdCli = Number(r.qtd_clientes_distintos || 1);
-      const divTitAtual = Number(r.divida_titular_atual ?? r.valor ?? 0);
-      const divOutros = Number(r.divida_outros_titulares || 0);
-      const temOutros = divOutros > 0 || qtdCli > 1;
+      const valTot = Number(r.valor || 0);
+      const divTitAtual = ehCil99 ? 0 : Number(r.divida_titular_atual ?? valTot);
+      const divOutros = ehCil99 ? valTot : Number(r.divida_outros_titulares || 0);
+      const temOutros = divOutros > 0 || qtdCli > 1 || ehCil99;
+
+      // Cálculo de Dívida Prescrita (> 5 anos) do CIL (usa coluna nativa ou estima pela soma das contas históricas 70/07)
+      let divPrescCil = r.divida_prescrita !== undefined ? Number(r.divida_prescrita) : 0;
+      if (divPrescCil === 0 && valTot > 0) {
+        const somaHistPresc = hist.reduce((acc, h) => {
+          if (h.divida_prescrita !== undefined) return acc + Number(h.divida_prescrita || 0);
+          const empC = String(h.emp || "").replace(/^0+/, "");
+          if (empC === "70") return acc + Number(h.divida || 0);
+          if (empC === "7" && Number(h.id) !== Number(r.id_cliente)) return acc + Number(h.divida || 0);
+          return acc;
+        }, 0);
+        divPrescCil = Math.min(valTot, somaHistPresc > 0 ? somaHistPresc : Number(r.divida_sarl || 0));
+      }
+      const divExigivelCil = Math.max(0, valTot - divPrescCil);
 
       const linhasHtml = hist.map((h) => {
-        const ehAtual = Number(h.id) === Number(r.id_cliente);
+        const ehAtual = !ehCil99 && Number(h.id) === Number(r.id_cliente);
+        const empC = String(h.emp || "").trim().replace(/^0+/, "");
         const divH = Number(h.divida || 0);
-        const badgeTit = ehAtual
-          ? `<span class="badge badge-ok" style="font-size:9.5px; padding:1px 5px; margin-left:4px;">TITULAR ATUAL</span>`
-          : `<span class="badge badge-warn" style="font-size:9.5px; padding:1px 5px; margin-left:4px;">ANTERIOR</span>`;
-        const vig = `${fmtDataOitoDigitos(h.dt_ini)} → ${h.dt_baixa ? fmtDataOitoDigitos(h.dt_baixa) : "Ativo"}`;
+        const divPrescH = h.divida_prescrita !== undefined
+          ? Number(h.divida_prescrita || 0)
+          : (empC === "70" ? divH : (!ehAtual && empC === "7" ? divH : 0));
+        const estStr = String(h.est || "—");
+        const ehBaixaDiv = Boolean(h.baixa_divida) || estStr.toLowerCase().includes("baixa por d");
+        const badgeTit = ehCil99
+          ? `<span class="badge badge-danger" style="font-size:9px; padding:1px 5px; margin-left:4px;">CONTA ISOLADA</span>`
+          : (ehAtual
+              ? `<span class="badge badge-ok" style="font-size:9.5px; padding:1px 5px; margin-left:4px;">TITULAR EDEC (17)</span>`
+              : `<span class="badge badge-warn" style="font-size:9.5px; padding:1px 5px; margin-left:4px;">OUTRO CLIENTE (CIL+ID)</span>`);
+        const badgePresc = divPrescH > 0
+          ? `<span class="badge badge-danger" style="font-size:9px; padding:1px 4px; margin-left:4px;" title="Dívida prescrita (> 5 anos): ${fmtECV(divPrescH)}">⏳ Presc. &gt;5a: ${fmtECV(divPrescH)}</span>`
+          : "";
+        const estHtml = ehBaixaDiv
+          ? `<span style="color:#F87171; font-weight:700;">🔌 ${estStr}</span>`
+          : estStr;
+        const vig = `${fmtDataOitoDigitos(h.dt_ini)} → ${h.dt_baixa ? fmtDataOitoDigitos(h.dt_baixa) : (empC === "17" ? "Ativo (EDEC)" : "Legado")}`;
         return `
           <tr style="border-bottom:1px solid rgba(148,163,184,0.12); background:${ehAtual ? 'rgba(16,185,129,0.05)' : 'transparent'};">
             <td style="padding:6px 8px; font-family:var(--font-mono); font-size:11px; color:#93C5FD;">${nomeEmpresaCodigo(h.emp)}</td>
             <td style="padding:6px 8px; font-family:var(--font-mono); font-size:11px;">${h.id || "—"}${badgeTit}</td>
             <td style="padding:6px 8px; font-size:11.5px; font-weight:600; color:var(--text-primary);">${h.nome || "—"}</td>
             <td style="padding:6px 8px; font-family:var(--font-mono); font-size:11px;">${h.prod || "—"}</td>
-            <td style="padding:6px 8px; font-size:11px; color:var(--text-secondary);">${h.est || "—"}</td>
+            <td style="padding:6px 8px; font-size:11px; color:var(--text-secondary);">${estHtml}</td>
             <td style="padding:6px 8px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">${vig}</td>
             <td style="padding:6px 8px; text-align:right; font-family:var(--font-mono); font-size:11.5px; font-weight:700; color:${divH > 0 ? (ehAtual ? '#FBBF24' : '#F87171') : 'var(--text-muted)'};">
-              ${divH > 0 ? `${fmtECV(divH)} (${h.faturas || 0} fat.)` : "0 ECV"}
+              ${divH > 0 ? `${fmtECV(divH)} (${h.faturas || 0} fat.)${badgePresc}` : "0 ECV"}
             </td>
           </tr>
         `;
@@ -502,25 +550,26 @@
 
       return `
         <div class="dossier-section" style="border-color:${temOutros ? 'rgba(56,189,248,0.45)' : 'var(--border-dim)'}; background:${temOutros ? 'rgba(56,189,248,0.05)' : 'var(--bg-input)'};">
-          <h4 style="color:#38BDF8;">📜 2.5. Histórico de Contratos &amp; Titulares no CIL (Empresas 17, 21, 07, 70)</h4>
+          <h4 style="color:#38BDF8;">📜 2.5. Alocação por Cliente (CIL + ID), Dívida Prescrita (&gt; 5 Anos) &amp; Baixa por Dívida</h4>
+          ${ehCil99 ? `<div style="margin-bottom:10px; padding:8px 12px; background:rgba(239,68,68,0.15); border:1px solid #EF4444; border-radius:6px; color:#FCA5A5; font-size:11.5px; font-weight:600;">🗂️ CONTA TÉCNICA ISOLADA (CIL 99999999): Agrupa 468 clientes sem local de consumo definido (34.488.555 ECV, dos quais 27.965.320 ECV estão prescritos &gt; 5 anos). Isolado do ranking operacional.</div>` : ""}
           <div class="dossier-grid" style="margin-bottom:${hist.length ? '10px' : '0'};">
-            <div class="kv-item"><div class="k">Contratos no CIL</div><div class="v" style="color:#38BDF8;">${qtdCtr} contrato(s)</div></div>
-            <div class="kv-item"><div class="k">Titulares Distintos (ID)</div><div class="v" style="color:${qtdCli > 1 ? '#FBBF24' : '#34D399'};">${qtdCli} cliente(s)</div></div>
-            <div class="kv-item"><div class="k">Dívida Titular Atual (ID ${r.id_cliente || "—"})</div><div class="v" style="color:#FBBF24;">${fmtECV(divTitAtual)}</div></div>
-            <div class="kv-item"><div class="k">Dívida Outros Titulares (Anteriores)</div><div class="v" style="color:${divOutros > 0 ? '#F87171' : '#34D399'}; font-weight:700;">${fmtECV(divOutros)}</div></div>
+            <div class="kv-item"><div class="k">Contratos / Titulares (CIL+ID)</div><div class="v" style="color:#38BDF8;">${qtdCtr} ctr. / ${qtdCli} cliente(s)</div></div>
+            <div class="kv-item"><div class="k">Dívida Titular EDEC 17 (ID ${r.id_cliente || "—"})</div><div class="v" style="color:#FBBF24;">${fmtECV(divTitAtual)}</div></div>
+            <div class="kv-item"><div class="k">Dívida Outros Clientes no CIL (Anteriores)</div><div class="v" style="color:${divOutros > 0 ? '#F87171' : '#34D399'}; font-weight:700;">${fmtECV(divOutros)}</div></div>
+            <div class="kv-item"><div class="k">⏳ Dívida Prescrita (&gt; 5 Anos) vs Exigível</div><div class="v" style="color:${divPrescCil > 0 ? '#F87171' : '#34D399'};">${fmtECV(divPrescCil)} presc. | ${fmtECV(divExigivelCil)} exig.</div></div>
           </div>
           ${hist.length ? `
-            <div style="overflow-x:auto; border:1px solid var(--border-dim); border-radius:6px; background:rgba(7,10,15,0.55);">
+            <div style="overflow-x:auto; border:1px solid var(--border-dim); border-radius:6px; background:rgba(7,10,15,0.55); max-height:280px; overflow-y:auto;">
               <table style="width:100%; border-collapse:collapse; text-align:left;">
                 <thead>
                   <tr style="border-bottom:1px solid var(--border-dim); font-size:10.5px; color:var(--text-muted); text-transform:uppercase;">
                     <th style="padding:6px 8px;">Empresa</th>
-                    <th style="padding:6px 8px;">ID Conta</th>
-                    <th style="padding:6px 8px;">Titular / Cliente</th>
+                    <th style="padding:6px 8px;">ID Cliente (CIL+ID)</th>
+                    <th style="padding:6px 8px;">Consumidor</th>
                     <th style="padding:6px 8px;">Prod.</th>
-                    <th style="padding:6px 8px;">Estado</th>
+                    <th style="padding:6px 8px;">Estado Contrato</th>
                     <th style="padding:6px 8px;">Vigência</th>
-                    <th style="padding:6px 8px; text-align:right;">Dívida Conta</th>
+                    <th style="padding:6px 8px; text-align:right;">Dívida Alocada &amp; Prescrição</th>
                   </tr>
                 </thead>
                 <tbody>${linhasHtml}</tbody>
