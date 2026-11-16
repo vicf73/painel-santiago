@@ -894,11 +894,11 @@
         if (typeof atualizarBotoesEmpresaDivida === "function") atualizarBotoesEmpresaDivida(document.getElementById("div-empresa")?.value || "");
         carregarEvolucaoMensalDivida(document.getElementById("div-ilha")?.value || "");
 
-        // KPI 4: Taxa de Recuperação 2026
-        const baseRecup = cobTotal2026 + totDiv;
-        const taxaRecup = baseRecup > 0 ? ((cobTotal2026 / baseRecup) * 100).toFixed(1) : "0.0";
-        document.getElementById("kpi-div-taxa-recup").textContent = `${taxaRecup}%`;
-        document.getElementById("kpi-div-taxa-recup-sub").textContent = `Cobrança 2026 vs Carteira Total`;
+        // KPI 4: Índice Cobrança E017 vs Dívida EDEC Sul (17) (sem misturar 21/07/70)
+        const baseRecup17 = cobTotal2026 + divEdec;
+        const taxaRecup17 = baseRecup17 > 0 ? ((cobTotal2026 / baseRecup17) * 100).toFixed(1) : "0.0";
+        document.getElementById("kpi-div-taxa-recup").textContent = `${taxaRecup17}%`;
+        document.getElementById("kpi-div-taxa-recup-sub").textContent = `Cobrança E017 vs Dívida EDEC Sul (17)`;
 
         // KPI 5: Ticket Médio Devedor
         const ticketMedio = totCont > 0 ? Math.round(totDiv / totCont) : 0;
@@ -1070,10 +1070,10 @@
         const isMedioGrande = valDiv >= 250000;
 
         const compEmp = [];
-        if (Number(r.divida_edec || 0) > 0) compEmp.push(`<span style="color:#60A5FA; background:rgba(96,165,250,0.12); padding:1px 4px; border-radius:3px;" title="17 - EDEC SA: ${fmtInt(r.divida_edec)} ECV (${r.faturas_edec || 0} fat.)">EDEC: ${fmtInt(r.divida_edec)}</span>`);
-        if (Number(r.divida_electra || 0) > 0) compEmp.push(`<span style="color:#FBBF24; background:rgba(251,191,36,0.12); padding:1px 4px; border-radius:3px;" title="21 - ELECTRA SA: ${fmtInt(r.divida_electra)} ECV (${r.faturas_electra || 0} fat.)">ELECTRA: ${fmtInt(r.divida_electra)}</span>`);
-        if (Number(r.divida_sul || 0) > 0) compEmp.push(`<span style="color:#A78BFA; background:rgba(167,139,250,0.12); padding:1px 4px; border-radius:3px;" title="07 - ELECTRA Sul: ${fmtInt(r.divida_sul)} ECV (${r.faturas_sul || 0} fat.)">Sul: ${fmtInt(r.divida_sul)}</span>`);
-        if (Number(r.divida_sarl || 0) > 0) compEmp.push(`<span style="color:#F472B6; background:rgba(244,114,182,0.12); padding:1px 4px; border-radius:3px;" title="70 - ELECTRA SARL: ${fmtInt(r.divida_sarl)} ECV (${r.faturas_sarl || 0} fat.)">SARL: ${fmtInt(r.divida_sarl)}</span>`);
+        if (Number(r.divida_edec || 0) > 0) compEmp.push(`<span style="color:#60A5FA; background:rgba(96,165,250,0.12); padding:1px 4px; border-radius:3px;" title="17 - EDEC Sul: ${fmtInt(r.divida_edec)} ECV (${r.faturas_edec || 0} fat.)">17-EDEC Sul: ${fmtInt(r.divida_edec)}</span>`);
+        if (Number(r.divida_electra || 0) > 0) compEmp.push(`<span style="color:#FBBF24; background:rgba(251,191,36,0.12); padding:1px 4px; border-radius:3px;" title="21 - Electra SA: ${fmtInt(r.divida_electra)} ECV (${r.faturas_electra || 0} fat.)">21-Electra SA: ${fmtInt(r.divida_electra)}</span>`);
+        if (Number(r.divida_sul || 0) > 0) compEmp.push(`<span style="color:#A78BFA; background:rgba(167,139,250,0.12); padding:1px 4px; border-radius:3px;" title="07 - Electra Sul: ${fmtInt(r.divida_sul)} ECV (${r.faturas_sul || 0} fat.)">07-Sul: ${fmtInt(r.divida_sul)}</span>`);
+        if (Number(r.divida_sarl || 0) > 0) compEmp.push(`<span style="color:#F472B6; background:rgba(244,114,182,0.12); padding:1px 4px; border-radius:3px;" title="70 - Electra SARL: ${fmtInt(r.divida_sarl)} ECV (${r.faturas_sarl || 0} fat.)">70-SARL: ${fmtInt(r.divida_sarl)}</span>`);
         if (Number(r.divida_ag || 0) > 0 && Number(r.divida_en || 0) > 0) compEmp.push(`<span style="color:#38BDF8; background:rgba(14,165,233,0.15); padding:1px 4px; border-radius:3px;" title="Parcela Água AG: ${fmtInt(r.divida_ag)} ECV (${r.faturas_ag || 0} fat.)">🚰 AG: ${fmtInt(r.divida_ag)}</span>`);
         const divPrescRow = r.divida_prescrita !== undefined
           ? Number(r.divida_prescrita || 0)
@@ -1248,10 +1248,10 @@
                   <span style="font-weight:800; color:var(--text-primary);">${fmtCurto(s.divida_total)} ECV</span>
                 </div>
                 <div style="width:${wTot.toFixed(1)}%; height:13px; border-radius:4px; overflow:hidden; display:flex; background:#1E293B; border:1px solid var(--border-dim);">
-                  <div style="width:${p17.toFixed(1)}%; background:#60A5FA;" title="17 - EDEC SA: ${fmtECV(s.divida_edec_17)}"></div>
-                  <div style="width:${p21.toFixed(1)}%; background:#FBBF24;" title="21 - ELECTRA SA: ${fmtECV(s.divida_electra_21)}"></div>
-                  <div style="width:${p07.toFixed(1)}%; background:#A78BFA;" title="07 - ELECTRA Sul: ${fmtECV(s.divida_sul_07)}"></div>
-                  <div style="width:${p70.toFixed(1)}%; background:#F472B6;" title="70 - ELECTRA SARL: ${fmtECV(s.divida_sarl_70)}"></div>
+                  <div style="width:${p17.toFixed(1)}%; background:#60A5FA;" title="17 - EDEC Sul: ${fmtECV(s.divida_edec_17)}"></div>
+                  <div style="width:${p21.toFixed(1)}%; background:#FBBF24;" title="21 - Electra SA: ${fmtECV(s.divida_electra_21)}"></div>
+                  <div style="width:${p07.toFixed(1)}%; background:#A78BFA;" title="07 - Electra Sul: ${fmtECV(s.divida_sul_07)}"></div>
+                  <div style="width:${p70.toFixed(1)}%; background:#F472B6;" title="70 - Electra SARL: ${fmtECV(s.divida_sarl_70)}"></div>
                 </div>
                 <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:9.8px; color:var(--text-secondary); margin-top:2px;">
                   <span style="color:#60A5FA;">17: ${fmtCurto(s.divida_edec_17)}</span>
@@ -1267,10 +1267,10 @@
         const deltasBox = document.getElementById("snap-deltas-container");
         if (deltasBox) {
           const empresas = [
-            { cod: "17 - EDEC SA", cor: "#60A5FA", v0: Number(first.divida_edec_17), v1: Number(last.divida_edec_17), nota: "Faturação Corrente & Cobrança" },
-            { cod: "21 - ELECTRA SA", cor: "#FBBF24", v0: Number(first.divida_electra_21), v1: Number(last.divida_electra_21), nota: "Conta Especial Água AdS" },
-            { cod: "07 - ELECTRA Sul", cor: "#A78BFA", v0: Number(first.divida_sul_07), v1: Number(last.divida_sul_07), nota: "S/ Faturação • Cobrada na 17" },
-            { cod: "70 - ELECTRA SARL", cor: "#F472B6", v0: Number(first.divida_sarl_70), v1: Number(last.divida_sarl_70), nota: "S/ Faturação • Cobrada na 17" }
+            { cod: "17 - EDEC Sul", cor: "#60A5FA", v0: Number(first.divida_edec_17), v1: Number(last.divida_edec_17), nota: "Faturação Corrente Energia" },
+            { cod: "21 - Electra SA", cor: "#FBBF24", v0: Number(first.divida_electra_21), v1: Number(last.divida_electra_21), nota: "Contrato Especial Água AdS" },
+            { cod: "07 - Electra Sul", cor: "#A78BFA", v0: Number(first.divida_sul_07), v1: Number(last.divida_sul_07), nota: "Legado • Cobrada na 17" },
+            { cod: "70 - Electra SARL", cor: "#F472B6", v0: Number(first.divida_sarl_70), v1: Number(last.divida_sarl_70), nota: "Legado • Cobrada na 17" }
           ];
           deltasBox.innerHTML = `
             <div style="font-size:11px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; margin-bottom:8px; font-family:var(--font-mono);">
