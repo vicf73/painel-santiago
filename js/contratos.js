@@ -476,10 +476,10 @@
 
     function nomeEmpresaCodigo(cod) {
       const c = String(cod || "").trim().replace(/^0+/, "");
-      if (c === "17") return "17 • EDEC SA (Atual)";
-      if (c === "21") return "21 • ELECTRA SA (AdS)";
-      if (c === "7")  return "07 • ELECTRA Sul (Legado)";
-      if (c === "70") return "70 • ELECTRA SARL (Legado)";
+      if (c === "17") return "17 • EDEC Sul (Atual)";
+      if (c === "21") return "21 • Electra SA (AdS)";
+      if (c === "7")  return "07 • Electra Sul (Legado)";
+      if (c === "70") return "70 • Electra SARL (Legado)";
       return c || "—";
     }
 
