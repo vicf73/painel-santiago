@@ -45,11 +45,11 @@ def gerar_e_validar_manifesto(base_santiago: str, base_atual_script: str) -> dic
     fontes = []
     erros = []
 
-    # 1. Pastas TXT do sistema comercial (CONTRATO, DIVIDA, APARELHO, cob_26)
-    for pasta_nome in ["CONTRATO", "DIVIDA", "APARELHO", "cob_26"]:
+    # 1. Pastas TXT do sistema comercial (CONTRATO, DIVIDA, APARELHO, cob_26, FATURAÇAO)
+    for pasta_nome in ["CONTRATO", "DIVIDA", "APARELHO", "cob_26", "FATURAÇAO"]:
         pasta_dir = os.path.join(base_atual_script, pasta_nome)
         if not os.path.isdir(pasta_dir):
-            if pasta_nome != "cob_26":
+            if pasta_nome not in ("cob_26", "FATURAÇAO"):
                 erros.append(f"Pasta obrigatória ausente: {pasta_dir}")
             continue
         arqs = sorted([
@@ -57,15 +57,18 @@ def gerar_e_validar_manifesto(base_santiago: str, base_atual_script: str) -> dic
             for f in os.listdir(pasta_dir)
             if not f.startswith("~$") and not f.startswith(".") and os.path.isfile(os.path.join(pasta_dir, f))
         ])
-        if not arqs and pasta_nome != "cob_26":
+        if not arqs and pasta_nome not in ("cob_26", "FATURAÇAO"):
             erros.append(f"Pasta obrigatória vazia: {pasta_dir}")
         for arq in arqs:
             info = _info_ficheiro(arq, pasta_nome)
-            if info["tamanho_bytes"] == 0:
+            if info["tamanho_bytes"] == 0 and pasta_nome != "cob_26":
                 erros.append(f"Ficheiro vazio (0 bytes): {arq}")
             fontes.append(info)
 
-    # 2. Ficheiros Excel na pasta santiago
+    # 2. Ficheiros Excel na pasta santiago (Fat_piv.xlsx deixa de ser obrigatório quando FATURAÇAO existe)
+    tem_faturacao_dir = os.path.isdir(os.path.join(base_atual_script, "FATURAÇAO")) and any(
+        f.lower().endswith(".txt") for f in os.listdir(os.path.join(base_atual_script, "FATURAÇAO"))
+    )
     excels_obrigatorios = [
         ("CODIGOS", "CODIGOS.xlsx"),
         ("ANOMALIA", "Anomalia de Leitura Setembro 2026.xlsx"),
@@ -76,6 +79,8 @@ def gerar_e_validar_manifesto(base_santiago: str, base_atual_script: str) -> dic
         ("COBRANCA_2026", "COB_J.xlsx"),
     ]
     for cat, nome_xlsx in excels_obrigatorios:
+        if cat == "FATURACAO_T3" and tem_faturacao_dir:
+            continue
         caminho = os.path.join(base_santiago, nome_xlsx)
         if os.path.isfile(caminho):
             info = _info_ficheiro(caminho, cat)
@@ -84,6 +89,18 @@ def gerar_e_validar_manifesto(base_santiago: str, base_atual_script: str) -> dic
             fontes.append(info)
         elif cat not in ("CF1_AUTOS", "COBRANCA_2026"):
             erros.append(f"Ficheiro Excel obrigatório não encontrado: {caminho}")
+
+    # 3. Ficheiro de Itinerários / Sequência de Rotas (itenrar.csv)
+    caminho_iten = os.path.join(base_atual_script, "itenrar.csv")
+    if not os.path.isfile(caminho_iten):
+        caminho_iten = os.path.join(base_santiago, "itenrar.csv")
+    if os.path.isfile(caminho_iten):
+        info = _info_ficheiro(caminho_iten, "ITINERARIO_ROTAS")
+        if info["tamanho_bytes"] == 0:
+            erros.append(f"Ficheiro de itinerário vazio (0 bytes): {caminho_iten}")
+        fontes.append(info)
+    else:
+        erros.append(f"Ficheiro itenrar.csv não encontrado em {base_atual_script} nem em {base_santiago}")
 
     manifesto = {
         "gerado_em": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

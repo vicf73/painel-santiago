@@ -1,9 +1,9 @@
 {
-  "gerado_em": "2026-11-06 11:44:22",
+  "gerado_em": "2026-11-16 14:58:11",
   "base_santiago": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago",
   "base_atual_script": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script",
-  "total_ficheiros": 36,
-  "tamanho_total_mb": 3914.22,
+  "total_ficheiros": 106,
+  "tamanho_total_mb": 7721.21,
   "validacao_ok": true,
   "erros": [],
   "fontes": [
@@ -144,6 +144,42 @@
     },
     {
       "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_E021.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_E021.20260201.txt",
+      "tamanho_bytes": 18556312,
+      "tamanho_mb": 17.7,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "641b8f914544cc81"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_E021.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_E021.20260301.txt",
+      "tamanho_bytes": 18238057,
+      "tamanho_mb": 17.39,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "b140daff7816db29"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_E021.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_E021.20260401.txt",
+      "tamanho_bytes": 20932956,
+      "tamanho_mb": 19.96,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "c1b11f1a1a71237f"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_E021.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_E021.20260501.txt",
+      "tamanho_bytes": 20214603,
+      "tamanho_mb": 19.28,
+      "modificado_em": "2026-05-01 07:28:58",
+      "sha256_curto": "2be407479780e304"
+    },
+    {
+      "categoria": "cob_26",
       "ficheiro": "3Cob_TcxRecConc_Outros_E017.20260201.txt",
       "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_E017.20260201.txt",
       "tamanho_bytes": 236708580,
@@ -180,6 +216,42 @@
     },
     {
       "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_Sul_EN.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_Sul_EN.20260201.txt",
+      "tamanho_bytes": 4806156,
+      "tamanho_mb": 4.58,
+      "modificado_em": "2026-02-01 07:27:59",
+      "sha256_curto": "3d399b01595b0fa6"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_Sul_EN.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_Sul_EN.20260301.txt",
+      "tamanho_bytes": 4124339,
+      "tamanho_mb": 3.93,
+      "modificado_em": "2026-03-01 07:31:01",
+      "sha256_curto": "f309e3121345c03c"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_Sul_EN.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_Sul_EN.20260401.txt",
+      "tamanho_bytes": 2472171,
+      "tamanho_mb": 2.36,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "0c596f3ba21d5d41"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Outros_Sul_EN.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Outros_Sul_EN.20260501.txt",
+      "tamanho_bytes": 2894773,
+      "tamanho_mb": 2.76,
+      "modificado_em": "2026-05-01 07:30:05",
+      "sha256_curto": "1b466fc8fe77dd0a"
+    },
+    {
+      "categoria": "cob_26",
       "ficheiro": "3Cob_TcxRecConc_Praia_E017.20260201.txt",
       "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_E017.20260201.txt",
       "tamanho_bytes": 85396558,
@@ -213,6 +285,276 @@
       "tamanho_mb": 69.4,
       "modificado_em": "2026-10-27 10:56:02",
       "sha256_curto": "28c01ba734cb5f07"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_Sul_EN.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_Sul_EN.20260201.txt",
+      "tamanho_bytes": 3655806,
+      "tamanho_mb": 3.49,
+      "modificado_em": "2026-02-01 07:28:21",
+      "sha256_curto": "49ad42ba8a3b3ea0"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_Sul_EN.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_Sul_EN.20260301.txt",
+      "tamanho_bytes": 2298932,
+      "tamanho_mb": 2.19,
+      "modificado_em": "2026-03-01 07:31:24",
+      "sha256_curto": "ce7dbd2f9d24c0af"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_Sul_EN.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_Sul_EN.20260401.txt",
+      "tamanho_bytes": 3663372,
+      "tamanho_mb": 3.49,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "0a415dc952e82f8a"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Praia_Sul_EN.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Praia_Sul_EN.20260501.txt",
+      "tamanho_bytes": 1680861,
+      "tamanho_mb": 1.6,
+      "modificado_em": "2026-05-01 07:30:19",
+      "sha256_curto": "3d47c070a87c0f43"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_E021.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_E021.20260201.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-02-01 07:28:27",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_E021.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_E021.20260301.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-03-01 07:31:31",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_E021.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_E021.20260401.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_E021.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_E021.20260501.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260201.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-02-01 07:28:30",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260301.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:48:34",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260401.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Outros_Sul_AG.20260501.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260201.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-02-01 07:28:32",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260301.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:48:34",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260401.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_Rec_Praia_Sul_AG.20260501.txt",
+      "tamanho_bytes": 0,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "5feceb66ffc86f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_AG.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_AG.20260201.txt",
+      "tamanho_bytes": 15600,
+      "tamanho_mb": 0.01,
+      "modificado_em": "2026-02-01 07:28:33",
+      "sha256_curto": "ea596e83ee51cdf9"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_AG.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_AG.20260301.txt",
+      "tamanho_bytes": 4485,
+      "tamanho_mb": 0.0,
+      "modificado_em": "2026-11-16 14:48:34",
+      "sha256_curto": "51e003ce3e1fe2fd"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_AG.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_AG.20260401.txt",
+      "tamanho_bytes": 25294,
+      "tamanho_mb": 0.02,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "598b4c5d6b709069"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_AG.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_AG.20260501.txt",
+      "tamanho_bytes": 52730,
+      "tamanho_mb": 0.05,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "91e852621b7a7e60"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_EN.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_EN.20260201.txt",
+      "tamanho_bytes": 92131,
+      "tamanho_mb": 0.09,
+      "modificado_em": "2026-02-01 07:28:33",
+      "sha256_curto": "6ebbe96cc1102f38"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_EN.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_EN.20260301.txt",
+      "tamanho_bytes": 85978,
+      "tamanho_mb": 0.08,
+      "modificado_em": "2026-03-01 07:31:37",
+      "sha256_curto": "82df4e66c7354ddf"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_EN.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_EN.20260401.txt",
+      "tamanho_bytes": 271618,
+      "tamanho_mb": 0.26,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "b6a70828a86fb73a"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "3Cob_TcxRecConc_SARL_EN.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\3Cob_TcxRecConc_SARL_EN.20260501.txt",
+      "tamanho_bytes": 242919,
+      "tamanho_mb": 0.23,
+      "modificado_em": "2026-05-01 07:30:31",
+      "sha256_curto": "ba5c91ab6721555c"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E007_Cob_TcxRecConc.20260601.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E007_Cob_TcxRecConc.20260601.txt",
+      "tamanho_bytes": 5249742,
+      "tamanho_mb": 5.01,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "993a975c96d96723"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E007_Cob_TcxRecConc.20260701.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E007_Cob_TcxRecConc.20260701.txt",
+      "tamanho_bytes": 5391312,
+      "tamanho_mb": 5.14,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "1219d6b547a00210"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E007_Cob_TcxRecConc.20260801.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E007_Cob_TcxRecConc.20260801.txt",
+      "tamanho_bytes": 9175140,
+      "tamanho_mb": 8.75,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "454abfcbd4c653f0"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E007_Cob_TcxRecConc.20260901.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E007_Cob_TcxRecConc.20260901.txt",
+      "tamanho_bytes": 5251280,
+      "tamanho_mb": 5.01,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "14563790cf19c2ea"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E007_Cob_TcxRecConc.20261001.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E007_Cob_TcxRecConc.20261001.txt",
+      "tamanho_bytes": 4417615,
+      "tamanho_mb": 4.21,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "1cf6e30bdac367f3"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E007_Cob_TcxRecConc.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E007_Cob_TcxRecConc.20261101.txt",
+      "tamanho_bytes": 5081058,
+      "tamanho_mb": 4.85,
+      "modificado_em": "2026-11-16 14:52:47",
+      "sha256_curto": "220a54c65b2a37e3"
     },
     {
       "categoria": "cob_26",
@@ -269,6 +611,294 @@
       "sha256_curto": "152fa6396d091c32"
     },
     {
+      "categoria": "cob_26",
+      "ficheiro": "E021_Cob_TcxRecConc.20260601.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E021_Cob_TcxRecConc.20260601.txt",
+      "tamanho_bytes": 49533802,
+      "tamanho_mb": 47.24,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "fd86cb6839244041"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E021_Cob_TcxRecConc.20260701.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E021_Cob_TcxRecConc.20260701.txt",
+      "tamanho_bytes": 50587214,
+      "tamanho_mb": 48.24,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "fa26547aabc70311"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E021_Cob_TcxRecConc.20260801.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E021_Cob_TcxRecConc.20260801.txt",
+      "tamanho_bytes": 57489086,
+      "tamanho_mb": 54.83,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "9d7f5678c2ec9cee"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E021_Cob_TcxRecConc.20260901.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E021_Cob_TcxRecConc.20260901.txt",
+      "tamanho_bytes": 51587335,
+      "tamanho_mb": 49.2,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "9969a0e0b5a539be"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E021_Cob_TcxRecConc.20261001.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E021_Cob_TcxRecConc.20261001.txt",
+      "tamanho_bytes": 52265226,
+      "tamanho_mb": 49.84,
+      "modificado_em": "2026-11-16 14:52:47",
+      "sha256_curto": "9e926928aa57e830"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E021_Cob_TcxRecConc.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E021_Cob_TcxRecConc.20261101.txt",
+      "tamanho_bytes": 54073069,
+      "tamanho_mb": 51.57,
+      "modificado_em": "2026-11-16 14:52:47",
+      "sha256_curto": "b547b98c598fb5b4"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E070_Cob_TcxRecConc.20260601.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E070_Cob_TcxRecConc.20260601.txt",
+      "tamanho_bytes": 270297,
+      "tamanho_mb": 0.26,
+      "modificado_em": "2026-11-16 14:52:45",
+      "sha256_curto": "89ec23b474426087"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E070_Cob_TcxRecConc.20260701.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E070_Cob_TcxRecConc.20260701.txt",
+      "tamanho_bytes": 172699,
+      "tamanho_mb": 0.16,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "3b71c7dca6ee842e"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E070_Cob_TcxRecConc.20260801.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E070_Cob_TcxRecConc.20260801.txt",
+      "tamanho_bytes": 281711,
+      "tamanho_mb": 0.27,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "416f021ac20ca867"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E070_Cob_TcxRecConc.20260901.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E070_Cob_TcxRecConc.20260901.txt",
+      "tamanho_bytes": 265913,
+      "tamanho_mb": 0.25,
+      "modificado_em": "2026-11-16 14:52:46",
+      "sha256_curto": "26e4aeee38c50470"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E070_Cob_TcxRecConc.20261001.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E070_Cob_TcxRecConc.20261001.txt",
+      "tamanho_bytes": 186740,
+      "tamanho_mb": 0.18,
+      "modificado_em": "2026-11-16 14:52:47",
+      "sha256_curto": "ed5287c2c0050d5a"
+    },
+    {
+      "categoria": "cob_26",
+      "ficheiro": "E070_Cob_TcxRecConc.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\cob_26\\E070_Cob_TcxRecConc.20261101.txt",
+      "tamanho_bytes": 135846,
+      "tamanho_mb": 0.13,
+      "modificado_em": "2026-11-16 14:52:47",
+      "sha256_curto": "4364f9d845c00d1b"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260201.txt",
+      "tamanho_bytes": 299602869,
+      "tamanho_mb": 285.72,
+      "modificado_em": "2026-02-01 07:48:54",
+      "sha256_curto": "2e4a3cbc7370cd65"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260301.txt",
+      "tamanho_bytes": 292015150,
+      "tamanho_mb": 278.49,
+      "modificado_em": "2026-03-01 07:55:26",
+      "sha256_curto": "7e8d661f87a7d073"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260401.txt",
+      "tamanho_bytes": 309518648,
+      "tamanho_mb": 295.18,
+      "modificado_em": "2026-04-01 08:52:45",
+      "sha256_curto": "bf990e77c401d173"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260501.txt",
+      "tamanho_bytes": 300573880,
+      "tamanho_mb": 286.65,
+      "modificado_em": "2026-05-01 07:51:34",
+      "sha256_curto": "5793caba9467513f"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260601.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260601.txt",
+      "tamanho_bytes": 299975385,
+      "tamanho_mb": 286.08,
+      "modificado_em": "2026-06-01 07:48:40",
+      "sha256_curto": "4a5686168ca9a76f"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260701.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260701.txt",
+      "tamanho_bytes": 296172309,
+      "tamanho_mb": 282.45,
+      "modificado_em": "2026-07-01 07:54:55",
+      "sha256_curto": "a04247eb50372b32"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260801.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260801.txt",
+      "tamanho_bytes": 336338710,
+      "tamanho_mb": 320.76,
+      "modificado_em": "2026-08-01 07:50:15",
+      "sha256_curto": "79f2fd5cdc194663"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20260901.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20260901.txt",
+      "tamanho_bytes": 312036890,
+      "tamanho_mb": 297.58,
+      "modificado_em": "2026-09-01 08:00:24",
+      "sha256_curto": "c39508ecffda4581"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20261001.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20261001.txt",
+      "tamanho_bytes": 349781760,
+      "tamanho_mb": 333.58,
+      "modificado_em": "2026-10-01 07:53:40",
+      "sha256_curto": "c47088c05269bab5"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E017.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E017.20261101.txt",
+      "tamanho_bytes": 329611205,
+      "tamanho_mb": 314.34,
+      "modificado_em": "2026-11-01 07:46:54",
+      "sha256_curto": "0d590945e9cfc8fb"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260201.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260201.txt",
+      "tamanho_bytes": 43621229,
+      "tamanho_mb": 41.6,
+      "modificado_em": "2026-02-01 07:49:03",
+      "sha256_curto": "f00668780f2ee728"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260301.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260301.txt",
+      "tamanho_bytes": 43942946,
+      "tamanho_mb": 41.91,
+      "modificado_em": "2026-03-01 07:55:35",
+      "sha256_curto": "8aab05a781084a52"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260401.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260401.txt",
+      "tamanho_bytes": 44468582,
+      "tamanho_mb": 42.41,
+      "modificado_em": "2026-04-01 08:53:08",
+      "sha256_curto": "79b7046a4546cfb3"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260501.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260501.txt",
+      "tamanho_bytes": 44392994,
+      "tamanho_mb": 42.34,
+      "modificado_em": "2026-05-01 07:51:41",
+      "sha256_curto": "beec1c1a8ebce887"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260601.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260601.txt",
+      "tamanho_bytes": 44423610,
+      "tamanho_mb": 42.37,
+      "modificado_em": "2026-06-01 07:48:46",
+      "sha256_curto": "e4b2180f48fa49f0"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260701.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260701.txt",
+      "tamanho_bytes": 44198006,
+      "tamanho_mb": 42.15,
+      "modificado_em": "2026-07-01 07:55:04",
+      "sha256_curto": "ddae5bf2a1b0a517"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260801.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260801.txt",
+      "tamanho_bytes": 42715934,
+      "tamanho_mb": 40.74,
+      "modificado_em": "2026-08-01 07:50:21",
+      "sha256_curto": "427aa112725b8d9a"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20260901.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20260901.txt",
+      "tamanho_bytes": 38374291,
+      "tamanho_mb": 36.6,
+      "modificado_em": "2026-09-01 08:00:35",
+      "sha256_curto": "31d8851b68f21fe5"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20261001.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20261001.txt",
+      "tamanho_bytes": 45186044,
+      "tamanho_mb": 43.09,
+      "modificado_em": "2026-10-01 07:53:47",
+      "sha256_curto": "bb6c85dc6e7ef10d"
+    },
+    {
+      "categoria": "FATURAÇAO",
+      "ficheiro": "z3Facturas_Conceito_TRecibos_E021.20261101.txt",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\FATURAÇAO\\z3Facturas_Conceito_TRecibos_E021.20261101.txt",
+      "tamanho_bytes": 42524811,
+      "tamanho_mb": 40.55,
+      "modificado_em": "2026-11-01 07:47:00",
+      "sha256_curto": "825d07bae0bf08a9"
+    },
+    {
       "categoria": "CODIGOS",
       "ficheiro": "CODIGOS.xlsx",
       "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\CODIGOS.xlsx",
@@ -285,15 +915,6 @@
       "tamanho_mb": 1.31,
       "modificado_em": "2026-10-09 10:24:00",
       "sha256_curto": "a8fb60f1274062eb"
-    },
-    {
-      "categoria": "FATURACAO_T3",
-      "ficheiro": "Fat_piv.xlsx",
-      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\santiago\\Fat_piv.xlsx",
-      "tamanho_bytes": 25702290,
-      "tamanho_mb": 24.51,
-      "modificado_em": "2026-10-21 11:34:33",
-      "sha256_curto": "79faf87cd87c3fef"
     },
     {
       "categoria": "GEOREF_PT",
@@ -330,6 +951,15 @@
       "tamanho_mb": 20.17,
       "modificado_em": "2026-10-27 13:58:18",
       "sha256_curto": "291116e69a452187"
+    },
+    {
+      "categoria": "ITINERARIO_ROTAS",
+      "ficheiro": "itenrar.csv",
+      "caminho": "C:\\Users\\VICTOR FERREIRA\\Desktop\\Atual_script\\itenrar.csv",
+      "tamanho_bytes": 2394359,
+      "tamanho_mb": 2.28,
+      "modificado_em": "2024-07-09 10:01:37",
+      "sha256_curto": "b77e52b5af26adc6"
     }
   ]
 }

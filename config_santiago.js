@@ -11,9 +11,9 @@ window.SANTIAGO_CONFIG = {
   THEME_STORAGE_KEY: "santiago_theme",
   VERSAO_SISTEMA: "2026.11-RBAC",
   EMPRESAS_CREDORAS: [
-    { codigo: "17", sigla: "EDEC SA",      cor: "#60A5FA", descricao: "Faturação Corrente / Pós-Cisão" },
-    { codigo: "21", sigla: "ELECTRA SA",   cor: "#FBBF24", descricao: "Contrato Especial AdS" },
-    { codigo: "7",  sigla: "EDEC Sul",     cor: "#A78BFA", descricao: "Dívida Sul Histórica" },
-    { codigo: "70", sigla: "ELECTRA SARL", cor: "#F472B6", descricao: "Dívida Antiga Legada" }
+    { codigo: "17", sigla: "EDEC Sul",     cor: "#60A5FA", descricao: "Faturação Corrente Energia (EB, EE, EM)" },
+    { codigo: "21", sigla: "Electra SA",   cor: "#FBBF24", descricao: "Contrato Especial AdS (Água AG)" },
+    { codigo: "7",  sigla: "Electra Sul",  cor: "#A78BFA", descricao: "Dívida Histórica Legada" },
+    { codigo: "70", sigla: "Electra SARL", cor: "#F472B6", descricao: "Dívida Antiga Legada" }
   ]
 };

@@ -10,4 +10,4 @@ python etl_santiago_supabase.py
 echo.
 python publicar_painel_web.py
 echo.
-pause
+if /i "%~1" NEQ "--auto" pause

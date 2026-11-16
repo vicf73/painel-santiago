@@ -1,0 +1,415 @@
+{
+  "gerado_em": "2026-11-16 14:59:21",
+  "janela_t_atual": [
+    "202609",
+    "202610",
+    "202611"
+  ],
+  "janela_t_prev": [
+    "202606",
+    "202607",
+    "202608"
+  ],
+  "mensal": [
+    {
+      "lote_ym": "202602",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 87591,
+      "consumo_qtd": 7340238.0,
+      "valor_faturado_ecv": 259522655.57,
+      "preco_medio_ecv": 35.36,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202602",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 528,
+      "consumo_qtd": 1658224.0,
+      "valor_faturado_ecv": 101841106.8,
+      "preco_medio_ecv": 61.42,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202602",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 133,
+      "consumo_qtd": 3065629.0,
+      "valor_faturado_ecv": 80283859.0,
+      "preco_medio_ecv": 26.19,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202603",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 83971,
+      "consumo_qtd": 6835595.0,
+      "valor_faturado_ecv": 238229029.17,
+      "preco_medio_ecv": 34.85,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202603",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 478,
+      "consumo_qtd": 1483746.0,
+      "valor_faturado_ecv": 98725139.0,
+      "preco_medio_ecv": 66.54,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202603",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 134,
+      "consumo_qtd": 2953334.0,
+      "valor_faturado_ecv": 74116590.0,
+      "preco_medio_ecv": 25.1,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202604",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 92252,
+      "consumo_qtd": 6900621.0,
+      "valor_faturado_ecv": 242469337.82,
+      "preco_medio_ecv": 35.14,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202604",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 524,
+      "consumo_qtd": 1597351.0,
+      "valor_faturado_ecv": 92582847.0,
+      "preco_medio_ecv": 57.96,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202604",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 135,
+      "consumo_qtd": 3063407.0,
+      "valor_faturado_ecv": 76064303.0,
+      "preco_medio_ecv": 24.83,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202605",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 86749,
+      "consumo_qtd": 7140404.0,
+      "valor_faturado_ecv": 244119883.89,
+      "preco_medio_ecv": 34.19,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202605",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 523,
+      "consumo_qtd": 1649958.0,
+      "valor_faturado_ecv": 103489543.1,
+      "preco_medio_ecv": 62.72,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202605",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 142,
+      "consumo_qtd": 3218244.0,
+      "valor_faturado_ecv": 79985254.0,
+      "preco_medio_ecv": 24.85,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202606",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 86930,
+      "consumo_qtd": 7425509.0,
+      "valor_faturado_ecv": 254965507.53,
+      "preco_medio_ecv": 34.34,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202606",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 511,
+      "consumo_qtd": 1678448.0,
+      "valor_faturado_ecv": 95879289.0,
+      "preco_medio_ecv": 57.12,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202606",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 141,
+      "consumo_qtd": 3095899.0,
+      "valor_faturado_ecv": 76697997.0,
+      "preco_medio_ecv": 24.77,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202607",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 87208,
+      "consumo_qtd": 7583092.0,
+      "valor_faturado_ecv": 263168920.86,
+      "preco_medio_ecv": 34.7,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202607",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 507,
+      "consumo_qtd": 1721042.0,
+      "valor_faturado_ecv": 100356917.0,
+      "preco_medio_ecv": 58.31,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202607",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 146,
+      "consumo_qtd": 3477053.0,
+      "valor_faturado_ecv": 85872170.0,
+      "preco_medio_ecv": 24.7,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202608",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 88283,
+      "consumo_qtd": 8187793.0,
+      "valor_faturado_ecv": 292146947.0,
+      "preco_medio_ecv": 35.68,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202608",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 537,
+      "consumo_qtd": 2034850.0,
+      "valor_faturado_ecv": 63226217.59,
+      "preco_medio_ecv": 31.07,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202608",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 143,
+      "consumo_qtd": 3846336.0,
+      "valor_faturado_ecv": 97086285.57,
+      "preco_medio_ecv": 25.24,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202609",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 85188,
+      "consumo_qtd": 9134207.0,
+      "valor_faturado_ecv": 329482029.38,
+      "preco_medio_ecv": 36.07,
+      "linhas_partidas_recuperadas": 1014
+    },
+    {
+      "lote_ym": "202609",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 565,
+      "consumo_qtd": 2067446.0,
+      "valor_faturado_ecv": 161655025.17,
+      "preco_medio_ecv": 78.19,
+      "linhas_partidas_recuperadas": 1014
+    },
+    {
+      "lote_ym": "202609",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 140,
+      "consumo_qtd": 4022589.0,
+      "valor_faturado_ecv": 104686058.6,
+      "preco_medio_ecv": 26.02,
+      "linhas_partidas_recuperadas": 1014
+    },
+    {
+      "lote_ym": "202610",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 90960,
+      "consumo_qtd": 9588598.0,
+      "valor_faturado_ecv": 351305424.57,
+      "preco_medio_ecv": 36.64,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202610",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 733,
+      "consumo_qtd": 2093338.0,
+      "valor_faturado_ecv": 110674118.1,
+      "preco_medio_ecv": 52.87,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202610",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 164,
+      "consumo_qtd": 4185685.0,
+      "valor_faturado_ecv": 106787883.4,
+      "preco_medio_ecv": 25.51,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202611",
+      "empresa": "17",
+      "produto": "EB",
+      "faturas": 85980,
+      "consumo_qtd": 8754139.0,
+      "valor_faturado_ecv": 321802100.93,
+      "preco_medio_ecv": 36.76,
+      "linhas_partidas_recuperadas": 214
+    },
+    {
+      "lote_ym": "202611",
+      "empresa": "17",
+      "produto": "EE",
+      "faturas": 817,
+      "consumo_qtd": 1988383.0,
+      "valor_faturado_ecv": 117041865.16,
+      "preco_medio_ecv": 58.86,
+      "linhas_partidas_recuperadas": 214
+    },
+    {
+      "lote_ym": "202611",
+      "empresa": "17",
+      "produto": "EM",
+      "faturas": 190,
+      "consumo_qtd": 4096053.0,
+      "valor_faturado_ecv": 110389521.04,
+      "preco_medio_ecv": 26.95,
+      "linhas_partidas_recuperadas": 214
+    },
+    {
+      "lote_ym": "202602",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 482155.0,
+      "valor_faturado_ecv": 76405493.0,
+      "preco_medio_ecv": 158.47,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202603",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 457536.0,
+      "valor_faturado_ecv": 73656240.0,
+      "preco_medio_ecv": 160.98,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202604",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 441466.0,
+      "valor_faturado_ecv": 71861671.0,
+      "preco_medio_ecv": 162.78,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202605",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 450172.0,
+      "valor_faturado_ecv": 72833888.0,
+      "preco_medio_ecv": 161.79,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202606",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 460359.0,
+      "valor_faturado_ecv": 73971490.0,
+      "preco_medio_ecv": 160.68,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202607",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 449530.0,
+      "valor_faturado_ecv": 72762194.0,
+      "preco_medio_ecv": 161.86,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202608",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 465956.0,
+      "valor_faturado_ecv": 74596518.0,
+      "preco_medio_ecv": 160.09,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202609",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 585911.0,
+      "valor_faturado_ecv": 88424834.0,
+      "preco_medio_ecv": 150.92,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202610",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 425144.0,
+      "valor_faturado_ecv": 70471663.0,
+      "preco_medio_ecv": 165.76,
+      "linhas_partidas_recuperadas": 0
+    },
+    {
+      "lote_ym": "202611",
+      "empresa": "21",
+      "produto": "AG",
+      "faturas": 2,
+      "consumo_qtd": 352934.0,
+      "valor_faturado_ecv": 61666054.0,
+      "preco_medio_ecv": 174.72,
+      "linhas_partidas_recuperadas": 0
+    }
+  ]
+}
