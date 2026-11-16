@@ -17,6 +17,10 @@ __pycache__/
 _arquivo_antigo/
 backups/
 entrada/
+lake/
+*.parquet
+*.duckdb
+*.duckdb.wal
 
 # Backups manuais antigos
 *.bak
