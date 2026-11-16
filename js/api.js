@@ -25,7 +25,7 @@
       mod2: {
         icone: "🗺️",
         titulo: "2. Mapa GIS & Balanço Energético de PTs — Em Atualização",
-        desc: "Em atualização: Integração dos Polígonos Geográficos das zonas de cada PT, cadastro técnico dos Transformadores e cálculo de Perda Energética por PT (kWh medido no PT vs soma da faturação T3 dos clientes)."
+        desc: "Módulo suspenso temporariamente enquanto são apurados os dados reais de energia injetada por PT. Os dados demonstrativos foram retirados para garantir rigor analítico."
       },
       mod5: {
         icone: "⚖️",
@@ -95,11 +95,13 @@
       const btnAtivo = document.getElementById(`tab-btn-${modId}`);
       if (btnAtivo) btnAtivo.classList.add("active");
 
+      const paneMod0 = document.getElementById("modulo-mod0");
       const paneMod1 = document.getElementById("modulo-mod1");
       const paneMod3 = document.getElementById("modulo-mod3");
       const paneUpd = document.getElementById("modulo-em-atualizacao");
 
       // Esconder todos inicialmente
+      if (paneMod0) paneMod0.classList.add("hidden");
       paneMod1.classList.add("hidden");
       if (paneMod3) paneMod3.classList.add("hidden");
       paneUpd.classList.add("hidden");
@@ -107,14 +109,14 @@
       const paneMod2 = document.getElementById("modulo-mod2");
       if (paneMod2) paneMod2.classList.add("hidden");
 
-      if (modId === "mod1") {
+      if (modId === "mod0") {
+        if (paneMod0) paneMod0.classList.remove("hidden");
+        if (typeof carregarMartsGold === "function") carregarMartsGold();
+      } else if (modId === "mod1") {
         paneMod1.classList.remove("hidden");
         if (map) {
           setTimeout(() => map.invalidateSize(), 60);
         }
-      } else if (modId === "mod2") {
-        if (paneMod2) paneMod2.classList.remove("hidden");
-        iniciarOuRedimensionar3D();
       } else if (modId === "mod3") {
         if (paneMod3) paneMod3.classList.remove("hidden");
         dividaIniciada = true;
