@@ -283,6 +283,9 @@
     <!-- BARRA DE NAVEGAÇÃO POR MÓDULOS -->
     <nav class="module-nav" aria-label="Módulos do Sistema">
       <div class="module-tabs">
+        <button class="mod-tab-btn" id="tab-btn-mod0" onclick="selecionarModulo('mod0')">
+          📈 0. Visão Executiva (Gold)
+        </button>
         <button class="mod-tab-btn active" id="tab-btn-mod1" onclick="selecionarModulo('mod1')">
           📊 1. Triagem &amp; Contratos
         </button>
@@ -293,8 +296,8 @@
 
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod2" onclick="selecionarModulo('mod2')">
-          🌐 2. Mapa GIS 3D &amp; Balanço PT
-          <span class="mod-pill-soon" style="background:#EBF5FB; color:#2B6CB0; border-color:#BEE3F8; font-weight:700;">3D Interativo</span>
+          🌐 2. Mapa GIS &amp; Balanço PT
+          <span class="mod-pill-soon">Em Atualização</span>
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod5" onclick="selecionarModulo('mod5')">
           ⚖️ 5. Jurídico CF1 &amp; Cobrança
@@ -305,6 +308,191 @@
         ARQUITETURA MODULAR EDEC • MÓDULO 1 ATIVO
       </div>
     </nav>
+
+    <!-- MÓDULO 0: VISÃO EXECUTIVA & MARTS GOLD (LAKEHOUSE) -->
+    <div id="modulo-mod0" class="module-pane hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:12px 18px; box-shadow:var(--card-shadow);">
+        <div>
+          <h2 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            📈 Centro Executivo Gold — Faturação, Cobrança Real, Aging &amp; AdS
+            <span class="brand-tag" style="background:rgba(16,185,129,0.14); color:#34D399; border-color:rgba(16,185,129,0.4);">LAKEHOUSE GOLD</span>
+          </h2>
+          <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+            Indicadores calculados ao grão da fatura e recibo em DuckDB (Bronze → Silver → Gold)
+          </p>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span id="gold-sync-status" style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">--</span>
+          <button class="btn" onclick="carregarMartsGold(true)">↻ Atualizar Gold</button>
+        </div>
+      </div>
+
+      <!-- KPIs Executivos Gold (6 cards) -->
+      <div class="kpi-strip" style="grid-template-columns: repeat(6, 1fr);">
+        <div class="kpi-card">
+          <div class="kpi-label"><span>FATURAÇÃO EDEC SUL (17)</span><span>2026</span></div>
+          <div class="kpi-value" id="g-kpi-fat17">--</div>
+          <div class="kpi-sub" id="g-kpi-fat17-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>COBRANÇA REAL 2026</span><span>4 EMPRESAS</span></div>
+          <div class="kpi-value" style="color:#60A5FA;" id="g-kpi-cob-tot">--</div>
+          <div class="kpi-sub" id="g-kpi-cob-tot-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>TAXA COBRANÇA REAL</span><span>E017</span></div>
+          <div class="kpi-value" style="color:#34D399;" id="g-kpi-taxa-cob">--%</div>
+          <div class="kpi-sub" id="g-kpi-taxa-cob-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>DSO MÉDIO (E017)</span><span>RECEBIMENTO</span></div>
+          <div class="kpi-value" style="color:#FBBF24;" id="g-kpi-dso">-- dias</div>
+          <div class="kpi-sub" id="g-kpi-dso-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>DÍVIDA EXIGÍVEL (&le;5a)</span><span>REGIÃO SUL</span></div>
+          <div class="kpi-value" id="g-kpi-div-exig">--</div>
+          <div class="kpi-sub" id="g-kpi-div-exig-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>CLIENTE ESPECIAL AdS (21)</span><span>ÁGUA AG</span></div>
+          <div class="kpi-value" style="color:#FBBF24;" id="g-kpi-ads">--</div>
+          <div class="kpi-sub" id="g-kpi-ads-sub">--</div>
+        </div>
+      </div>
+
+      <!-- Faturação vs Cobrança Mensal + Aging Real -->
+      <div style="display:grid; grid-template-columns: 1.15fr 1fr; gap:14px;">
+        <div class="table-container" style="padding:14px 16px;">
+          <div class="panel-title" style="margin-bottom:10px;">
+            <span>📊</span> Série Mensal 2026 — Faturação vs Cobrança (17 - EDEC Sul)
+          </div>
+          <div class="table-scroll" style="max-height:360px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mês</th>
+                  <th style="text-align:right;">Energia</th>
+                  <th style="text-align:right;">Faturado</th>
+                  <th style="text-align:right;">PM (ECV/kWh)</th>
+                  <th style="text-align:right;">Cobrado</th>
+                  <th style="text-align:right;">Taxa Cob.</th>
+                  <th style="text-align:right;">Mix (EB/EM/EE)</th>
+                </tr>
+              </thead>
+              <tbody id="g-tbody-fat-cob"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-container" style="padding:14px 16px;">
+          <div class="panel-title" style="margin-bottom:10px;">
+            <span>⏳</span> Aging Real da Dívida (por Emissão da Fatura)
+          </div>
+          <div class="table-scroll" style="max-height:360px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Escalão</th>
+                  <th style="text-align:right;">Faturas</th>
+                  <th style="text-align:right;">Total</th>
+                  <th style="text-align:right;">17</th>
+                  <th style="text-align:right;">21</th>
+                  <th style="text-align:right;">07</th>
+                  <th style="text-align:right;">70</th>
+                </tr>
+              </thead>
+              <tbody id="g-tbody-aging"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conta Corrente AdS + Operacional & Qualidade de Dados -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+        <div class="table-container" style="padding:14px 16px;">
+          <div class="panel-title" style="margin-bottom:8px;">
+            <span>💧</span> Cliente Especial AdS (21 - Electra SA • Água AG)
+          </div>
+          <div id="g-ads-aging-pills" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;"></div>
+          <div class="table-scroll" style="max-height:260px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Lote</th>
+                  <th style="text-align:right;">Volume (m³)</th>
+                  <th style="text-align:right;">Faturado</th>
+                  <th style="text-align:right;">PM (ECV/m³)</th>
+                </tr>
+              </thead>
+              <tbody id="g-tbody-ads"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-container" style="padding:14px 16px; display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <div class="panel-title" style="margin-bottom:8px;">
+              <span>🛠️</span> Operacional — Inspeções CEA &amp; Ordens de Serviço
+            </div>
+            <div id="g-cea-os-box"></div>
+          </div>
+          <div style="border-top:1px solid var(--border-dim); padding-top:10px;">
+            <div class="panel-title" style="margin-bottom:8px;">
+              <span>🛡️</span> Qualidade de Dados &amp; Reconciliação (Bronze → Silver)
+            </div>
+            <div id="g-dq-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCORE DE RISCO V2 CALIBRADO EM INSPEÇÕES CEA (FASE 3) -->
+      <div class="table-container" style="padding:14px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div class="panel-title">
+            <span>🎯</span> Priorização de Brigadas — Score de Risco v2 (Calibrado em 83k Inspeções CEA)
+          </div>
+          <div id="g-scorev2-badges" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <div style="display:grid; grid-template-columns: 0.9fr 1.6fr; gap:14px;">
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:6px; font-family:var(--font-mono);">CALIBRAÇÃO OUT-OF-TIME POR DECIL</div>
+            <div class="table-scroll" style="max-height:280px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Decil</th>
+                    <th style="text-align:right;">Insp.</th>
+                    <th style="text-align:right;">Fraudes</th>
+                    <th style="text-align:right;">Taxa</th>
+                    <th style="text-align:right;">Lift</th>
+                  </tr>
+                </thead>
+                <tbody id="g-tbody-decis"></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:6px; font-family:var(--font-mono);">TOP 100 ALVOS PRIORITÁRIOS PARA BRIGADA DE CAMPO (CLICAR PARA DOSSIÊ)</div>
+            <div class="table-scroll" style="max-height:280px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>CIL</th>
+                    <th>Cliente</th>
+                    <th>PT</th>
+                    <th style="text-align:right;">Prob.</th>
+                    <th style="text-align:right;">Dívida Exig.</th>
+                    <th>Fatores Explicáveis</th>
+                  </tr>
+                </thead>
+                <tbody id="g-tbody-top100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- FIM MÓDULO 0 -->
 
     <!-- MÓDULO 1: CENTRO DE COMANDO, TRIAGEM E CONTRATOS (ATIVO) -->
     <div id="modulo-mod1" class="module-pane">
@@ -810,9 +998,9 @@
         </div>
 
         <div class="kpi-card cyan">
-          <div class="kpi-label"><span>TAXA DE RECUPERAÇÃO</span><span>EFICÁCIA 2026</span></div>
-          <div class="kpi-value" id="kpi-div-taxa-recup">15.8%</div>
-          <div class="kpi-sub" id="kpi-div-taxa-recup-sub">Cobrança 2026 vs Carteira Total</div>
+          <div class="kpi-label"><span>COBRANÇA E017 VS DÍVIDA (17)</span><span>EDEC SUL 2026</span></div>
+          <div class="kpi-value" id="kpi-div-taxa-recup">--%</div>
+          <div class="kpi-sub" id="kpi-div-taxa-recup-sub">Cobrança E017 vs Dívida EDEC Sul (17)</div>
         </div>
 
         <div class="kpi-card purple">
@@ -1059,33 +1247,33 @@
               🌐 Todas as Empresas (<span id="pill-tot-emp">--</span>)
             </button>
             <button class="btn-prod-pill" id="btn-emp-17" onclick="selecionarEmpresaDivida('17')">
-              🏢 17 - EDEC SA (<span id="pill-emp-17">--</span>)
+              🏢 17 - EDEC Sul (<span id="pill-emp-17">--</span>)
             </button>
             <button class="btn-prod-pill" id="btn-emp-21" onclick="selecionarEmpresaDivida('21')">
-              ⚡ 21 - ELECTRA SA (<span id="pill-emp-21">--</span>)
+              ⚡ 21 - Electra SA (<span id="pill-emp-21">--</span>)
             </button>
             <button class="btn-prod-pill" id="btn-emp-7" onclick="selecionarEmpresaDivida('7')">
-              📍 07 - ELECTRA Sul (<span id="pill-emp-7">--</span>)
+              📍 07 - Electra Sul (<span id="pill-emp-7">--</span>)
             </button>
             <button class="btn-prod-pill" id="btn-emp-70" onclick="selecionarEmpresaDivida('70')">
-              🏛️ 70 - ELECTRA SARL (<span id="pill-emp-70">--</span>)
+              🏛️ 70 - Electra SARL (<span id="pill-emp-70">--</span>)
             </button>
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px;">
-          <!-- Card 1: EDEC SA (17) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(96,165,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('17')" title="Filtrar clientes com faturas em atraso da EDEC SA (Código 17 - Contratos Ativos, Faturação Atual e Cobranças)">
+          <!-- Card 1: EDEC Sul (17) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(96,165,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('17')" title="Filtrar clientes com faturas em atraso da EDEC Sul (Código 17 - Contratos Ativos, Faturação Corrente Energia e Cobranças)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-family:var(--font-mono); font-size:11px; color:#60A5FA; font-weight:700;">🏢 17 - EDEC SA</span>
+              <span style="font-family:var(--font-mono); font-size:11px; color:#60A5FA; font-weight:700;">🏢 17 - EDEC SUL</span>
               <span class="badge" style="background:rgba(96,165,250,0.18); color:#60A5FA; border:1px solid rgba(96,165,250,0.4); font-size:9.5px;" id="emp-pct-17">11.3% (0% Presc.)</span>
             </div>
             <div style="font-family:var(--font-display); font-size:16px; font-weight:800; color:var(--text-primary); margin:2px 0;" id="emp-val-17">1.534.592.254 ECV</div>
             <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-17">66.153 devedores (422.259 fat.) • Faturação &amp; Cobrança Atual</div>
           </div>
 
-          <!-- Card 2: ELECTRA SA (21) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(251,191,36,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('21')" title="Filtrar clientes com dívida ELECTRA SA (Código 21, Contrato Especial AdS)">
+          <!-- Card 2: Electra SA (21) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(251,191,36,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('21')" title="Filtrar clientes com dívida Electra SA (Código 21, Contrato Especial AdS)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <span style="font-family:var(--font-mono); font-size:11px; color:#FBBF24; font-weight:700;">⚡ 21 - ELECTRA SA</span>
               <span class="badge badge-warn" style="font-size:9.5px;" id="emp-pct-21">12.4% (0% Presc.)</span>
@@ -1094,8 +1282,8 @@
             <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-21">1 devedor (46 fat.) • Contrato Especial AdS</div>
           </div>
 
-          <!-- Card 3: ELECTRA Sul (07) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(167,139,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('7')" title="Filtrar clientes com dívida ELECTRA Sul (Código 07 - Legado Regional Sul)">
+          <!-- Card 3: Electra Sul (07) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(167,139,250,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('7')" title="Filtrar clientes com dívida Electra Sul (Código 07 - Legado Regional Sul)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <span style="font-family:var(--font-mono); font-size:11px; color:#A78BFA; font-weight:700;">📍 07 - ELECTRA SUL</span>
               <span class="badge" style="background:rgba(167,139,250,0.18); color:#A78BFA; border:1px solid rgba(167,139,250,0.4); font-size:9.5px;" id="emp-pct-7">57.6% (54.9% Presc.)</span>
@@ -1104,8 +1292,8 @@
             <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);" id="emp-det-7">45.948 dev. (1.748.966 fat.) • 4,28B Presc. &gt;5a</div>
           </div>
 
-          <!-- Card 4: ELECTRA SARL (70) -->
-          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(244,114,182,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('70')" title="Filtrar clientes com dívida legada ELECTRA SARL (Código 70 - Legado Antigo)">
+          <!-- Card 4: Electra SARL (70) -->
+          <div style="background:var(--bg-panel-elevated); border:1px solid rgba(244,114,182,0.4); border-radius:6px; padding:12px 14px; cursor:pointer;" onclick="selecionarEmpresaDivida('70')" title="Filtrar clientes com dívida legada Electra SARL (Código 70 - Legado Antigo)">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <span style="font-family:var(--font-mono); font-size:11px; color:#F472B6; font-weight:700;">🏛️ 70 - ELECTRA SARL</span>
               <span class="badge" style="background:rgba(244,114,182,0.18); color:#F472B6; border:1px solid rgba(244,114,182,0.4); font-size:9.5px;" id="emp-pct-70">18.8% (~100% Presc.)</span>
@@ -1539,10 +1727,10 @@
             <label>Empresa Credora</label>
             <select id="div-empresa" class="select-ctrl" onchange="aplicarFiltrosDivida(1)">
               <option value="">Todas as Empresas</option>
-              <option value="17">🏢 17 - EDEC SA (Atual)</option>
-              <option value="21">⚡ 21 - ELECTRA SA (AdS)</option>
-              <option value="7">📍 07 - ELECTRA Sul (Legado)</option>
-              <option value="70">🏛️ 70 - ELECTRA SARL (Legado)</option>
+              <option value="17">🏢 17 - EDEC Sul (Atual)</option>
+              <option value="21">⚡ 21 - Electra SA (AdS)</option>
+              <option value="7">📍 07 - Electra Sul (Legado)</option>
+              <option value="70">🏛️ 70 - Electra SARL (Legado)</option>
             </select>
           </div>
 
@@ -1975,6 +2163,7 @@
   </div>
 
   <script src="js/api.js"></script>
+  <script src="js/gold.js"></script>
   <script src="js/contratos.js"></script>
   <script src="js/mapa.js"></script>
   <script src="js/auth.js"></script>
