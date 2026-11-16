@@ -95,11 +95,13 @@
       const btnAtivo = document.getElementById(`tab-btn-${modId}`);
       if (btnAtivo) btnAtivo.classList.add("active");
 
+      const paneMod0 = document.getElementById("modulo-mod0");
       const paneMod1 = document.getElementById("modulo-mod1");
       const paneMod3 = document.getElementById("modulo-mod3");
       const paneUpd = document.getElementById("modulo-em-atualizacao");
 
       // Esconder todos inicialmente
+      if (paneMod0) paneMod0.classList.add("hidden");
       paneMod1.classList.add("hidden");
       if (paneMod3) paneMod3.classList.add("hidden");
       paneUpd.classList.add("hidden");
@@ -107,7 +109,10 @@
       const paneMod2 = document.getElementById("modulo-mod2");
       if (paneMod2) paneMod2.classList.add("hidden");
 
-      if (modId === "mod1") {
+      if (modId === "mod0") {
+        if (paneMod0) paneMod0.classList.remove("hidden");
+        if (typeof carregarMartsGold === "function") carregarMartsGold();
+      } else if (modId === "mod1") {
         paneMod1.classList.remove("hidden");
         if (map) {
           setTimeout(() => map.invalidateSize(), 60);
