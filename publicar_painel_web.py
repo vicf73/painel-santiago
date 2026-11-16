@@ -106,6 +106,7 @@ def publicar():
     for rel_mod in [
         "css/painel.css",
         "js/api.js",
+        "js/gold.js",
         "js/contratos.js",
         "js/mapa.js",
         "js/auth.js",
@@ -140,7 +141,7 @@ def publicar():
     dt_pub = time.strftime("%d/%m/%Y %H:%M")
     readme_texto = f"""# EDEC • Painel Operacional Santiago & Tabela Story Executivo
 
-Plataforma unificada de telemetria comercial, auditoria de perdas não técnicas (PNT), gestão de dívida multiempresa (`17 - EDEC SA`, `21 - ELECTRA SA`, `07 - EDEC Sul`, `70 - ELECTRA SARL`) e acompanhamento de cobrança da Região Sul (Santiago, Fogo, Maio e Brava).
+Plataforma unificada de telemetria comercial, auditoria de perdas não técnicas (PNT), gestão de dívida multiempresa (`17 - EDEC Sul`, `21 - Electra SA`, `07 - Electra Sul`, `70 - Electra SARL`) e acompanhamento de cobrança da Região Sul (Santiago, Fogo, Maio e Brava).
 
 ## 🚀 Links de Acesso Online 24/7 (Nuvem):
 - 📊 **Painel Operacional Principal (SCADA):** https://vicf73.github.io/painel-santiago/
