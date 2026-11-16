@@ -17,13 +17,14 @@ BASE_ATUAL_SCRIPT = os.environ.get("PASTA_ATUAL_SCRIPT", r"C:\Users\VICTOR FERRE
 from etl.bronze import executar_bronze
 from etl.silver import executar_silver
 from etl.qualidade import executar_qualidade_silver
+from etl.score_v2 import executar_score_v2
 from etl.gold import construir_marts_gold, sincronizar_marts_supabase
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Pipeline Lakehouse Fase 1+2 (Bronze -> Silver -> DQ -> Gold)")
-    parser.add_argument("--so-silver", action="store_true", help="Salta a camada Bronze e reconstrói Silver + Qualidade + Gold")
-    parser.add_argument("--so-gold", action="store_true", help="Executa apenas a camada Gold sobre a Silver existente")
+    parser = argparse.ArgumentParser(description="Pipeline Lakehouse Fase 1+2+3 (Bronze -> Silver -> Score v2 -> Gold)")
+    parser.add_argument("--so-silver", action="store_true", help="Salta a camada Bronze e reconstrói Silver + Score v2 + Gold")
+    parser.add_argument("--so-gold", action="store_true", help="Executa apenas Score v2 + Gold sobre a Silver existente")
     parser.add_argument("--sem-sync", action="store_true", help="Não envia os Marts Gold para o Supabase")
     parser.add_argument("--anos-prescricao", type=int, default=int(os.environ.get("ANOS_PRESCRICAO", "5")))
     args = parser.parse_args()
@@ -37,6 +38,7 @@ def main():
         if not rel["todos_testes_ok"]:
             sys.exit(1)
 
+    executar_score_v2(BASE_SANTIAGO)
     marts = construir_marts_gold(BASE_SANTIAGO)
     if not args.sem_sync:
         sincronizar_marts_supabase(BASE_SANTIAGO, marts)

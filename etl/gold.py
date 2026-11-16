@@ -186,6 +186,12 @@ def construir_marts_gold(base_santiago: str) -> dict:
         with open(dq_path, "r", encoding="utf-8") as f:
             dq_data = json.load(f)
 
+    score_v2_path = os.path.join(gold_dir, "score_v2_metricas.json")
+    score_v2_data = {}
+    if os.path.exists(score_v2_path):
+        with open(score_v2_path, "r", encoding="utf-8") as f:
+            score_v2_data = json.load(f)
+
     marts = {
         "kpis_executivos": {
             "gerado_em": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -227,6 +233,7 @@ def construir_marts_gold(base_santiago: str) -> dict:
             },
             "qualidade_dados": dq_data,
         },
+        "score_v2_validacao": score_v2_data,
     }
 
     out_gold = os.path.join(gold_dir, "marts_gold.json")

@@ -43,6 +43,7 @@ async function carregarMartsGold(forcar = false) {
     renderizarAgingGold(mapa.aging_divida?.rows || []);
     renderizarAdSGold(mapa.ads_conta_corrente || {});
     renderizarOperacionalDQGold(mapa.operacional_cea_os || {});
+    renderizarScoreV2Gold(mapa.score_v2_validacao || {});
 
     if (statusEl && ultimaData) {
       const dt = new Date(ultimaData);
@@ -236,5 +237,52 @@ function renderizarOperacionalDQGold(op) {
         = Silver Região Sul <strong><code>${fmtM(fd.silver_ecv)} ECV</code></strong> (${fmtInt(fd.silver_linhas)} fat.).
       </div>
     `;
+  }
+}
+
+function renderizarScoreV2Gold(sv2) {
+  const badgesEl = document.getElementById("g-scorev2-badges");
+  const tbodyDecis = document.getElementById("g-tbody-decis");
+  const tbodyTop = document.getElementById("g-tbody-top100");
+  if (!sv2 || !sv2.auc_teste_out_of_time) return;
+
+  if (badgesEl) {
+    const top10 = sv2.cortes?.top_10pct || {};
+    badgesEl.innerHTML = `
+      <span class="badge badge-ok" style="font-family:var(--font-mono);">AUC Out-of-Time: ${sv2.auc_teste_out_of_time}</span>
+      <span class="badge" style="background:rgba(96,165,250,0.14); color:#60A5FA; border:1px solid rgba(96,165,250,0.35); font-family:var(--font-mono);">
+        Top 10%: ${top10.precision_pct || 0}% acerto (Lift ${top10.lift || 1}x vs base ${sv2.taxa_fraude_base_teste_pct}%)
+      </span>
+    `;
+  }
+
+  if (tbodyDecis) {
+    const decis = sv2.decis || [];
+    tbodyDecis.innerHTML = decis.map(d => {
+      const cor = d.lift >= 2 ? "#34D399" : d.lift >= 1 ? "#FBBF24" : "var(--text-muted)";
+      return `
+        <tr>
+          <td style="font-family:var(--font-mono); font-weight:700;">${d.decil}</td>
+          <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(d.insp)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">${fmtInt(d.fraudes)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:${cor}; font-weight:700;">${d.taxa_fraude_pct}%</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:${cor}; font-weight:800;">${d.lift}x</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  if (tbodyTop) {
+    const top = sv2.fila_brigada_top100 || [];
+    tbodyTop.innerHTML = top.map(r => `
+      <tr style="cursor:pointer;" onclick="if(typeof abrirDossiePorCIL==='function') abrirDossiePorCIL(${r.cil})">
+        <td style="font-family:var(--font-mono); color:#60A5FA; font-weight:700;">${r.cil}</td>
+        <td style="max-width:170px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.nome || "--"}</td>
+        <td style="font-family:var(--font-mono); font-size:11px;">${r.pt}</td>
+        <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:#F87171;">${r.prob_fraude_pct}%</td>
+        <td style="text-align:right; font-family:var(--font-mono);">${fmtM(r.divida_exigivel_ecv)}</td>
+        <td style="font-size:11px; color:var(--text-secondary);">${r.motivos_v2}</td>
+      </tr>
+    `).join("");
   }
 }

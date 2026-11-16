@@ -445,6 +445,53 @@
           </div>
         </div>
       </div>
+
+      <!-- SCORE DE RISCO V2 CALIBRADO EM INSPEÇÕES CEA (FASE 3) -->
+      <div class="table-container" style="padding:14px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div class="panel-title">
+            <span>🎯</span> Priorização de Brigadas — Score de Risco v2 (Calibrado em 83k Inspeções CEA)
+          </div>
+          <div id="g-scorev2-badges" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+        <div style="display:grid; grid-template-columns: 0.9fr 1.6fr; gap:14px;">
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:6px; font-family:var(--font-mono);">CALIBRAÇÃO OUT-OF-TIME POR DECIL</div>
+            <div class="table-scroll" style="max-height:280px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Decil</th>
+                    <th style="text-align:right;">Insp.</th>
+                    <th style="text-align:right;">Fraudes</th>
+                    <th style="text-align:right;">Taxa</th>
+                    <th style="text-align:right;">Lift</th>
+                  </tr>
+                </thead>
+                <tbody id="g-tbody-decis"></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:6px; font-family:var(--font-mono);">TOP 100 ALVOS PRIORITÁRIOS PARA BRIGADA DE CAMPO (CLICAR PARA DOSSIÊ)</div>
+            <div class="table-scroll" style="max-height:280px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>CIL</th>
+                    <th>Cliente</th>
+                    <th>PT</th>
+                    <th style="text-align:right;">Prob.</th>
+                    <th style="text-align:right;">Dívida Exig.</th>
+                    <th>Fatores Explicáveis</th>
+                  </tr>
+                </thead>
+                <tbody id="g-tbody-top100"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div><!-- FIM MÓDULO 0 -->
 
     <!-- MÓDULO 1: CENTRO DE COMANDO, TRIAGEM E CONTRATOS (ATIVO) -->
