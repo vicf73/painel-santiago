@@ -433,22 +433,30 @@
       <!-- Conta Corrente AdS + Operacional & Qualidade de Dados -->
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
         <div class="table-container" style="padding:14px 16px;">
-          <div class="panel-title" style="margin-bottom:8px;">
-            <span>💧</span> Cliente Especial AdS (21 - Electra SA • Água AG)
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div class="panel-title">
+              <span>💧</span> Cliente Especial AdS (21 · Electra SA • Água AG)
+            </div>
+            <div id="g-ads-resumo-badge" style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">--</div>
           </div>
           <div id="g-ads-aging-pills" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;"></div>
-          <div class="table-scroll" style="max-height:260px;">
+          <div class="table-scroll" style="max-height:280px;">
             <table>
               <thead>
                 <tr>
-                  <th>Lote</th>
-                  <th style="text-align:right;">Volume (m³)</th>
-                  <th style="text-align:right;">Faturado</th>
-                  <th style="text-align:right;">PM (ECV/m³)</th>
+                  <th style="white-space:nowrap;">Mês</th>
+                  <th style="text-align:right; white-space:nowrap;">Fat.</th>
+                  <th style="text-align:right; white-space:nowrap;">Volume (m³)</th>
+                  <th style="text-align:right; white-space:nowrap;">Faturado (ECV)</th>
+                  <th style="text-align:right; white-space:nowrap;" title="Preço Médio (ECV/m³)">PM (ECV/m³)</th>
                 </tr>
               </thead>
               <tbody id="g-tbody-ads"></tbody>
+              <tfoot id="g-tfoot-ads"></tfoot>
             </table>
+          </div>
+          <div style="font-size:10.5px; color:var(--text-muted); margin-top:8px; font-family:var(--font-mono);">
+            CILs <code>60220187</code> &amp; <code>60220188</code> (Águas de Santiago S.A.). Valores em <strong>M</strong> (Milhões) e <strong>k</strong> (Milhares).
           </div>
         </div>
 
