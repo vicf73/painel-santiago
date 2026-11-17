@@ -364,24 +364,35 @@
       <!-- Faturação vs Cobrança Mensal + Aging Real -->
       <div style="display:grid; grid-template-columns: 1.15fr 1fr; gap:14px;">
         <div class="table-container" style="padding:14px 16px;">
-          <div class="panel-title" style="margin-bottom:10px;">
-            <span>📊</span> Série Mensal 2026 — Faturação vs Cobrança (17 - EDEC Sul)
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <div class="panel-title">
+              <span>📊</span> Série Mensal 2026 — Faturação vs Cobrança (17 · EDEC Sul)
+            </div>
+            <div style="display:flex; gap:8px; font-family:var(--font-mono); font-size:10px;">
+              <span style="color:#34D399;">● ≥90% Meta</span>
+              <span style="color:#FBBF24;">● 75–89% Atenção</span>
+              <span style="color:#F87171;">● &lt;75% Crítico</span>
+            </div>
           </div>
-          <div class="table-scroll" style="max-height:360px;">
+          <div class="table-scroll" style="max-height:380px;">
             <table>
               <thead>
                 <tr>
-                  <th>Mês</th>
-                  <th style="text-align:right;">Energia</th>
-                  <th style="text-align:right;">Faturado</th>
-                  <th style="text-align:right;">PM (ECV/kWh)</th>
-                  <th style="text-align:right;">Cobrado</th>
-                  <th style="text-align:right;">Taxa Cob.</th>
-                  <th style="text-align:right;">Mix (EB/EM/EE)</th>
+                  <th style="white-space:nowrap;">Mês</th>
+                  <th style="text-align:right; white-space:nowrap;">Energia (GWh)</th>
+                  <th style="text-align:right; white-space:nowrap;">Faturado (ECV)</th>
+                  <th style="text-align:right; white-space:nowrap;" title="Preço Médio Realizado (ECV/kWh)">PM</th>
+                  <th style="text-align:right; white-space:nowrap; color:#60A5FA;">Cobrado (ECV)</th>
+                  <th style="text-align:right; white-space:nowrap;">Taxa Cob.</th>
+                  <th style="text-align:right; white-space:nowrap;" title="Baixa Tensão (EB) / Média Tensão (EM) / Iluminação &amp; Especiais (EE)">EB / EM / EE</th>
                 </tr>
               </thead>
               <tbody id="g-tbody-fat-cob"></tbody>
+              <tfoot id="g-tfoot-fat-cob"></tfoot>
             </table>
+          </div>
+          <div style="font-size:10.5px; color:var(--text-muted); margin-top:8px; font-family:var(--font-mono);">
+            <strong>PM</strong> = Preço Médio (ECV/kWh). Valores em <strong>B</strong> (Mil Milhões) e <strong>M</strong> (Milhões) de ECV.
           </div>
         </div>
 
