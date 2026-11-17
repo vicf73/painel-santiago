@@ -259,25 +259,83 @@ function renderizarAgingGold(rows) {
 
 function renderizarAdSGold(ads) {
   const tbody = document.getElementById("g-tbody-ads");
+  const tfoot = document.getElementById("g-tfoot-ads");
   const agingBox = document.getElementById("g-ads-aging-pills");
+  const resumoBadge = document.getElementById("g-ads-resumo-badge");
+
+  if (resumoBadge) {
+    resumoBadge.innerHTML = `Dívida Aberta: <strong style="color:#FBBF24;">${fmtM(ads.saldo_divida_ecv)} ECV</strong> • PM: <strong>${Number(ads.preco_medio_m3 || 0).toFixed(2).replace(".", ",")} ECV/m³</strong>`;
+  }
+
   if (tbody) {
     const serie = ads.serie_mensal || [];
-    tbody.innerHTML = serie.length ? serie.map(r => `
-      <tr>
-        <td style="font-family:var(--font-mono); font-weight:700;">${r.lote_ym}</td>
-        <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(r.m3)} m³</td>
-        <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#FBBF24;">${fmtM(r.valor_ecv)} ECV</td>
-        <td style="text-align:right; font-family:var(--font-mono);">${r.preco_medio_m3} ECV/m³</td>
-      </tr>
-    `).join("") : `<tr><td colspan="4" style="text-align:center; padding:12px;">Sem registos AdS.</td></tr>`;
+    const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const fmtMesAdS = (lote) => {
+      const ano = Number(String(lote).slice(0, 4));
+      const mes = Number(String(lote).slice(4, 6));
+      const d = new Date(ano, mes - 2, 1);
+      return `${nomesMes[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`;
+    };
+    const maxVal = Math.max(1, ...serie.map(r => Number(r.valor_ecv || 0)));
+
+    if (!serie.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:12px;">Sem registos AdS.</td></tr>`;
+      if (tfoot) tfoot.innerHTML = "";
+    } else {
+      let totF = 0, totM3 = 0, totV = 0;
+      tbody.innerHTML = serie.map(r => {
+        const f = Number(r.faturas || 0);
+        const m3 = Number(r.m3 || 0);
+        const v = Number(r.valor_ecv || 0);
+        const pm = Number(r.preco_medio_m3 || 0).toFixed(2).replace(".", ",");
+        const w = Math.min(100, (v / maxVal) * 100).toFixed(0);
+        totF += f; totM3 += m3; totV += v;
+        return `
+          <tr>
+            <td style="font-family:var(--font-mono); font-weight:700; white-space:nowrap;">${fmtMesAdS(r.lote_ym)}</td>
+            <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary); white-space:nowrap;">${f}</td>
+            <td style="text-align:right; font-family:var(--font-mono); white-space:nowrap;">${(m3 / 1e3).toFixed(1).replace(".", ",")} k</td>
+            <td style="text-align:right; font-family:var(--font-mono); white-space:nowrap; min-width:105px;">
+              <div style="font-weight:700; color:#FBBF24;">${fmtM(v)}</div>
+              <div style="height:3px; background:rgba(148,163,184,0.18); border-radius:2px; margin-top:2px; overflow:hidden;">
+                <div style="width:${w}%; height:100%; background:#FBBF24;"></div>
+              </div>
+            </td>
+            <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary); white-space:nowrap;">${pm}</td>
+          </tr>
+        `;
+      }).join("");
+
+      if (tfoot) {
+        const pmTot = totM3 > 0 ? (totV / totM3).toFixed(2).replace(".", ",") : "0,00";
+        tfoot.innerHTML = `
+          <tr style="border-top:2px solid var(--border-dim); background:var(--bg-panel-elevated); font-weight:800; font-family:var(--font-mono);">
+            <td style="white-space:nowrap;">TOTAL 2026</td>
+            <td style="text-align:right; white-space:nowrap;">${totF}</td>
+            <td style="text-align:right; white-space:nowrap;">${(totM3 / 1e6).toFixed(2).replace(".", ",")} M</td>
+            <td style="text-align:right; color:#FBBF24; white-space:nowrap;">${fmtM(totV)}</td>
+            <td style="text-align:right; color:var(--text-secondary); white-space:nowrap;">${pmTot}</td>
+          </tr>
+        `;
+      }
+    }
   }
+
   if (agingBox) {
     const ag = ads.aging || [];
-    agingBox.innerHTML = ag.map(a => `
-      <span class="badge" style="background:rgba(251,191,36,0.12); color:#FBBF24; border:1px solid rgba(251,191,36,0.35); font-family:var(--font-mono); font-size:10.5px; padding:4px 8px;">
-        ${a.faixa}: ${fmtM(a.valor_ecv)} ECV (${a.faturas} fat.)
-      </span>
-    `).join("");
+    const totAg = ag.reduce((s, a) => s + Number(a.valor_ecv || 0), 0);
+    agingBox.innerHTML = ag.map(a => {
+      const pct = totAg > 0 ? ((Number(a.valor_ecv) / totAg) * 100).toFixed(1).replace(".", ",") : "0,0";
+      const crit = a.faixa === "1-2 anos" || a.faixa === "2-5 anos";
+      const cor = crit ? "#FBBF24" : "#34D399";
+      const bg = crit ? "rgba(251,191,36,0.12)" : "rgba(52,211,153,0.12)";
+      const bd = crit ? "rgba(251,191,36,0.35)" : "rgba(52,211,153,0.35)";
+      return `
+        <span class="badge" style="background:${bg}; color:${cor}; border:1px solid ${bd}; font-family:var(--font-mono); font-size:10.5px; padding:4px 8px;">
+          ${a.faixa}: ${fmtM(a.valor_ecv)} (${pct}% · ${a.faturas} fat.)
+        </span>
+      `;
+    }).join("");
   }
 }
 
