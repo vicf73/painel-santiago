@@ -371,10 +371,15 @@ function renderizarOperacionalDQGold(op) {
     const dq = op.qualidade_dados || {};
     const fd = dq.funil_divida || {};
     const testes = dq.testes || [];
+    const frescura = op.frescura_fontes || [];
+    const snaps = op.snapshots_divida_arquivados || 0;
     dqBox.innerHTML = `
       <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
         <span class="badge ${dq.todos_testes_ok ? "badge-ok" : "badge-crit"}" style="font-family:var(--font-mono);">
           ${dq.todos_testes_ok ? "✔ DATA QUALITY APROVADO" : "✖ FALHA DQ"}
+        </span>
+        <span class="badge" style="background:rgba(96,165,250,0.12); color:#60A5FA; border:1px solid rgba(96,165,250,0.35); font-family:var(--font-mono); font-size:10.5px;">
+          📦 Snapshots Dívida: ${snaps} mês(es)
         </span>
         ${testes.map(t => `
           <span class="badge" style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); font-family:var(--font-mono); font-size:10.5px;">
@@ -382,13 +387,50 @@ function renderizarOperacionalDQGold(op) {
           </span>
         `).join("")}
       </div>
-      <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary); line-height:1.7;">
+      <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-secondary); line-height:1.7; margin-bottom:8px;">
         • <strong>Funil Dívida (Bronze → Silver Sul):</strong> Bruto <code>${fmtM(fd.bronze_ecv)} ECV</code> (${fmtInt(fd.bronze_linhas)} fat.)
         − Fora Sul/Inválidos <code>${fmtM(fd.filtrado_fora_sul_ou_invalido_ecv)} ECV</code>
         = Silver Região Sul <strong><code>${fmtM(fd.silver_ecv)} ECV</code></strong> (${fmtInt(fd.silver_linhas)} fat.).
       </div>
+      ${frescura.length ? `
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+          <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">Frescura Fontes:</span>
+          ${frescura.map(f => {
+            const atras = f.alerta_atraso;
+            const cor = atras ? "#FBBF24" : "#34D399";
+            const bg = atras ? "rgba(251,191,36,0.12)" : "rgba(52,211,153,0.10)";
+            const bd = atras ? "rgba(251,191,36,0.35)" : "rgba(52,211,153,0.3)";
+            return `<span class="badge" style="background:${bg}; color:${cor}; border:1px solid ${bd}; font-family:var(--font-mono); font-size:10px; padding:2px 6px;" title="${f.ultimo_ficheiro} (${f.modificado_em})">${f.categoria}: ${f.dias_idade}d</span>`;
+          }).join("")}
+        </div>
+      ` : ""}
     `;
   }
+}
+
+window._scoreV2Top100 = [];
+
+function exportarBrigadasScoreV2CSV() {
+  const rows = window._scoreV2Top100 || [];
+  if (!rows.length) {
+    alert("Abra a aba 0. Visão Executiva (Gold) e aguarde o carregamento antes de exportar.");
+    return;
+  }
+  const cab = ["CIL", "Nome", "Ilha", "Unidade", "PT", "Probabilidade_Fraude_Pct", "Score_v2", "Divida_Exigivel_ECV", "T3_kWh", "Fatores_Explicaveis"];
+  const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const linhas = [
+    cab.join(";"),
+    ...rows.map(r => [
+      r.cil, esc(r.nome), esc(r.ilha), esc(r.desc_uni), esc(r.pt),
+      r.prob_fraude_pct, r.score_v2, r.divida_exigivel_ecv, r.t3_kwh, esc(r.motivos_v2)
+    ].join(";"))
+  ];
+  const blob = new Blob(["\uFEFF" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `EDEC_Brigadas_ScoreV2_Top100_${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
 function renderizarScoreV2Gold(sv2) {
@@ -425,6 +467,7 @@ function renderizarScoreV2Gold(sv2) {
 
   if (tbodyTop) {
     const top = sv2.fila_brigada_top100 || [];
+    window._scoreV2Top100 = top;
     tbodyTop.innerHTML = top.map(r => `
       <tr style="cursor:pointer;" onclick="if(typeof abrirDossiePorCIL==='function') abrirDossiePorCIL(${r.cil})">
         <td style="font-family:var(--font-mono); color:#60A5FA; font-weight:700;">${r.cil}</td>
