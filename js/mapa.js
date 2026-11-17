@@ -1,24 +1,107 @@
     // =========================================================================
-    // MOTOR 3D: TOPOGRAFIA INTERATIVA DE SANTIAGO & POSTOS DE TRANSFORMAÇÃO (PTs)
+    // MOTOR 3D: TOPOGRAFIA INTERATIVA DE SANTIAGO & BALANÇO REAL DE PTs (SL7000)
     // =========================================================================
-    const DADOS_PTS_3D = [
-      { id: "PT-015", nome: "Fazenda / Sucupira", concelho: "Praia", x: 12, z: 22, injetada: 142.5, faturada: 88.1, perda: 54.4, taxa: 38.2, divida: 34218450, clientes: 418, status: "critico" },
-      { id: "PT-042", nome: "Palmarejo Universitário", concelho: "Praia", x: 10, z: 24, injetada: 168.0, faturada: 120.1, perda: 47.9, taxa: 28.5, divida: 28410200, clientes: 520, status: "alerta" },
-      { id: "PT-088", nome: "Achada Santo António Sul", concelho: "Praia", x: 13, z: 25, injetada: 195.4, faturada: 154.3, perda: 41.1, taxa: 21.0, divida: 22140800, clientes: 630, status: "alerta" },
-      { id: "PT-112", nome: "Platô Histórico / Centro", concelho: "Praia", x: 14, z: 23, injetada: 110.2, faturada: 97.6, perda: 12.6, taxa: 11.4, divida: 14820100, clientes: 310, status: "normal" },
-      { id: "PT-204", nome: "Assomada Centro Comercial", concelho: "Santa Catarina", x: 1, z: 2, injetada: 124.0, faturada: 84.7, perda: 39.3, taxa: 31.7, divida: 19640000, clientes: 380, status: "critico" },
-      { id: "PT-215", nome: "Rincão Costeiro", concelho: "Santa Catarina", x: -10, z: 4, injetada: 48.0, faturada: 36.4, perda: 11.6, taxa: 24.1, divida: 8920000, clientes: 140, status: "alerta" },
-      { id: "PT-310", nome: "Pedra Badejo Orla", concelho: "Santa Cruz", x: 14, z: 5, injetada: 86.5, faturada: 62.4, perda: 24.1, taxa: 27.8, divida: 16540300, clientes: 260, status: "alerta" },
-      { id: "PT-401", nome: "Tarrafal Baía / Ponta", concelho: "Tarrafal", x: -8, z: -26, injetada: 72.0, faturada: 61.8, perda: 10.2, taxa: 14.2, divida: 11210000, clientes: 210, status: "normal" },
-      { id: "PT-502", nome: "São Domingos Vale", concelho: "São Domingos", x: 8, z: 14, injetada: 65.0, faturada: 45.9, perda: 19.1, taxa: 29.3, divida: 13740000, clientes: 190, status: "alerta" },
-      { id: "PT-601", nome: "Calheta São Miguel", concelho: "São Miguel", x: 6, z: -12, injetada: 54.0, faturada: 43.5, perda: 10.5, taxa: 19.5, divida: 7850000, clientes: 165, status: "alerta" }
-    ];
-
-    let ptSelecionado3D = DADOS_PTS_3D[0];
+    let DADOS_PTS_3D = [];
+    let BALANCO_TRIMS = {};
+    let trimestreAtualPT = "2026-T3";
+    let ptSelecionado3D = null;
     let scene3D, camera3D, renderer3D, controls3D, animId3D;
     let beacons3D = [];
     let autoRotacao3D = true;
     let iniciado3D = false;
+
+    function geoParaTerreno3D(lat, lon) {
+      // Mapeia coordenadas reais da Ilha de Santiago para o plano 3D (x: -24..24, z: -28..28)
+      if (!lat || !lon || isNaN(lat) || isNaN(lon)) return { x: 0, z: 0 };
+      const x = ((Number(lon) - (-23.60)) / 0.18) * 20;
+      const z = ((15.10 - Number(lat)) / 0.22) * 26;
+      return {
+        x: Math.max(-22, Math.min(22, x)),
+        z: Math.max(-26, Math.min(26, z)),
+      };
+    }
+
+    async function carregarBalancoPTReal(trimCod = trimestreAtualPT) {
+      trimestreAtualPT = trimCod;
+      if (!Object.keys(BALANCO_TRIMS).length) {
+        try {
+          const resp = await fetch(
+            `${SUPABASE_URL}/rest/v1/santiago_marts_gold?chave=eq.balanco_pt_trimestral&select=dados`,
+            { headers: HEADERS }
+          );
+          if (resp.ok) {
+            const rows = await resp.json();
+            if (rows.length && rows[0].dados?.trimestres) {
+              BALANCO_TRIMS = rows[0].dados.trimestres;
+            }
+          }
+        } catch (err) {
+          console.error("Erro ao carregar Balanço PT:", err);
+        }
+      }
+
+      const tri = BALANCO_TRIMS[trimCod];
+      if (!tri) {
+        iniciarOuRedimensionar3D();
+        return;
+      }
+
+      const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      setTxt("m2-kpi-pts", `${tri.pts_com_cobertura} / ${tri.pts_medidos}`);
+      setTxt("m2-kpi-inj", `${Number(tri.injetada_mwh || 0).toLocaleString("pt-PT", { maximumFractionDigits: 1 })} MWh`);
+      setTxt("m2-kpi-fat", `${Number(tri.faturada_mwh || 0).toLocaleString("pt-PT", { maximumFractionDigits: 1 })} MWh`);
+      setTxt("m2-kpi-perda", `${Number(tri.perda_mwh || 0).toLocaleString("pt-PT", { maximumFractionDigits: 1 })} MWh (${tri.taxa_perda_pct}%)`);
+
+      DADOS_PTS_3D = (tri.pts || [])
+        .filter(p => p.status !== "sem_cobertura" && p.injetada_kwh > 0)
+        .map(p => {
+          const pos = geoParaTerreno3D(p.lat, p.lon);
+          return {
+            id: p.pt,
+            nome: p.localidade || p.pt,
+            concelho: p.localidade || "Santiago",
+            contador: p.contador,
+            x: pos.x,
+            z: pos.z,
+            injetada: Number(p.injetada_kwh) / 1000.0,
+            faturada: Number(p.faturada_kwh) / 1000.0,
+            perda: Number(p.perda_kwh) / 1000.0,
+            taxa: Number(p.taxa_perda_pct),
+            divida: Number(p.divida_ecv || 0),
+            clientes: Number(p.qtd_clientes || 0),
+            status: p.status,
+          };
+        });
+
+      ptSelecionado3D = DADOS_PTS_3D[0] || null;
+      iniciarOuRedimensionar3D();
+      if (iniciado3D) criarBeaconsPTs();
+      renderizarTabelaCompletaPTs(tri.pts || []);
+    }
+
+    function mudarTrimestreBalancoPT(trimCod) {
+      carregarBalancoPTReal(trimCod);
+    }
+
+    function renderizarTabelaCompletaPTs(pts) {
+      const tbody = document.getElementById("m2-tbody-pts");
+      if (!tbody) return;
+      tbody.innerHTML = pts.map(p => {
+        const cor = p.status === "critico" ? "#F87171" : p.status === "alerta" ? "#FBBF24" : p.status === "normal" ? "#34D399" : "var(--text-muted)";
+        const stLbl = p.status === "sem_cobertura" ? "S/ Cobertura CL_PT" : p.status.toUpperCase();
+        return `
+          <tr style="cursor:pointer;" onclick="selecionarPT3DPorId('${p.pt}')">
+            <td style="font-family:var(--font-mono); font-weight:700; color:#60A5FA;">${p.pt}</td>
+            <td style="font-size:11px; color:var(--text-secondary);">${p.localidade || "--"}</td>
+            <td style="text-align:right; font-family:var(--font-mono);">${p.qtd_clientes}</td>
+            <td style="text-align:right; font-family:var(--font-mono);">${(p.injetada_kwh / 1000).toFixed(1)} MWh</td>
+            <td style="text-align:right; font-family:var(--font-mono);">${(p.faturada_kwh / 1000).toFixed(1)} MWh</td>
+            <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:${cor};">${p.taxa_perda_pct}%</td>
+            <td style="text-align:center;"><span class="badge" style="color:${cor}; border:1px solid ${cor}; font-size:9.5px;">${stLbl}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
 
     function iniciarOuRedimensionar3D() {
       const container = document.getElementById("canvas-3d-viewport");
@@ -296,8 +379,8 @@
       document.getElementById("pt-bar-faturada").style.width = `${pctFat.toFixed(1)}%`;
       document.getElementById("pt-bar-perda").style.width = `${pctPerda.toFixed(1)}%`;
 
-      const prejuizoEcv = Math.round(pt.perda * 26000); // ~26 ECV/kWh
-      document.getElementById("pt-sel-prejuizo").textContent = `~${prejuizoEcv.toLocaleString('pt-PT')} ECV/mês`;
+      const prejuizoEcv = Math.round(pt.perda * 35810); // PM Real 35,81 ECV/kWh
+      document.getElementById("pt-sel-prejuizo").textContent = `~${prejuizoEcv.toLocaleString('pt-PT')} ECV/trim.`;
       document.getElementById("pt-sel-divida").textContent = `${pt.divida.toLocaleString('pt-PT')} ECV`;
       document.getElementById("pt-sel-clientes").textContent = `${pt.clientes} clientes ligados`;
 
