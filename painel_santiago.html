@@ -2095,20 +2095,22 @@
         <div class="panel-title" style="margin-bottom:10px;">
           <span>⚡</span> Balanço Detalhado de Todos os PTs Medidos (SL7000 vs Faturação E017)
         </div>
-        <div class="table-scroll" style="max-height:320px;">
+        <div class="table-scroll" style="max-height:360px;">
           <table>
             <thead>
               <tr>
                 <th>PT</th>
                 <th>Localidade</th>
-                <th style="text-align:right;">Clientes</th>
-                <th style="text-align:right;">Injetada</th>
-                <th style="text-align:right;">Faturada</th>
-                <th style="text-align:right;">Perda %</th>
+                <th style="text-align:right; white-space:nowrap;">Tot. Clientes</th>
+                <th style="text-align:right; white-space:nowrap;">Contador IP (Consumo)</th>
+                <th style="text-align:right; white-space:nowrap;">Injetada</th>
+                <th style="text-align:right; white-space:nowrap;">Faturada (Cli+IP)</th>
+                <th style="text-align:right; white-space:nowrap;">Perda %</th>
                 <th style="text-align:center;">Estado</th>
               </tr>
             </thead>
             <tbody id="m2-tbody-pts"></tbody>
+            <tfoot id="m2-tfoot-pts"></tfoot>
           </table>
         </div>
       </div>

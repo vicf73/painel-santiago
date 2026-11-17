@@ -234,6 +234,9 @@ def executar_balanco_pt(base_santiago: str, base_atual: str) -> dict:
             fat_ip AS (
                 SELECT
                     i.pt,
+                    MAX(i.contador_ip) AS contador_ip,
+                    MAX(ip.cil_ip) AS cil_ip,
+                    SUM(COALESCE(f.consumo_qtd, 0)) AS fat_ip_total_kwh,
                     SUM(CASE WHEN ip.pt_atual_cil IS DISTINCT FROM i.pt THEN COALESCE(f.consumo_qtd, 0) ELSE 0 END) AS fat_ip_extra_kwh
                 FROM inj i
                 LEFT JOIN tmp_ip_cil ip ON i.contador_ip = ip.contador_ip
@@ -244,6 +247,8 @@ def executar_balanco_pt(base_santiago: str, base_atual: str) -> dict:
                 i.pt,
                 i.num_contador,
                 i.localidade,
+                COALESCE(NULLIF(fi.contador_ip, ''), i.contador_ip) AS contador_ip,
+                ROUND(COALESCE(fi.fat_ip_total_kwh, 0), 1) AS fat_ip_kwh,
                 ROUND(i.injetada_kwh, 1) AS injetada_kwh,
                 ROUND(COALESCE(fp.fat_clientes_kwh, 0) + COALESCE(fi.fat_ip_extra_kwh, 0), 1) AS faturada_kwh,
                 COALESCE(g.qtd_clientes, 0) AS qtd_clientes,
@@ -261,9 +266,10 @@ def executar_balanco_pt(base_santiago: str, base_atual: str) -> dict:
         tot_inj_valid = 0.0
         tot_fat_valid = 0.0
         for r in rows:
-            pt, cont, loc, inj, fat, qcli, div, lat, lon = r
+            pt, cont, loc, cont_ip, fat_ip_kwh, inj, fat, qcli, div, lat, lon = r
             inj_f = float(inj or 0)
             fat_f = float(fat or 0)
+            fat_ip_f = float(fat_ip_kwh or 0)
             perda = inj_f - fat_f
             taxa = (perda / inj_f * 100.0) if inj_f > 0 else 0.0
             if int(qcli or 0) < 10 or fat_f <= 0:
@@ -282,6 +288,8 @@ def executar_balanco_pt(base_santiago: str, base_atual: str) -> dict:
             lista_pts.append({
                 "pt": pt,
                 "contador": cont,
+                "contador_ip": cont_ip or "",
+                "fat_ip_kwh": fat_ip_f,
                 "localidade": loc or "",
                 "injetada_kwh": inj_f,
                 "faturada_kwh": fat_f,
