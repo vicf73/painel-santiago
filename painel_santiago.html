@@ -297,7 +297,7 @@
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod2" onclick="selecionarModulo('mod2')">
           🌐 2. Mapa GIS &amp; Balanço PT
-          <span class="mod-pill-soon">Em Atualização</span>
+          <span class="mod-pill-soon" style="background:rgba(16,185,129,0.14); color:#34D399; border-color:rgba(16,185,129,0.4); font-weight:700;">Balanço Real</span>
         </button>
         <button class="mod-tab-btn" id="tab-btn-mod5" onclick="selecionarModulo('mod5')">
           ⚖️ 5. Jurídico CF1 &amp; Cobrança
@@ -1909,12 +1909,37 @@
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
+          <select id="mod2-trimestre" class="select-ctrl" style="min-width:190px;" onchange="mudarTrimestreBalancoPT(this.value)">
+            <option value="2026-T3">3º Trim 2026 (Jul–Set)</option>
+            <option value="2026-T2">2º Trim 2026 (Abr–Jun)</option>
+            <option value="2026-T1">1º Trim 2026 (Jan–Mar)</option>
+          </select>
           <button class="btn" onclick="resetarCamera3D()" title="Restaurar orientação original da câmera 3D">
             ↺ Centrar Câmera 3D
           </button>
           <button class="btn btn-amber" onclick="selecionarModulo('mod1')" title="Ver contratos associados na Triagem">
             📊 Ir para Triagem de Contratos
           </button>
+        </div>
+      </div>
+
+      <!-- KPIs Reais do Balanço Energético por PT -->
+      <div class="kpi-strip" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="kpi-card">
+          <div class="kpi-label"><span>PTs MEDIDOS (SL7000)</span><span>C/ COBERTURA / TOTAL</span></div>
+          <div class="kpi-value" id="m2-kpi-pts">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>ENERGIA INJETADA</span><span>OBIS 1.1.1.8.0</span></div>
+          <div class="kpi-value" style="color:#60A5FA;" id="m2-kpi-inj">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>ENERGIA FATURADA</span><span>EDEC SUL (E017 + IP)</span></div>
+          <div class="kpi-value" style="color:#34D399;" id="m2-kpi-fat">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>PERDA GLOBAL APURADA</span><span>INJETADA − FATURADA</span></div>
+          <div class="kpi-value" style="color:#F87171;" id="m2-kpi-perda">--</div>
         </div>
       </div>
 
@@ -2062,6 +2087,29 @@
               <!-- Preenchido via script -->
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Tabela Completa de PTs Medidos (Balanço Real) -->
+      <div class="table-container" style="padding:14px 16px;">
+        <div class="panel-title" style="margin-bottom:10px;">
+          <span>⚡</span> Balanço Detalhado de Todos os PTs Medidos (SL7000 vs Faturação E017)
+        </div>
+        <div class="table-scroll" style="max-height:320px;">
+          <table>
+            <thead>
+              <tr>
+                <th>PT</th>
+                <th>Localidade</th>
+                <th style="text-align:right;">Clientes</th>
+                <th style="text-align:right;">Injetada</th>
+                <th style="text-align:right;">Faturada</th>
+                <th style="text-align:right;">Perda %</th>
+                <th style="text-align:center;">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="m2-tbody-pts"></tbody>
+          </table>
         </div>
       </div>
     </div>
