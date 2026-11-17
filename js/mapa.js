@@ -85,22 +85,54 @@
 
     function renderizarTabelaCompletaPTs(pts) {
       const tbody = document.getElementById("m2-tbody-pts");
+      const tfoot = document.getElementById("m2-tfoot-pts");
       if (!tbody) return;
+
+      let totCli = 0, totIpKwh = 0, totInj = 0, totFat = 0;
       tbody.innerHTML = pts.map(p => {
         const cor = p.status === "critico" ? "#F87171" : p.status === "alerta" ? "#FBBF24" : p.status === "normal" ? "#34D399" : "var(--text-muted)";
         const stLbl = p.status === "sem_cobertura" ? "S/ Cobertura CL_PT" : p.status.toUpperCase();
+        const ipKwh = Number(p.fat_ip_kwh || 0);
+        const ipTxt = p.contador_ip
+          ? `<div style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">${p.contador_ip}</div><div style="font-family:var(--font-mono); font-weight:700; color:#FBBF24;">${Math.round(ipKwh).toLocaleString("pt-PT")} kWh</div>`
+          : `<span style="color:var(--text-muted); opacity:0.45;">—</span>`;
+
+        totCli += Number(p.qtd_clientes || 0);
+        totIpKwh += ipKwh;
+        if (p.status !== "sem_cobertura") {
+          totInj += Number(p.injetada_kwh || 0);
+          totFat += Number(p.faturada_kwh || 0);
+        }
+
         return `
           <tr style="cursor:pointer;" onclick="selecionarPT3DPorId('${p.pt}')">
-            <td style="font-family:var(--font-mono); font-weight:700; color:#60A5FA;">${p.pt}</td>
+            <td style="font-family:var(--font-mono); font-weight:700; color:#60A5FA; white-space:nowrap;">${p.pt}</td>
             <td style="font-size:11px; color:var(--text-secondary);">${p.localidade || "--"}</td>
-            <td style="text-align:right; font-family:var(--font-mono);">${p.qtd_clientes}</td>
-            <td style="text-align:right; font-family:var(--font-mono);">${(p.injetada_kwh / 1000).toFixed(1)} MWh</td>
-            <td style="text-align:right; font-family:var(--font-mono);">${(p.faturada_kwh / 1000).toFixed(1)} MWh</td>
-            <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:${cor};">${p.taxa_perda_pct}%</td>
+            <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">${Number(p.qtd_clientes || 0).toLocaleString("pt-PT")}</td>
+            <td style="text-align:right; white-space:nowrap;">${ipTxt}</td>
+            <td style="text-align:right; font-family:var(--font-mono); white-space:nowrap;">${(p.injetada_kwh / 1000).toFixed(1)} MWh</td>
+            <td style="text-align:right; font-family:var(--font-mono); white-space:nowrap;">${(p.faturada_kwh / 1000).toFixed(1)} MWh</td>
+            <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:${cor}; white-space:nowrap;">${p.taxa_perda_pct}%</td>
             <td style="text-align:center;"><span class="badge" style="color:${cor}; border:1px solid ${cor}; font-size:9.5px;">${stLbl}</span></td>
           </tr>
         `;
       }).join("");
+
+      if (tfoot) {
+        const taxaTot = totInj > 0 ? (((totInj - totFat) / totInj) * 100).toFixed(1) : "0.0";
+        tfoot.innerHTML = `
+          <tr style="border-top:2px solid var(--border-dim); background:var(--bg-panel-elevated); font-weight:800; font-family:var(--font-mono);">
+            <td>TOTAL (${pts.length} PTs)</td>
+            <td style="font-size:10.5px; color:var(--text-muted);">*Injetada/Faturada c/ cobertura</td>
+            <td style="text-align:right;">${totCli.toLocaleString("pt-PT")}</td>
+            <td style="text-align:right; color:#FBBF24;">${(totIpKwh / 1000).toFixed(1)} MWh</td>
+            <td style="text-align:right;">${(totInj / 1000).toFixed(1)} MWh</td>
+            <td style="text-align:right;">${(totFat / 1000).toFixed(1)} MWh</td>
+            <td style="text-align:right; color:#F87171;">${taxaTot}%</td>
+            <td></td>
+          </tr>
+        `;
+      }
     }
 
     function iniciarOuRedimensionar3D() {
