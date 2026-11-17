@@ -386,24 +386,35 @@
         </div>
 
         <div class="table-container" style="padding:14px 16px;">
-          <div class="panel-title" style="margin-bottom:10px;">
-            <span>⏳</span> Aging Real da Dívida (por Emissão da Fatura)
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <div class="panel-title">
+              <span>⏳</span> Aging Real da Dívida (por Emissão da Fatura)
+            </div>
+            <div style="display:flex; gap:6px; font-family:var(--font-mono); font-size:10px;">
+              <span style="color:#34D399;">● &lt;1a Corrente</span>
+              <span style="color:#FBBF24;">● 1–5a Crítico</span>
+              <span style="color:#F87171;">● &gt;5a Prescrito</span>
+            </div>
           </div>
-          <div class="table-scroll" style="max-height:360px;">
+          <div class="table-scroll" style="max-height:380px;">
             <table>
               <thead>
                 <tr>
                   <th>Escalão</th>
                   <th style="text-align:right;">Faturas</th>
-                  <th style="text-align:right;">Total</th>
-                  <th style="text-align:right;">17</th>
-                  <th style="text-align:right;">21</th>
-                  <th style="text-align:right;">07</th>
-                  <th style="text-align:right;">70</th>
+                  <th style="text-align:right;">Total Carteira (%)</th>
+                  <th style="text-align:right; color:#60A5FA;">17 · EDEC Sul</th>
+                  <th style="text-align:right; color:#FBBF24;">21 · Electra SA</th>
+                  <th style="text-align:right; color:#A78BFA;">07 · Electra Sul</th>
+                  <th style="text-align:right; color:#F472B6;">70 · SARL</th>
                 </tr>
               </thead>
               <tbody id="g-tbody-aging"></tbody>
+              <tfoot id="g-tfoot-aging"></tfoot>
             </table>
+          </div>
+          <div style="font-size:10.5px; color:var(--text-muted); margin-top:8px; font-family:var(--font-mono);">
+            Unidades: <strong>B</strong> = Mil Milhões · <strong>M</strong> = Milhões · <strong>k</strong> = Milhares de ECV. Valores negativos em itálico correspondem a notas de crédito/retificações não compensadas.
           </div>
         </div>
       </div>
