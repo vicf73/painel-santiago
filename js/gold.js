@@ -82,9 +82,9 @@ function renderizarKpisGold(k) {
 
 function renderizarSerieFatCobGold(fatRows, cobRows) {
   const tbody = document.getElementById("g-tbody-fat-cob");
+  const tfoot = document.getElementById("g-tfoot-fat-cob");
   if (!tbody) return;
 
-  // Mapear lote_ym (ex: 202602 = dados de jan/2026 ou mês do lote) para E017
   const porLote = {};
   for (const r of fatRows) {
     if (r.emp !== "17") continue;
@@ -97,7 +97,6 @@ function renderizarSerieFatCobGold(fatRows, cobRows) {
     if (r.produto === "EM") porLote[ym].em += Number(r.valor_ecv || 0);
   }
 
-  // Cobrança E017 por ano_mes (2026-01 .. 2026-10)
   const cobPorMes = {};
   for (const r of cobRows) {
     if (r.emp !== "17") continue;
@@ -107,36 +106,75 @@ function renderizarSerieFatCobGold(fatRows, cobRows) {
   const lotes = Object.keys(porLote).sort();
   if (!lotes.length) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:16px; color:var(--text-muted);">Sem dados mensais.</td></tr>`;
+    if (tfoot) tfoot.innerHTML = "";
     return;
   }
 
-  // Lote 202602 corresponde ao mês de atividade 2026-01, ..., 202611 -> 2026-10
+  const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
   const loteParaMesCob = (lote) => {
     const ano = Number(lote.slice(0, 4));
     const mes = Number(lote.slice(4, 6));
     const d = new Date(ano, mes - 2, 1);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    return {
+      key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+      label: `${nomesMes[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`
+    };
   };
+
+  let totKwh = 0, totFat = 0, totCob = 0, totEb = 0, totEm = 0, totEe = 0;
 
   tbody.innerHTML = lotes.map(lote => {
     const f = porLote[lote];
-    const mesCobKey = loteParaMesCob(lote);
-    const cob = cobPorMes[mesCobKey] || 0;
-    const taxa = f.fat_ecv > 0 ? ((cob / f.fat_ecv) * 100).toFixed(1) : "0.0";
-    const pm = f.fat_kwh > 0 ? (f.fat_ecv / f.fat_kwh).toFixed(2) : "0.00";
-    const corTaxa = Number(taxa) >= 90 ? "#34D399" : Number(taxa) >= 75 ? "#FBBF24" : "#F87171";
+    const mInfo = loteParaMesCob(lote);
+    const cob = cobPorMes[mInfo.key] || 0;
+    const taxaNum = f.fat_ecv > 0 ? (cob / f.fat_ecv) * 100 : 0;
+    const taxa = taxaNum.toFixed(1).replace(".", ",");
+    const pm = f.fat_kwh > 0 ? (f.fat_ecv / f.fat_kwh).toFixed(2).replace(".", ",") : "0,00";
+    const corTaxa = taxaNum >= 90 ? "#34D399" : taxaNum >= 75 ? "#FBBF24" : "#F87171";
+
+    totKwh += f.fat_kwh;
+    totFat += f.fat_ecv;
+    totCob += cob;
+    totEb += f.eb;
+    totEm += f.em;
+    totEe += f.ee;
+
     return `
       <tr>
-        <td style="font-family:var(--font-mono); font-weight:700;">${mesCobKey}</td>
-        <td style="text-align:right; font-family:var(--font-mono);">${(f.fat_kwh / 1e6).toFixed(2)} GWh</td>
-        <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">${fmtM(f.fat_ecv)} ECV</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary);">${pm}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#60A5FA; font-weight:700;">${fmtM(cob)} ECV</td>
-        <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:${corTaxa};">${taxa}%</td>
-        <td style="text-align:right; font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">EB ${fmtM(f.eb)} • EM ${fmtM(f.em)} • EE ${fmtM(f.ee)}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; white-space:nowrap;">${mInfo.label}</td>
+        <td style="text-align:right; font-family:var(--font-mono); white-space:nowrap;">${(f.fat_kwh / 1e6).toFixed(2).replace(".", ",")}</td>
+        <td style="text-align:right; font-family:var(--font-mono); font-weight:700; white-space:nowrap;">${fmtM(f.fat_ecv)}</td>
+        <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary); white-space:nowrap;">${pm}</td>
+        <td style="text-align:right; font-family:var(--font-mono); color:#60A5FA; font-weight:700; white-space:nowrap;">${fmtM(cob)}</td>
+        <td style="text-align:right; font-family:var(--font-mono); white-space:nowrap; min-width:74px;">
+          <div style="font-weight:800; color:${corTaxa};">${taxa}%</div>
+          <div style="height:3px; background:rgba(148,163,184,0.18); border-radius:2px; margin-top:2px; overflow:hidden;">
+            <div style="width:${Math.min(100, Math.max(0, taxaNum)).toFixed(0)}%; height:100%; background:${corTaxa};"></div>
+          </div>
+        </td>
+        <td style="text-align:right; font-family:var(--font-mono); font-size:10px; color:var(--text-secondary); white-space:nowrap;" title="EB: ${fmtM(f.eb)} | EM: ${fmtM(f.em)} | EE: ${fmtM(f.ee)}">
+          ${Math.round(f.eb / 1e6)}M / ${Math.round(f.em / 1e6)}M / ${Math.round(f.ee / 1e6)}M
+        </td>
       </tr>
     `;
   }).join("");
+
+  if (tfoot) {
+    const taxaTot = totFat > 0 ? ((totCob / totFat) * 100).toFixed(1).replace(".", ",") : "0,0";
+    const pmTot = totKwh > 0 ? (totFat / totKwh).toFixed(2).replace(".", ",") : "0,00";
+    const corTot = (totFat > 0 && (totCob / totFat) * 100 >= 90) ? "#34D399" : "#FBBF24";
+    tfoot.innerHTML = `
+      <tr style="border-top:2px solid var(--border-dim); background:var(--bg-panel-elevated); font-weight:800; font-family:var(--font-mono);">
+        <td style="white-space:nowrap;">TOTAL 2026</td>
+        <td style="text-align:right; white-space:nowrap;">${(totKwh / 1e6).toFixed(2).replace(".", ",")}</td>
+        <td style="text-align:right; white-space:nowrap;">${fmtM(totFat)}</td>
+        <td style="text-align:right; color:var(--text-secondary); white-space:nowrap;">${pmTot}</td>
+        <td style="text-align:right; color:#60A5FA; white-space:nowrap;">${fmtM(totCob)}</td>
+        <td style="text-align:right; color:${corTot}; white-space:nowrap;">${taxaTot}%</td>
+        <td style="text-align:right; font-size:10px; color:var(--text-secondary); white-space:nowrap;">${Math.round(totEb / 1e6)}M / ${Math.round(totEm / 1e6)}M / ${Math.round(totEe / 1e6)}M</td>
+      </tr>
+    `;
+  }
 }
 
 function renderizarAgingGold(rows) {
