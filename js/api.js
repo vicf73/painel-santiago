@@ -117,6 +117,9 @@
         if (map) {
           setTimeout(() => map.invalidateSize(), 60);
         }
+      } else if (modId === "mod2") {
+        if (paneMod2) paneMod2.classList.remove("hidden");
+        if (typeof carregarBalancoPTReal === "function") carregarBalancoPTReal();
       } else if (modId === "mod3") {
         if (paneMod3) paneMod3.classList.remove("hidden");
         dividaIniciada = true;

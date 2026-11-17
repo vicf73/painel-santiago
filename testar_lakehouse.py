@@ -29,14 +29,14 @@ def testar():
     arqs_py = [
         "etl_santiago_supabase.py", "etl_lakehouse.py", "publicar_painel_web.py",
         "etl/manifesto.py", "etl/bronze.py", "etl/silver.py",
-        "etl/qualidade.py", "etl/score_v2.py", "etl/gold.py",
+        "etl/qualidade.py", "etl/score_v2.py", "etl/balanco_pt.py", "etl/gold.py",
     ]
     for rel in arqs_py:
         py_compile.compile(os.path.join(BASE, rel), doraise=True)
     print(f"  [1/5] Sintaxe Python ({len(arqs_py)} ficheiros): OK")
 
     # 2. Sintaxe JS
-    arqs_js = ["config_santiago.js", "js/api.js", "js/gold.js", "js/contratos.js", "js/divida.js", "js/auth.js"]
+    arqs_js = ["config_santiago.js", "js/api.js", "js/gold.js", "js/mapa.js", "js/contratos.js", "js/divida.js", "js/auth.js"]
     for rel in arqs_js:
         r = subprocess.run(["node", "--check", os.path.join(BASE, rel)], capture_output=True, text=True)
         if r.returncode != 0:
@@ -70,7 +70,7 @@ def testar():
     gold_path = os.path.join(BASE, "lake", "gold", "marts_gold.json")
     with open(gold_path, "r", encoding="utf-8") as f:
         gold = json.load(f)
-    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao"}
+    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao", "balanco_pt_trimestral"}
     assert chaves_esp.issubset(set(gold.keys())), f"Chaves Gold em falta: {chaves_esp - set(gold.keys())}"
     auc = gold["score_v2_validacao"].get("auc_teste_out_of_time", 0)
     assert auc >= 0.75, f"AUC Out-of-Time abaixo do limite: {auc}"
