@@ -18,6 +18,7 @@ _arquivo_antigo/
 backups/
 entrada/
 lake/
+logs/
 *.parquet
 *.duckdb
 *.duckdb.wal

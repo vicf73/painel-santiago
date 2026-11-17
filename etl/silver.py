@@ -314,6 +314,18 @@ def executar_silver(base_santiago: str, anos_prescricao: int = 5) -> dict:
         WHERE TRY_CAST(o.CIL AS BIGINT) BETWEEN 10000000 AND 99999999;
     """)
 
+    # 8. Snapshot mensal imutável de dívida (base histórica para Roll-Rate)
+    snap_dir = os.path.join(silver_dir, "snapshots_divida")
+    os.makedirs(snap_dir, exist_ok=True)
+    tag_mes = datetime.now().strftime("%Y-%m")
+    snap_pq = os.path.join(snap_dir, f"dt_extracao={tag_mes}.parquet").replace("\\", "/")
+    con.execute(f"""
+        COPY (
+            SELECT emp, cil, numfact, dt_emissao, faixa_aging, val_divida_ecv, is_prescrita, dt_extracao
+            FROM fct_divida_snapshot
+        ) TO '{snap_pq}' (FORMAT PARQUET, COMPRESSION ZSTD);
+    """)
+
     contagens = {}
     for tbl in [
         "dim_empresa", "dim_uc_geo", "dim_local_consumo", "dim_contrato",

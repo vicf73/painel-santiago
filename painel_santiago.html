@@ -482,7 +482,10 @@
           <div class="panel-title">
             <span>🎯</span> Priorização de Brigadas — Score de Risco v2 (Calibrado em 83k Inspeções CEA)
           </div>
-          <div id="g-scorev2-badges" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <div id="g-scorev2-badges" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+            <button class="btn" onclick="exportarBrigadasScoreV2CSV()" title="Exportar Top 100 alvos em CSV para as equipas de campo">⬇ Exportar Top 100 Brigadas (CSV)</button>
+          </div>
         </div>
         <div style="display:grid; grid-template-columns: 0.9fr 1.6fr; gap:14px;">
           <div>
@@ -560,7 +563,7 @@
       </div>
 
       <div class="kpi-card red">
-        <div class="kpi-label"><span>ANOMALIAS DE LEITURA</span><span>SET 2026</span></div>
+        <div class="kpi-label"><span>ANOMALIAS DE LEITURA</span><span>ÚLT. EXTRAÇÃO</span></div>
         <div class="kpi-value" id="kpi-anomalias">--</div>
         <div class="kpi-sub" id="kpi-anomalias-sub">--% do universo filtrado</div>
       </div>

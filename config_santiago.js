@@ -10,6 +10,7 @@ window.SANTIAGO_CONFIG = {
   AUTH_STORAGE_KEY: "santiago_auth_session",
   THEME_STORAGE_KEY: "santiago_theme",
   VERSAO_SISTEMA: "2026.11-RBAC",
+  ADS_CLIENT: { cils: [60220187, 60220188], id_cliente: 60209538, nome: "AGUAS DE SANTIAGO" },
   EMPRESAS_CREDORAS: [
     { codigo: "17", sigla: "EDEC Sul",     cor: "#60A5FA", descricao: "Faturação Corrente Energia (EB, EE, EM)" },
     { codigo: "21", sigla: "Electra SA",   cor: "#FBBF24", descricao: "Contrato Especial AdS (Água AG)" },

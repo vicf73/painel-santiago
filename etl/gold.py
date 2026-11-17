@@ -192,6 +192,39 @@ def construir_marts_gold(base_santiago: str) -> dict:
         with open(score_v2_path, "r", encoding="utf-8") as f:
             score_v2_data = json.load(f)
 
+    # Monitor de frescura das fontes (a partir de manifesto_fontes.json + pastas lake)
+    frescura_fontes = []
+    manifesto_path = os.path.join(base_santiago, "manifesto_fontes.json")
+    if os.path.exists(manifesto_path):
+        try:
+            with open(manifesto_path, "r", encoding="utf-8") as fm:
+                man = json.load(fm)
+            por_cat = {}
+            for item in man.get("fontes", []):
+                cat = item.get("categoria", "OUTROS")
+                mod = item.get("modificado_em", "")
+                if mod and (cat not in por_cat or mod > por_cat[cat]["mod"]):
+                    por_cat[cat] = {"mod": mod, "fich": item.get("ficheiro", "")}
+            hoje_dt = datetime.now()
+            for cat, info_c in sorted(por_cat.items()):
+                try:
+                    dt_mod = datetime.strptime(info_c["mod"], "%Y-%m-%d %H:%M:%S")
+                    dias = (hoje_dt - dt_mod).days
+                except Exception:
+                    dias = -1
+                frescura_fontes.append({
+                    "categoria": cat,
+                    "ultimo_ficheiro": info_c["fich"],
+                    "modificado_em": info_c["mod"],
+                    "dias_idade": dias,
+                    "alerta_atraso": bool(dias > 35),
+                })
+        except Exception:
+            pass
+
+    snap_dir = os.path.join(silver_dir, "snapshots_divida")
+    qtd_snapshots = len([f for f in os.listdir(snap_dir) if f.endswith(".parquet")]) if os.path.isdir(snap_dir) else 0
+
     marts = {
         "kpis_executivos": {
             "gerado_em": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -232,6 +265,8 @@ def construir_marts_gold(base_santiago: str) -> dict:
                 "sla_mediana_dias": float(os_res[3] or 0.0),
             },
             "qualidade_dados": dq_data,
+            "frescura_fontes": frescura_fontes,
+            "snapshots_divida_arquivados": qtd_snapshots,
         },
         "score_v2_validacao": score_v2_data,
     }
