@@ -141,27 +141,82 @@ function renderizarSerieFatCobGold(fatRows, cobRows) {
 
 function renderizarAgingGold(rows) {
   const tbody = document.getElementById("g-tbody-aging");
+  const tfoot = document.getElementById("g-tfoot-aging");
   if (!tbody) return;
   if (!rows.length) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:16px; color:var(--text-muted);">Sem dados de aging.</td></tr>`;
+    if (tfoot) tfoot.innerHTML = "";
     return;
   }
+
+  const fmtCompacto = (val) => {
+    const n = Number(val || 0);
+    if (Math.abs(n) < 0.5) return `<span style="color:var(--text-muted); opacity:0.45;">—</span>`;
+    const abs = Math.abs(n);
+    const sinal = n < 0 ? "−" : "";
+    let txt = "";
+    if (abs >= 1e9) txt = `${sinal}${(abs / 1e9).toFixed(2).replace(".", ",")} B`;
+    else if (abs >= 1e6) txt = `${sinal}${(abs / 1e6).toFixed(1).replace(".", ",")} M`;
+    else if (abs >= 1e3) txt = `${sinal}${(abs / 1e3).toFixed(1).replace(".", ",")} k`;
+    else txt = `${sinal}${Math.round(abs).toLocaleString("pt-PT")}`;
+
+    if (n < 0) {
+      return `<span style="color:#94A3B8; font-style:italic;" title="Créditos / retificações não compensadas (${Math.round(n).toLocaleString('pt-PT')} ECV)">${txt}</span>`;
+    }
+    return txt;
+  };
+
+  const corZona = (faixa) => {
+    if (["0-30d", "31-90d", "91-180d", "181-365d"].includes(faixa)) return "#34D399";
+    if (["1-2 anos", "2-5 anos"].includes(faixa)) return "#FBBF24";
+    return "#F87171";
+  };
+
   const totGeral = rows.reduce((s, r) => s + Number(r.total_ecv || 0), 0);
+  const totFat = rows.reduce((s, r) => s + Number(r.faturas || 0), 0);
+  const tot17 = rows.reduce((s, r) => s + Number(r.emp_17 || 0), 0);
+  const tot21 = rows.reduce((s, r) => s + Number(r.emp_21 || 0), 0);
+  const tot07 = rows.reduce((s, r) => s + Number(r.emp_07 || 0), 0);
+  const tot70 = rows.reduce((s, r) => s + Number(r.emp_70 || 0), 0);
+
   tbody.innerHTML = rows.map(r => {
-    const pct = totGeral > 0 ? ((Number(r.total_ecv) / totGeral) * 100).toFixed(1) : "0.0";
+    const pctNum = totGeral > 0 ? (Number(r.total_ecv) / totGeral) * 100 : 0;
+    const pct = pctNum.toFixed(1).replace(".", ",");
     const ehPresc = r.faixa === "> 5 anos";
+    const cor = corZona(r.faixa);
     return `
       <tr style="${ehPresc ? "background:rgba(244,63,94,0.06);" : ""}">
-        <td style="font-family:var(--font-mono); font-weight:700;">${r.faixa}</td>
-        <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(r.faturas)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); font-weight:800;">${fmtM(r.total_ecv)} ECV <span style="color:var(--text-muted); font-weight:400;">(${pct}%)</span></td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#60A5FA;">${fmtM(r.emp_17)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#FBBF24;">${fmtM(r.emp_21)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#A78BFA;">${fmtM(r.emp_07)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#F472B6;">${fmtM(r.emp_70)}</td>
+        <td style="font-family:var(--font-mono); font-weight:700; white-space:nowrap;">
+          <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:${cor}; margin-right:6px;"></span>${r.faixa}
+        </td>
+        <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary);">${fmtInt(r.faturas)}</td>
+        <td style="text-align:right; font-family:var(--font-mono); min-width:145px;">
+          <div style="font-weight:800; color:var(--text-primary);">${fmtCompacto(r.total_ecv)} <span style="color:var(--text-muted); font-weight:500; font-size:10.5px;">(${pct}%)</span></div>
+          <div style="height:4px; background:rgba(148,163,184,0.18); border-radius:2px; margin-top:3px; overflow:hidden;">
+            <div style="width:${Math.min(100, Math.max(1, pctNum)).toFixed(1)}%; height:100%; background:${cor};"></div>
+          </div>
+        </td>
+        <td style="text-align:right; font-family:var(--font-mono); color:#60A5FA;">${fmtCompacto(r.emp_17)}</td>
+        <td style="text-align:right; font-family:var(--font-mono); color:#FBBF24;">${fmtCompacto(r.emp_21)}</td>
+        <td style="text-align:right; font-family:var(--font-mono); color:#A78BFA;">${fmtCompacto(r.emp_07)}</td>
+        <td style="text-align:right; font-family:var(--font-mono); color:#F472B6;">${fmtCompacto(r.emp_70)}</td>
       </tr>
     `;
   }).join("");
+
+  if (tfoot) {
+    tfoot.innerHTML = `
+      <tr style="border-top:2px solid var(--border-dim); background:var(--bg-panel-elevated); font-weight:800; font-family:var(--font-mono);">
+        <td>TOTAL SUL</td>
+        <td style="text-align:right;">${fmtInt(totFat)}</td>
+        <td style="text-align:right;">${fmtCompacto(totGeral)} <span style="color:var(--text-muted); font-weight:500; font-size:10.5px;">(100%)</span></td>
+        <td style="text-align:right; color:#60A5FA;">${fmtCompacto(tot17)}</td>
+        <td style="text-align:right; color:#FBBF24;">${fmtCompacto(tot21)}</td>
+        <td style="text-align:right; color:#A78BFA;">${fmtCompacto(tot07)}</td>
+        <td style="text-align:right; color:#F472B6;">${fmtCompacto(tot70)}</td>
+      </tr>
+    `;
+  }
 }
 
 function renderizarAdSGold(ads) {
