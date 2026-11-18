@@ -711,7 +711,7 @@ def carregar_dimensoes_santiago(dim_uc: pd.DataFrame | None = None):
     df_geo = pd.read_excel(p_geo, sheet_name=0, usecols=["CIL", "lat", "long", "PT"])
     df_geo["CIL"] = pd.to_numeric(df_geo["CIL"], errors="coerce").astype("Int64")
     for c in ["lat", "long", "PT"]:
-        df_geo[c] = df_geo[c].astype(str).str.strip()
+        df_geo[c] = df_geo[c].astype(str).str.replace(r"[\r\n\t]+", "", regex=True).str.strip()
         df_geo.loc[df_geo[c].isin(["nan", "None", ""]), c] = None
     df_geo = df_geo.drop_duplicates(subset=["CIL"], keep="first")
 

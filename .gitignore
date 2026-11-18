@@ -19,6 +19,8 @@ backups/
 entrada/
 lake/
 logs/
+exportacoes/
+relatorios/
 *.parquet
 *.duckdb
 *.duckdb.wal

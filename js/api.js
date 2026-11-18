@@ -875,4 +875,50 @@
       aplicarFiltros(1);
     }
 
+    function mostrarToastExportacao(msg, isOk = true) {
+      let el = document.getElementById("santiago-export-toast");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "santiago-export-toast";
+        el.style.cssText = "position:fixed; bottom:20px; right:20px; z-index:99999; padding:12px 16px; border-radius:8px; font-family:var(--font-mono); font-size:12px; font-weight:700; box-shadow:0 8px 24px rgba(0,0,0,0.35); max-width:480px;";
+        document.body.appendChild(el);
+      }
+      el.style.background = isOk ? "#065F46" : "#7F1D1D";
+      el.style.color = "#ECFDF5";
+      el.style.border = isOk ? "1px solid #34D399" : "1px solid #F87171";
+      el.textContent = msg;
+      el.style.display = "block";
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => { el.style.display = "none"; }, 5500);
+    }
+
+    async function salvarOuBaixarCSV(filename, csvContent) {
+      const ehLocal = ["127.0.0.1", "localhost"].includes(window.location.hostname);
+      if (ehLocal) {
+        try {
+          const resp = await fetch("/api/salvar-exportacao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename, content: csvContent })
+          });
+          if (resp.ok) {
+            const info = await resp.json();
+            if (info.ok) {
+              mostrarToastExportacao(`✔ Guardado em santiago\\exportacoes\\${info.filename}`);
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn("Fallback para download do browser:", err);
+        }
+      }
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
     

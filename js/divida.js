@@ -136,13 +136,7 @@
         `TOTAL PROJETADO EM CAIXA;${BASE_SIMULACAO.grandes + BASE_SIMULACAO.gov + BASE_SIMULACAO.massa + BASE_SIMULACAO.cf1};-;${total};${Math.round(total/12)}`
       ];
 
-      const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `EDEC_Simulacao_Recuperacao_${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      salvarOuBaixarCSV(`EDEC_Simulacao_Recuperacao_${new Date().toISOString().slice(0,10)}.csv`, "\uFEFF" + linhas.join("\n"));
     }
 
     // =========================================================================
@@ -304,13 +298,7 @@
         ...clientesRoteiroPT.map(c => `"${c.pt}";"${c.cil}";"${c.contador || ''}";"${(c.nome || '').replace(/"/g, '""')}";"${(c.localidade || '').replace(/"/g, '""')}";${c.valor};${c.qtd};"${c.status_cobranca || ''}";${c.cf1_qtd_autos || 0};"Corte / Vistoria Piquete"`)
       ];
 
-      const blob = new Blob(["\uFEFF" + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `EDEC_Roteiro_Piquete_PT_${ptAtivoRoteiro}_${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
+      salvarOuBaixarCSV(`EDEC_Roteiro_Piquete_PT_${ptAtivoRoteiro}_${new Date().toISOString().slice(0,10)}.csv`, "\uFEFF" + linhas.join("\n"));
     }
 
 
@@ -1343,13 +1331,7 @@
           cols.join(";"),
           ...dados.map(row => cols.map(c => `"${String(row[c] ?? "").replace(/"/g, '""')}"`).join(";"))
         ];
-        const blob = new Blob(["\uFEFF" + csvLinhas.join("\n")], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `EDEC_Divida_Santiago_${dados.length}_devedores_${new Date().toISOString().slice(0,10)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
+        await salvarOuBaixarCSV(`EDEC_Divida_Santiago_${dados.length}_devedores_${new Date().toISOString().slice(0,10)}.csv`, "\uFEFF" + csvLinhas.join("\n"));
       } catch (e) {
         alert("Erro ao exportar CSV de dívida: " + e.message);
       }

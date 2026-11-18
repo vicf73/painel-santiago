@@ -18,8 +18,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="config_santiago.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
   <link rel="stylesheet" href="css/painel.css" />
 </head>
 <body class="auth-locked">
@@ -1900,11 +1898,11 @@
           </div>
           <div>
             <h2 style="font-family:var(--font-display); font-size:15.5px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-              Centro Geoespacial de Balanço de PTs &amp; Topografia 3D
-              <span class="brand-tag" style="background:#EBF5FB; color:#2B6CB0; border-color:#BEE3F8;">WebGL / Three.js 3D</span>
+              Centro Geoespacial de Balanço Energético dos PTs
+              <span class="brand-tag" style="background:#EBF5FB; color:#2B6CB0; border-color:#BEE3F8;">Google Maps / Leaflet</span>
             </h2>
             <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
-              Modelagem tridimensional da Ilha de Santiago • Extrusão de perdas nos Postos de Transformação (PTs) &amp; Balanço Energético Injetada vs Faturada
+              Polígonos oficiais dos Postos de Transformação (PTs) medidos • Balanço Energético Injetada (SL7000) vs Faturada (BT + IP)
             </p>
           </div>
         </div>
@@ -1914,8 +1912,8 @@
             <option value="2026-T2">2º Trim 2026 (Abr–Jun)</option>
             <option value="2026-T1">1º Trim 2026 (Jan–Mar)</option>
           </select>
-          <button class="btn" onclick="resetarCamera3D()" title="Restaurar orientação original da câmera 3D">
-            ↺ Centrar Câmera 3D
+          <button class="btn" onclick="resetarCamera3D()" title="Recentrar o mapa em todos os PTs medidos">
+            ↺ Centrar Mapa
           </button>
           <button class="btn btn-amber" onclick="selecionarModulo('mod1')" title="Ver contratos associados na Triagem">
             📊 Ir para Triagem de Contratos
@@ -1923,108 +1921,99 @@
         </div>
       </div>
 
-      <!-- KPIs Reais do Balanço Energético por PT -->
-      <div class="kpi-strip" style="grid-template-columns: repeat(4, 1fr);">
+      <!-- KPIs Reais do Balanço Energético por PT (apenas PTs medidos com cobertura) -->
+      <div class="kpi-strip" style="grid-template-columns: repeat(5, 1fr);">
         <div class="kpi-card">
-          <div class="kpi-label"><span>PTs MEDIDOS (SL7000)</span><span>C/ COBERTURA / TOTAL</span></div>
+          <div class="kpi-label"><span>PTs MEDIDOS C/ COBERTURA</span><span>SL7000 + CL_PT</span></div>
           <div class="kpi-value" id="m2-kpi-pts">--</div>
+          <div class="kpi-sub" id="m2-kpi-pts-sub">--</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label"><span>ENERGIA INJETADA</span><span>OBIS 1.1.1.8.0</span></div>
           <div class="kpi-value" style="color:#60A5FA;" id="m2-kpi-inj">--</div>
+          <div class="kpi-sub" id="m2-kpi-inj-sub">--</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label"><span>ENERGIA FATURADA</span><span>EDEC SUL (E017 + IP)</span></div>
+          <div class="kpi-label"><span>ENERGIA FATURADA</span><span>EDEC SUL (BT + IP)</span></div>
           <div class="kpi-value" style="color:#34D399;" id="m2-kpi-fat">--</div>
+          <div class="kpi-sub" id="m2-kpi-fat-sub">--</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label"><span>PERDA GLOBAL APURADA</span><span>INJETADA − FATURADA</span></div>
+          <div class="kpi-label"><span>PERDA TOTAL vs PNT</span><span>TÉCNICA REF. 5%</span></div>
           <div class="kpi-value" style="color:#F87171;" id="m2-kpi-perda">--</div>
+          <div class="kpi-sub" id="m2-kpi-perda-sub">--</div>
         </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>IMPACTO FINANCEIRO PNT</span><span>@ 35,81 ECV/kWh</span></div>
+          <div class="kpi-value" style="color:#FBBF24;" id="m2-kpi-fin">--</div>
+          <div class="kpi-sub" id="m2-kpi-fin-sub">--</div>
+        </div>
+      </div>
+
+      <!-- Barra de Reconciliação Global BT (Cobertura de Cadastro) -->
+      <div id="m2-reconciliacao-bar" style="background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:8px 14px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; font-size:11.5px; color:var(--text-secondary); font-family:var(--font-mono);">
+        <span>A carregar reconciliação BT da ilha...</span>
       </div>
 
       <!-- Grid Principal do Módulo 2 -->
       <div class="geo3d-container">
-        <!-- Viewport 3D -->
+        <!-- Mapa Google Maps + Polígonos dos PTs Medidos -->
         <div class="canvas-3d-box">
           <div class="panel-header">
             <div class="panel-title">
-              <span>🌐</span> Relevo Topográfico 3D da Ilha de Santiago &amp; Beacons de Perda de PT
+              <span>🛰️</span> Google Maps — Polígonos das Zonas de PTs Medidos (Ilha de Santiago)
             </div>
-            <div class="panel-badge">
-              Ilha de Santiago • 54 km x 28 km
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="btn" id="btn-m2-camada" onclick="alternarCamadaMapaPT()" style="padding:4px 10px; font-size:11px;">🗺️ Alternar Ruas / Satélite</button>
+              <button class="btn" onclick="resetarCamera3D()" style="padding:4px 10px; font-size:11px;">↺ Centrar Ilha</button>
             </div>
           </div>
-          <div class="canvas-3d-viewport" id="canvas-3d-viewport">
-            <div class="hud-3d-overlay">
-              <div class="hud-pill">
-                <span>🖱️</span> <span>Girar: Clique esquerdo + Arrastar</span>
-              </div>
-              <div class="hud-pill">
-                <span>🔍</span> <span>Zoom: Roda do mouse</span>
-              </div>
-              <div class="hud-pill">
-                <span>🎯</span> <span>Clique em qualquer pino 3D para inspecionar</span>
-              </div>
-            </div>
-
-            <div class="hud-controls-right">
-              <button class="btn-hud-action" onclick="alternarAutoRotacao()" id="btn-auto-rot">
-                ⏸ Pausar Giro
-              </button>
-              <button class="btn-hud-action" onclick="resetarCamera3D()">
-                ↺ Vista Superior
-              </button>
-            </div>
-
-            <div class="hud-legend">
-              <span style="font-weight:600; color:#F8FAFC;">Severidade da Perda:</span>
-              <div class="hud-legend-item">
-                <div class="hud-legend-color" style="background:#59A14F;"></div>
-                <span>Normal (&lt; 15%)</span>
-              </div>
-              <div class="hud-legend-item">
-                <div class="hud-legend-color" style="background:#F28E2B;"></div>
-                <span>Alerta (15% - 30%)</span>
-              </div>
-              <div class="hud-legend-item">
-                <div class="hud-legend-color" style="background:#E15759;"></div>
-                <span>Crítico CF1 (&gt; 30%)</span>
-              </div>
-            </div>
+          <div class="canvas-3d-viewport" id="map-mod2-pts" style="height:520px; position:relative; z-index:1;"></div>
+          <div style="display:flex; gap:14px; align-items:center; padding:8px 14px; font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); border-top:1px solid var(--border-dim);">
+            <span style="font-weight:700;">Severidade da Perda:</span>
+            <span><span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#59A14F; margin-right:4px;"></span>Normal (&lt; 15%)</span>
+            <span><span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#F28E2B; margin-right:4px;"></span>Alerta (15%–30%)</span>
+            <span><span style="display:inline-block; width:10px; height:10px; border-radius:2px; background:#E15759; margin-right:4px;"></span>Crítico (&gt; 30%)</span>
+            <span style="margin-left:auto; color:var(--text-muted);">Clique num polígono para inspecionar o PT</span>
           </div>
         </div>
 
         <!-- Sidebar de Detalhe e Balanço do PT -->
         <div class="pt-detail-sidebar">
           <div class="pt-card-balance">
+            <div style="margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+              <label for="m2-filtro-pt" style="font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--text-secondary); white-space:nowrap;">🔎 Filtrar PT:</label>
+              <select id="m2-filtro-pt" class="select-ctrl" style="flex:1;" onchange="selecionarPT3DPorId(this.value)">
+                <option value="">A carregar PTs...</option>
+              </select>
+            </div>
             <div class="pt-balance-header">
               <div>
-                <span class="badge" id="pt-sel-badge" style="background:#FDE8E8; color:#9B1C1C; border:1px solid #F8B4B4;">🚨 PERDA CRÍTICA</span>
+                <span class="badge" id="pt-sel-badge" style="background:#FDE8E8; color:#9B1C1C; border:1px solid #F8B4B4;">--</span>
                 <h3 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); margin-top:4px;" id="pt-sel-codigo">
-                  PT-015 • Fazenda / Sucupira
+                  Selecione um PT...
                 </h3>
                 <div style="font-size:11.5px; color:var(--text-muted);" id="pt-sel-local">
-                  Concelho da Praia • Zona Comercial &amp; Mercado
+                  --
                 </div>
               </div>
               <div style="text-align:right;">
                 <div style="font-size:10.5px; color:var(--text-muted); text-transform:uppercase;">Taxa de Perda</div>
-                <div style="font-size:22px; font-weight:700; color:#E15759;" id="pt-sel-taxa">38.2%</div>
+                <div style="font-size:22px; font-weight:700; color:#E15759;" id="pt-sel-taxa">--%</div>
               </div>
             </div>
 
             <!-- Balanço de Energia (Sankey / Bar Breakdown) -->
             <div class="pt-energy-flow-box">
               <div style="font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">
-                Balanço Energético Mensal do Transformador
+                Balanço Energético Trimestral do Transformador
               </div>
 
               <!-- Injetada -->
               <div class="flow-bar-row">
                 <div class="flow-bar-labels">
                   <span style="font-weight:600; color:var(--text-primary);">⚡ Energia Total Injetada:</span>
-                  <span style="font-family:var(--font-mono); font-weight:700;" id="pt-sel-injetada">142,5 MWh</span>
+                  <span style="font-family:var(--font-mono); font-weight:700;" id="pt-sel-injetada">-- MWh</span>
                 </div>
                 <div class="flow-bar-track">
                   <div class="flow-bar-fill" style="width:100%; background:#4E79A7;"></div>
@@ -2034,41 +2023,58 @@
               <!-- Faturada Regular -->
               <div class="flow-bar-row">
                 <div class="flow-bar-labels">
-                  <span style="color:#59A14F; font-weight:600;">📗 Faturada aos Clientes (61.8%):</span>
-                  <span style="font-family:var(--font-mono); color:#59A14F; font-weight:700;" id="pt-sel-faturada">88,1 MWh</span>
+                  <span style="color:#59A14F; font-weight:600;" id="pt-lbl-fat-pct">📗 Faturada (Clientes + IP):</span>
+                  <span style="font-family:var(--font-mono); color:#59A14F; font-weight:700;" id="pt-sel-faturada">-- MWh</span>
                 </div>
                 <div class="flow-bar-track">
-                  <div class="flow-bar-fill" style="width:61.8%; background:#59A14F;" id="pt-bar-faturada"></div>
+                  <div class="flow-bar-fill" style="width:0%; background:#59A14F;" id="pt-bar-faturada"></div>
                 </div>
               </div>
 
-              <!-- Perda Comercial / Desvio -->
+              <!-- Perda Técnica Ref. (5%) -->
               <div class="flow-bar-row">
                 <div class="flow-bar-labels">
-                  <span style="color:#E15759; font-weight:600;">🚨 Perda Não Técnica / Desvio CF1 (38.2%):</span>
-                  <span style="font-family:var(--font-mono); color:#E15759; font-weight:700;" id="pt-sel-perda">54,4 MWh</span>
+                  <span style="color:#60A5FA; font-weight:600;" id="pt-lbl-tec-pct">⚙️ Perda Técnica Ref. (5,0%):</span>
+                  <span style="font-family:var(--font-mono); color:#60A5FA; font-weight:700;" id="pt-sel-tec">-- MWh</span>
                 </div>
                 <div class="flow-bar-track">
-                  <div class="flow-bar-fill" style="width:38.2%; background:#E15759;" id="pt-bar-perda"></div>
+                  <div class="flow-bar-fill" style="width:5%; background:#60A5FA;" id="pt-bar-tec"></div>
+                </div>
+              </div>
+
+              <!-- Perda Não Técnica (PNT) -->
+              <div class="flow-bar-row">
+                <div class="flow-bar-labels">
+                  <span style="color:#E15759; font-weight:600;" id="pt-lbl-perda-pct">🚨 Perda Não Técnica (PNT):</span>
+                  <span style="font-family:var(--font-mono); color:#E15759; font-weight:700;" id="pt-sel-perda">-- MWh</span>
+                </div>
+                <div class="flow-bar-track">
+                  <div class="flow-bar-fill" style="width:0%; background:#E15759;" id="pt-bar-perda"></div>
                 </div>
               </div>
             </div>
 
-            <!-- Indicadores do PT -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:10px 12px;">
-                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Prejuízo Estimado</div>
-                <div style="font-family:var(--font-mono); font-size:16px; font-weight:700; color:#E15759; margin-top:2px;" id="pt-sel-prejuizo">
-                  ~1.414.400 ECV/mês
-                </div>
-                <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;">Tarifa Média Comercial</div>
+            <!-- Indicadores Sénior do PT -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Prejuízo PNT / Trim.</div>
+                <div style="font-family:var(--font-mono); font-size:14.5px; font-weight:700; color:#E15759; margin-top:2px;" id="pt-sel-prejuizo">--</div>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;" id="pt-sel-delta">Δ Trim.: --</div>
               </div>
-              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:10px 12px;">
-                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Dívida Acumulada</div>
-                <div style="font-family:var(--font-mono); font-size:16px; font-weight:700; color:#F28E2B; margin-top:2px;" id="pt-sel-divida">
-                  34.218.450 ECV
-                </div>
-                <div style="font-size:10.5px; color:var(--text-muted); margin-top:2px;" id="pt-sel-clientes">418 clientes ligados</div>
+              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Dívida &amp; Clientes</div>
+                <div style="font-family:var(--font-mono); font-size:14.5px; font-weight:700; color:#F28E2B; margin-top:2px;" id="pt-sel-divida">--</div>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;" id="pt-sel-clientes">--</div>
+              </div>
+              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Risco Score v2 &amp; Fat. 0</div>
+                <div style="font-family:var(--font-mono); font-size:13.5px; font-weight:700; color:#FBBF24; margin-top:2px;" id="pt-sel-risco">--</div>
+                <div style="font-size:10px; color:var(--text-muted); margin-top:2px;" id="pt-sel-cons-med">--</div>
+              </div>
+              <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+                <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; font-weight:600;">Inspeções &amp; Diagnóstico</div>
+                <div style="font-family:var(--font-mono); font-size:13px; font-weight:700; color:var(--text-primary); margin-top:2px;" id="pt-sel-insp">--</div>
+                <div style="font-size:10px; margin-top:2px;" id="pt-sel-diag">--</div>
               </div>
             </div>
 
@@ -2090,23 +2096,74 @@
         </div>
       </div>
 
+      <!-- Matriz de Priorização + Top Alvos Score v2 do PT -->
+      <div style="display:grid; grid-template-columns:1.1fr 1fr; gap:14px;">
+        <div class="panel-box" style="padding:14px 16px;">
+          <div class="panel-header" style="margin-bottom:8px;">
+            <div class="panel-title"><span>🎯</span> Matriz de Priorização: Taxa de Perda (%) × Volume Perdido (MWh)</div>
+            <span style="font-size:10.5px; color:var(--text-muted); font-family:var(--font-mono);">Quadrante Sup. Direito = Top Offenders</span>
+          </div>
+          <div id="m2-matriz-priorizacao" style="width:100%; height:290px; position:relative;"></div>
+        </div>
+
+        <div class="panel-box" style="padding:14px 16px; display:flex; flex-direction:column;">
+          <div class="panel-header" style="margin-bottom:8px;">
+            <div class="panel-title"><span>🕵️</span> Top 10 Alvos de Inspeção no PT (<span id="m2-alvos-pt-nome" style="color:#60A5FA;">--</span>)</div>
+            <button class="btn" onclick="exportarAlvosPTCSV()" style="padding:4px 10px; font-size:11px;">📥 Exportar CSV Campo</button>
+          </div>
+          <div class="table-scroll" style="max-height:290px; flex:1;">
+            <table>
+              <thead>
+                <tr>
+                  <th>CIL</th>
+                  <th>Cliente</th>
+                  <th>Tar.</th>
+                  <th style="text-align:right;">Score v2</th>
+                  <th style="text-align:right;">Dívida (ECV)</th>
+                  <th>Motivos Principais</th>
+                </tr>
+              </thead>
+              <tbody id="m2-tbody-alvos-pt"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- Tabela Completa de PTs Medidos (Balanço Real) -->
       <div class="table-container" style="padding:14px 16px;">
-        <div class="panel-title" style="margin-bottom:10px;">
-          <span>⚡</span> Balanço Detalhado de Todos os PTs Medidos (SL7000 vs Faturação E017)
+        <div class="panel-header" style="margin-bottom:10px;">
+          <div class="panel-title">
+            <span>⚡</span> Balanço Detalhado de Todos os PTs Medidos (SL7000 vs Faturação BT + IP)
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <select id="m2-filtro-diag" class="select-ctrl" style="min-width:210px; font-size:11.5px;" onchange="filtrarTabelaPTs()">
+              <option value="todos">Todos os PTs Medidos</option>
+              <option value="critico">Apenas Críticos (≥ 30%)</option>
+              <option value="piora">Com Piora (Δ ≥ +3,0 p.p.)</option>
+              <option value="anomalias">Anomalias de Cadastro / Medição</option>
+            </select>
+          </div>
         </div>
-        <div class="table-scroll" style="max-height:360px;">
+        <div class="table-scroll" style="max-height:380px;">
           <table>
             <thead>
               <tr>
                 <th>PT</th>
+                <th style="white-space:nowrap;">Contador Geral</th>
                 <th>Localidade</th>
                 <th style="text-align:right; white-space:nowrap;">Tot. Clientes</th>
-                <th style="text-align:right; white-space:nowrap;">Contador IP (Consumo)</th>
+                <th style="text-align:right; white-space:nowrap;" title="Clientes BT ativos no PT sem consumo faturado (> 0 kWh) no trimestre">QTD Fat. Zero</th>
+                <th style="text-align:right; white-space:nowrap;" title="Contadores instalados há mais de 20 anos">QTD Med. &gt;20a</th>
+                <th style="text-align:right; white-space:nowrap;" title="Contadores com última leitura há mais de 5 meses">QTD Leit. &gt;5m</th>
+                <th style="text-align:right; white-space:nowrap;">IP (Consumo)</th>
                 <th style="text-align:right; white-space:nowrap;">Injetada</th>
-                <th style="text-align:right; white-space:nowrap;">Faturada (Cli+IP)</th>
-                <th style="text-align:right; white-space:nowrap;">Perda %</th>
-                <th style="text-align:center;">Estado</th>
+                <th style="text-align:right; white-space:nowrap;">Faturada</th>
+                <th style="text-align:right; white-space:nowrap;">Perda % (PNT %)</th>
+                <th style="text-align:right; white-space:nowrap;">Δ Trim.</th>
+                <th style="text-align:right; white-space:nowrap;">Prejuízo PNT</th>
+                <th style="text-align:right; white-space:nowrap;">Risco v2</th>
+                <th style="text-align:right; white-space:nowrap;">kWh/Cli/Mês</th>
+                <th style="text-align:center;">Diagnóstico</th>
               </tr>
             </thead>
             <tbody id="m2-tbody-pts"></tbody>

@@ -425,12 +425,7 @@ function exportarBrigadasScoreV2CSV() {
       r.prob_fraude_pct, r.score_v2, r.divida_exigivel_ecv, r.t3_kwh, esc(r.motivos_v2)
     ].join(";"))
   ];
-  const blob = new Blob(["\uFEFF" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8;" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `EDEC_Brigadas_ScoreV2_Top100_${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(a.href);
+  salvarOuBaixarCSV(`EDEC_Brigadas_ScoreV2_Top100_${new Date().toISOString().slice(0, 10)}.csv`, "\uFEFF" + linhas.join("\r\n"));
 }
 
 function renderizarScoreV2Gold(sv2) {

@@ -763,13 +763,8 @@
           cols.join(";"),
           ...dados.map(row => cols.map(c => `"${String(row[c] ?? "").replace(/"/g, '""')}"`).join(";"))
         ];
-        const blob = new Blob(["\uFEFF" + csvLinhas.join("\n")], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `EDEC_Santiago_Export_${dados.length}_reg_${new Date().toISOString().slice(0,10)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
+        const nomeArq = `EDEC_Santiago_Export_${dados.length}_reg_${new Date().toISOString().slice(0,10)}.csv`;
+        await salvarOuBaixarCSV(nomeArq, "\uFEFF" + csvLinhas.join("\n"));
       } catch (e) {
         alert("Erro ao exportar CSV: " + e.message);
       } finally {

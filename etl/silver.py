@@ -116,7 +116,7 @@ def executar_silver(base_santiago: str, anos_prescricao: int = 5) -> dict:
                 TRY_CAST(CAST(CIL AS DOUBLE) AS BIGINT) AS cil,
                 NULLIF(TRIM(lat), '') AS lat,
                 NULLIF(TRIM("long"), '') AS lon,
-                NULLIF(TRIM(PT), '') AS pt
+                NULLIF(TRIM(REGEXP_REPLACE(PT, '[\r\n\t]+', '', 'g')), '') AS pt
             FROM read_parquet('{bronze_dir}/dim_auxiliares/geo_pt.parquet')
             WHERE TRY_CAST(CAST(CIL AS DOUBLE) AS BIGINT) IS NOT NULL
         ),
