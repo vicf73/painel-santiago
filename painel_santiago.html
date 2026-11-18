@@ -297,6 +297,10 @@
           🌐 2. Mapa GIS &amp; Balanço PT
           <span class="mod-pill-soon" style="background:rgba(16,185,129,0.14); color:#34D399; border-color:rgba(16,185,129,0.4); font-weight:700;">Balanço Real</span>
         </button>
+        <button class="mod-tab-btn" id="tab-btn-mod4" onclick="selecionarModulo('mod4')">
+          💳 4. Pré-Pagamento
+          <span class="mod-pill-soon" style="background:rgba(59,130,246,0.14); color:#60A5FA; border-color:rgba(59,130,246,0.4); font-weight:700;">Tokens &amp; Risco</span>
+        </button>
         <button class="mod-tab-btn" id="tab-btn-mod5" onclick="selecionarModulo('mod5')">
           ⚖️ 5. Jurídico CF1 &amp; Cobrança
           <span class="mod-pill-soon">Em Atualização</span>
@@ -2173,6 +2177,155 @@
       </div>
     </div>
 
+    <!-- MÓDULO 4: PRÉ-PAGAMENTO (MEDIDORES, TOKENS & RISCO GEOGRÁFICO) -->
+    <div id="modulo-mod4" class="module-pane hidden">
+      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:12px 18px; box-shadow:var(--card-shadow);">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:38px; height:38px; border-radius:6px; background:rgba(59,130,246,0.14); border:1px solid rgba(59,130,246,0.35); display:grid; place-items:center; font-size:20px;">💳</div>
+          <div>
+            <h2 style="font-family:var(--font-display); font-size:15.5px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+              Centro de Monitorização Pré-Pagamento &amp; Risco de Bypass
+              <span class="brand-tag" style="background:rgba(59,130,246,0.14); color:#60A5FA; border-color:rgba(59,130,246,0.4);">TOKENS + GIS</span>
+            </h2>
+            <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
+              Medidores contratualizados, transações de energia, clientes sem compra (&gt;30/60/90d), desvio de consumo e micro-compras anómalas
+            </p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn" onclick="exportarPrepagoCSV(this)">📥 Exportar Lista Filtrada (CSV)</button>
+        </div>
+      </div>
+
+      <div class="kpi-strip" style="grid-template-columns: repeat(5, 1fr);">
+        <div class="kpi-card">
+          <div class="kpi-label"><span>MEDIDORES ATIVOS</span><span>PRÉ-PAGO</span></div>
+          <div class="kpi-value" id="p4-kpi-medidores">--</div>
+          <div class="kpi-sub" id="p4-kpi-medidores-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>VENDAS ENERGIA</span><span>TOKENS</span></div>
+          <div class="kpi-value" style="color:#60A5FA;" id="p4-kpi-vendas">--</div>
+          <div class="kpi-sub" id="p4-kpi-vendas-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>SEM COMPRA &gt;60 DIAS</span><span>RISCO BYPASS</span></div>
+          <div class="kpi-value" style="color:#F87171;" id="p4-kpi-semcompra">--</div>
+          <div class="kpi-sub" id="p4-kpi-semcompra-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>DESVIO DE COMPRA ≤ -50%</span><span>ÚLT. 60D vs HIST.</span></div>
+          <div class="kpi-value" style="color:#FBBF24;" id="p4-kpi-desvio">--</div>
+          <div class="kpi-sub" id="p4-kpi-desvio-sub">--</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span>VALOR BAIXO ANÓMALO</span><span>&lt;15 kWh/mês</span></div>
+          <div class="kpi-value" style="color:#A78BFA;" id="p4-kpi-valorbaixo">--</div>
+          <div class="kpi-sub" id="p4-kpi-valorbaixo-sub">--</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1.45fr 1fr; gap:14px;">
+        <div class="canvas-3d-box">
+          <div class="panel-header">
+            <div class="panel-title"><span>🛰️</span> Mapa Geográfico de Risco Pré-Pagamento</div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn" onclick="alternarCamadaMapaPrepago()" style="padding:4px 10px; font-size:11px;">🗺️ Ruas / Satélite</button>
+              <button class="btn" onclick="centrarMapaPrepago()" style="padding:4px 10px; font-size:11px;">↺ Centrar</button>
+            </div>
+          </div>
+          <div id="map-mod4-prepago" style="height:400px; position:relative; z-index:1;"></div>
+          <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:center; padding:8px 14px; font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); border-top:1px solid var(--border-dim);">
+            <span style="font-weight:700;">Severidade:</span>
+            <span><span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#E15759; margin-right:4px;"></span>Crítico (Bypass/&gt;60d)</span>
+            <span><span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#F28E2B; margin-right:4px;"></span>Alerta (Valor Baixo/31–60d)</span>
+            <span><span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#60A5FA; margin-right:4px;"></span>Desvio (-30% a -59%)</span>
+            <span><span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#34D399; margin-right:4px;"></span>Normal</span>
+          </div>
+        </div>
+
+        <div class="panel-box" style="padding:14px 16px; display:flex; flex-direction:column; gap:12px;">
+          <div class="panel-title"><span>🏆</span> Top PTs com Maior Risco Pré-Pago (Clique para Filtrar)</div>
+          <div id="p4-ranking-pts" style="display:flex; flex-direction:column; gap:8px; max-height:390px; overflow-y:auto;"></div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1.25fr 0.85fr 1.15fr; gap:14px;">
+        <div class="panel-box" style="padding:14px 16px;">
+          <div class="panel-header" style="margin-bottom:6px;">
+            <div class="panel-title"><span>📊</span> Evolução Mensal (M ECV vs. MWh)</div>
+            <div style="font-family:var(--font-mono); font-size:10px; color:var(--text-muted); display:flex; gap:10px;">
+              <span style="color:#60A5FA;">■ M ECV</span>
+              <span style="color:#FBBF24;">● MWh</span>
+            </div>
+          </div>
+          <div id="p4-chart-mensal" style="height:230px;"></div>
+        </div>
+        <div class="panel-box" style="padding:14px 16px;">
+          <div class="panel-title" style="margin-bottom:6px;"><span>🍩</span> Distribuição de Risco (Filtro Atual)</div>
+          <div id="p4-chart-donut-risco" style="height:230px;"></div>
+        </div>
+        <div class="panel-box" style="padding:14px 16px;">
+          <div class="panel-title" style="margin-bottom:8px;"><span>🧾</span> Faixas de Recarga &amp; Canais de Venda</div>
+          <div id="p4-canais-faixas"></div>
+        </div>
+      </div>
+
+      <div class="table-container" style="padding:14px 16px;">
+        <div class="panel-header" style="margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <div class="panel-title"><span>🔎</span> Lista Priorizada de Medidores Pré-Pagamento <span id="p4-qtd-filtrados" style="font-size:11px; color:var(--text-muted); margin-left:8px;">--</span></div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <select id="p4-filtro-risco" class="select-ctrl" onchange="aplicarFiltrosPrepago()">
+              <option value="">Todos os Estados</option>
+              <option value="critico">Crítico (Bypass Provável)</option>
+              <option value="alerta">Alerta (Valor Baixo / 31–60d)</option>
+              <option value="desvio">Desvio Moderado (-30% a -59%)</option>
+              <option value="normal">Normal</option>
+              <option value="sem_60d">Apenas &gt;60 dias s/ compra</option>
+            </select>
+            <select id="p4-filtro-regra" class="select-ctrl" onchange="aplicarFiltrosPrepago()">
+              <option value="">Todas as Regras (Critério)</option>
+              <option value="desvio_50">Desvio Compra ≤ -50%</option>
+              <option value="lt_15kwh">&lt; 15 kWh/mês (Valor Baixo)</option>
+              <option value="sem_3m">≥ 3 Meses (&gt;90d) sem compra</option>
+            </select>
+            <select id="p4-filtro-uni" class="select-ctrl" onchange="aplicarFiltrosPrepago()"><option value="">Todas Unidades</option></select>
+            <select id="p4-filtro-localidade" class="select-ctrl" onchange="aplicarFiltrosPrepago()"><option value="">Todas Localidades</option></select>
+            <select id="p4-filtro-pt" class="select-ctrl" onchange="aplicarFiltrosPrepago()"><option value="">Todos os PTs</option></select>
+            <select id="p4-filtro-modelo" class="select-ctrl" onchange="aplicarFiltrosPrepago()">
+              <option value="">Todos Modelos</option>
+              <option value="HXP100">HXP100 (Monofásico)</option>
+              <option value="HXE310">HXE310 (Trifásico)</option>
+            </select>
+            <input type="text" id="p4-filtro-busca" class="input-ctrl mono" placeholder="Medidor, Nome, PT..." oninput="aplicarFiltrosPrepago()" style="min-width:190px;" />
+            <button class="btn" onclick="limparFiltrosPrepago()" title="Repor todos os filtros de Pré-Pagamento">🧹 Limpar Filtros</button>
+          </div>
+        </div>
+        <div class="table-scroll" style="max-height:360px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Medidor</th>
+                <th>Cliente</th>
+                <th>Unidade Com.</th>
+                <th>PT</th>
+                <th>Localidade</th>
+                <th>Modelo</th>
+                <th style="text-align:center;">Última Compra</th>
+                <th style="text-align:right;">Dias s/ Compra</th>
+                <th style="text-align:right;">Hist. kWh/mês</th>
+                <th style="text-align:right;">Rec. kWh/mês</th>
+                <th style="text-align:right;">Desvio %</th>
+                <th style="text-align:center;">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="p4-tbody-medidores"></tbody>
+          </table>
+        </div>
+        <div id="p4-paginacao" style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; font-family:var(--font-mono); font-size:11.5px;"></div>
+      </div>
+    </div>
+
     <div id="modulo-em-atualizacao" class="module-pane hidden">
       <div class="under-update-box">
         <div class="under-update-icon" id="mod-upd-icon">🚧</div>
@@ -2306,6 +2459,7 @@
   <script src="js/gold.js"></script>
   <script src="js/contratos.js"></script>
   <script src="js/mapa.js"></script>
+  <script src="js/prepago.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/divida.js"></script>
 </body>

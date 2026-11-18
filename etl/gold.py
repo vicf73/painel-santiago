@@ -198,6 +198,12 @@ def construir_marts_gold(base_santiago: str) -> dict:
         with open(balanco_pt_path, "r", encoding="utf-8") as f:
             balanco_pt_data = json.load(f)
 
+    prepago_path = os.path.join(gold_dir, "prepago.json")
+    prepago_data = {}
+    if os.path.exists(prepago_path):
+        with open(prepago_path, "r", encoding="utf-8") as f:
+            prepago_data = json.load(f)
+
     # Monitor de frescura das fontes (a partir de manifesto_fontes.json + pastas lake)
     frescura_fontes = []
     manifesto_path = os.path.join(base_santiago, "manifesto_fontes.json")
@@ -276,6 +282,7 @@ def construir_marts_gold(base_santiago: str) -> dict:
         },
         "score_v2_validacao": score_v2_data,
         "balanco_pt_trimestral": balanco_pt_data,
+        "prepago_analise": prepago_data,
     }
 
     out_gold = os.path.join(gold_dir, "marts_gold.json")
