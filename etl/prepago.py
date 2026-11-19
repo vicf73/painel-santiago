@@ -490,4 +490,84 @@ def executar_prepago(base_santiago: str) -> dict:
         f"Alertas={resumo['alertas_qtd']:,} | Desvio>=50%={resumo['desvio_50_pct']:,}"
     )
     print(f" MÓDULO 4 CONCLUÍDO em {time.time() - t0:.2f}s -> {out_json}")
+    sincronizar_prepago_supabase(base_santiago, medidores_risco)
     return payload
+
+
+def sincronizar_prepago_supabase(base_santiago: str, medidores: list) -> bool:
+    """Sincroniza medidores pré-pago em public.prepago_santiago preservando prog='x'."""
+    if not medidores:
+        return False
+    import requests
+    env_path = os.path.join(base_santiago, ".env")
+    if os.path.exists(env_path):
+        with open(env_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip())
+    url = os.environ.get("SUPABASE_URL", "https://esbbohmkgbcrpegqvagk.supabase.co").rstrip("/")
+    service_key = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
+    etl_token = os.environ.get("ETL_SECRET_TOKEN", "").strip()
+    anon_key = os.environ.get("SUPABASE_KEY", "").strip()
+    if not service_key and not etl_token:
+        print("   [AVISO] SUPABASE_SERVICE_KEY e ETL_SECRET_TOKEN ausentes; prepago_santiago não sincronizada.")
+        return False
+
+    agora = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    ok_tot = 0
+    for i in range(0, len(medidores), 1000):
+        lote = [
+            {
+                "medidor": m["medidor"],
+                "nome": m.get("nome"),
+                "pt": m.get("pt"),
+                "pt_origem": m.get("pt_origem"),
+                "localidade": m.get("localidade"),
+                "desc_uni": m.get("desc_uni"),
+                "modelo": m.get("modelo"),
+                "tarifa": m.get("tarifa"),
+                "dt_ultima": m.get("dt_ultima"),
+                "dias_sem_compra": m.get("dias_sem_compra", 0),
+                "kwh_mes_hist": m.get("kwh_mes_hist", 0),
+                "kwh_mes_recente": m.get("kwh_mes_recente", 0),
+                "desvio_pct": m.get("desvio_pct"),
+                "ticket_medio_ecv": m.get("ticket_medio_ecv", 0),
+                "qtd_compras": m.get("qtd_compras", 0),
+                "total_ecv": m.get("total_ecv", 0),
+                "risco": m.get("risco"),
+                "lat": m.get("lat"),
+                "lon": m.get("lon"),
+                "atualizado_em": agora,
+            }
+            for m in medidores[i:i + 1000]
+        ]
+        try:
+            if etl_token and not service_key:
+                r = requests.post(
+                    f"{url}/rest/v1/rpc/etl_upsert_prepago_santiago",
+                    headers={"apikey": anon_key, "Authorization": f"Bearer {anon_key}", "Content-Type": "application/json"},
+                    json={"p_etl_token": etl_token, "p_lote": lote},
+                    timeout=60,
+                )
+            else:
+                r = requests.post(
+                    f"{url}/rest/v1/prepago_santiago?on_conflict=medidor",
+                    headers={
+                        "apikey": service_key, "Authorization": f"Bearer {service_key}",
+                        "Content-Type": "application/json", "Prefer": "resolution=merge-duplicates,return=minimal",
+                    },
+                    json=lote,
+                    timeout=60,
+                )
+            if r.status_code in (200, 201, 204):
+                ok_tot += len(lote)
+            else:
+                print(f"   [AVISO] prepago_santiago lote {i}: HTTP {r.status_code} {r.text[:150]}")
+                return False
+        except Exception as exc:
+            print(f"   [AVISO] prepago_santiago lote {i}: {exc}")
+            return False
+    print(f"   [OK] {ok_tot:,} medidores sincronizados em public.prepago_santiago!")
+    return True
