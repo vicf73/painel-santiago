@@ -329,8 +329,8 @@
         </div>
       </div>
 
-      <!-- KPIs Executivos Gold (6 cards) -->
-      <div class="kpi-strip" style="grid-template-columns: repeat(6, 1fr);">
+      <!-- KPIs Executivos Gold (7 cards) -->
+      <div class="kpi-strip" style="grid-template-columns: repeat(7, 1fr);">
         <div class="kpi-card">
           <div class="kpi-label"><span>FATURAÇÃO EDEC SUL (17)</span><span>2026</span></div>
           <div class="kpi-value" id="g-kpi-fat17">--</div>
@@ -360,6 +360,11 @@
           <div class="kpi-label"><span>CLIENTE ESPECIAL AdS (21)</span><span>ÁGUA AG</span></div>
           <div class="kpi-value" style="color:#FBBF24;" id="g-kpi-ads">--</div>
           <div class="kpi-sub" id="g-kpi-ads-sub">--</div>
+        </div>
+        <div class="kpi-card" style="cursor:pointer;" onclick="selecionarModulo('mod4')" title="Abrir Aba 4. Pré-Pagamento">
+          <div class="kpi-label"><span>PRÉ-PAGAMENTO</span><span>TOKENS 2026</span></div>
+          <div class="kpi-value" style="color:#60A5FA;" id="g-kpi-prepago">--</div>
+          <div class="kpi-sub" id="g-kpi-prepago-sub">--</div>
         </div>
       </div>
 
@@ -524,6 +529,34 @@
                 <tbody id="g-tbody-top100"></tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESUMO EXECUTIVO PRÉ-PAGAMENTO (MÓDULO 4) -->
+      <div class="table-container" style="padding:14px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div class="panel-title">
+            <span>💳</span> Resumo Executivo Pré-Pagamento — Vendas de Tokens, Cobertura Espacial &amp; Risco de Bypass
+          </div>
+          <button class="btn" onclick="selecionarModulo('mod4')">Abrir Aba 4. Pré-Pagamento ➔</button>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1.35fr; gap:14px;">
+          <div id="g-prepago-resumo-box"></div>
+          <div class="table-scroll" style="max-height:220px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>PT (Top Risco Pré-Pago)</th>
+                  <th>Localidade</th>
+                  <th style="text-align:right;">Medidores</th>
+                  <th style="text-align:right;">Críticos</th>
+                  <th style="text-align:right;">&gt;60d s/ Compra</th>
+                  <th style="text-align:right;">Vendas (M ECV)</th>
+                </tr>
+              </thead>
+              <tbody id="g-tbody-prepago-pts"></tbody>
+            </table>
           </div>
         </div>
       </div>

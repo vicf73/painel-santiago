@@ -16,8 +16,11 @@ import shutil
 import time
 from collections import defaultdict
 
+BASE_SANTIAGO = os.path.dirname(os.path.abspath(__file__))
 BASE_SCRIP = os.environ.get("PASTA_SCRIP", r"C:\Users\VICTOR FERREIRA\Desktop\scrip")
 BASE_ATUAL = os.environ.get("PASTA_ATUAL_SCRIPT", r"C:\Users\VICTOR FERREIRA\Desktop\Atual_script")
+BASE_PREPAGO_MED = os.path.join(BASE_SANTIAGO, "_arquivo_antigo", "medidor")
+BASE_PREPAGO_TOK = os.path.join(BASE_SANTIAGO, "_arquivo_antigo", "trans_tok")
 
 # Padrões de exclusão (Norte / Mindelo) e inclusão (Região Sul)
 EXCLUIR_RE = re.compile(r"(NORTE|MINDELO|005\s*-\s*NORTE)", re.IGNORECASE)
@@ -102,13 +105,51 @@ def organizar_fontes(dry_run: bool = False) -> dict:
             continue
         for fn in files:
             low = fn.lower()
+            fp_src = os.path.join(root, fn)
+            if not os.path.isfile(fp_src):
+                continue
+
+            # Pré-Pagamento (.csv / .csv.gz) -> _arquivo_antigo\medidor ou trans_tok
+            if (low.endswith(".csv") or low.endswith(".csv.gz")) and (
+                low.startswith("meter management - all customer data report")
+                or low.startswith("cape verde ra - retailer transaction report")
+            ):
+                nome_csv = fn[:-3] if low.endswith(".gz") else fn
+                if low.startswith("meter management"):
+                    pasta_dst = BASE_PREPAGO_MED
+                    lbl_dst = "_arquivo_antigo\\medidor"
+                else:
+                    pasta_dst = BASE_PREPAGO_TOK
+                    lbl_dst = "_arquivo_antigo\\trans_tok"
+                chave_v = (lbl_dst, nome_csv.lower())
+                if chave_v in vistos:
+                    continue
+                vistos.add(chave_v)
+                os.makedirs(pasta_dst, exist_ok=True)
+                fp_dst = os.path.join(pasta_dst, nome_csv)
+                precisa_copiar = (not os.path.exists(fp_dst)) or (
+                    not low.endswith(".gz")
+                    and os.path.getmtime(fp_src) > os.path.getmtime(fp_dst) + 5
+                    and os.path.getsize(fp_src) != os.path.getsize(fp_dst)
+                )
+                if not precisa_copiar:
+                    ja_atualizados += 1
+                    continue
+                if dry_run:
+                    print(f"   [SIMULAÇÃO] {fp_src} -> {lbl_dst}\\{nome_csv}")
+                else:
+                    if low.endswith(".gz"):
+                        with gzip.open(fp_src, "rb") as fg_in, open(fp_dst, "wb") as f_out:
+                            shutil.copyfileobj(fg_in, f_out)
+                    else:
+                        shutil.copy2(fp_src, fp_dst)
+                    print(f"   [COPIADO] {lbl_dst}\\{nome_csv}")
+                copiados_por_pasta[lbl_dst] += 1
+                continue
+
             if not (low.endswith(".txt") or low.endswith(".txt.gz")):
                 continue
             if EXCLUIR_RE.search(fn):
-                continue
-
-            fp_src = os.path.join(root, fn)
-            if not os.path.isfile(fp_src):
                 continue
 
             nome_txt = fn[:-3] if low.endswith(".gz") else fn

@@ -324,31 +324,52 @@ def sincronizar_marts_supabase(base_santiago: str, marts: dict) -> bool:
         }
         for chave, dados in marts.items()
     ]
-    if etl_token and not service_key:
-        resp = requests.post(
-            f"{url}/rest/v1/rpc/etl_upsert_marts_gold",
-            headers={
-                "apikey": anon_key,
-                "Authorization": f"Bearer {anon_key}",
-                "Content-Type": "application/json",
-            },
-            json={"p_etl_token": etl_token, "p_lote": payload},
-            timeout=30,
-        )
-    else:
-        resp = requests.post(
-            f"{url}/rest/v1/santiago_marts_gold?on_conflict=chave",
-            headers={
-                "apikey": service_key,
-                "Authorization": f"Bearer {service_key}",
-                "Content-Type": "application/json",
-                "Prefer": "resolution=merge-duplicates,return=minimal",
-            },
-            json=payload,
-            timeout=30,
-        )
-    if resp.status_code in (200, 201, 204):
+    sucesso = 0
+    for item in payload:
+        ok_item = False
+        for tentativa in range(2):
+            try:
+                if etl_token and not service_key:
+                    resp = requests.post(
+                        f"{url}/rest/v1/rpc/etl_upsert_marts_gold",
+                        headers={
+                            "apikey": anon_key,
+                            "Authorization": f"Bearer {anon_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json={"p_etl_token": etl_token, "p_lote": [item]},
+                        timeout=60,
+                    )
+                else:
+                    resp = requests.post(
+                        f"{url}/rest/v1/santiago_marts_gold?on_conflict=chave",
+                        headers={
+                            "apikey": service_key,
+                            "Authorization": f"Bearer {service_key}",
+                            "Content-Type": "application/json",
+                            "Prefer": "resolution=merge-duplicates,return=minimal",
+                        },
+                        json=[item],
+                        timeout=60,
+                    )
+                if resp.status_code in (200, 201, 204):
+                    ok_item = True
+                    break
+                if resp.status_code >= 500 and tentativa == 0:
+                    time.sleep(1.5)
+                    continue
+                print(f"  [ERRO] Falha ao sincronizar '{item['chave']}': HTTP {resp.status_code} {resp.text[:200]}")
+                break
+            except Exception as exc:
+                if tentativa == 0:
+                    time.sleep(1.5)
+                    continue
+                print(f"  [ERRO] Exceção ao sincronizar '{item['chave']}': {exc}")
+        if ok_item:
+            sucesso += 1
+
+    if sucesso == len(payload):
         print(f"  [OK] {len(payload)} Marts Gold sincronizados em public.santiago_marts_gold!")
         return True
-    print(f"  [ERRO] Falha ao sincronizar Marts Gold: HTTP {resp.status_code} {resp.text[:200]}")
+    print(f"  [AVISO] {sucesso}/{len(payload)} Marts Gold sincronizados.")
     return False

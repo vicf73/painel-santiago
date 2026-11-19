@@ -38,12 +38,13 @@ async function carregarMartsGold(forcar = false) {
       return;
     }
 
-    renderizarKpisGold(mapa.kpis_executivos);
+    renderizarKpisGold(mapa.kpis_executivos, mapa.prepago_analise || {});
     renderizarSerieFatCobGold(mapa.faturacao_mensal?.rows || [], mapa.cobranca_mensal?.rows || []);
     renderizarAgingGold(mapa.aging_divida?.rows || []);
     renderizarAdSGold(mapa.ads_conta_corrente || {});
     renderizarOperacionalDQGold(mapa.operacional_cea_os || {});
     renderizarScoreV2Gold(mapa.score_v2_validacao || {});
+    renderizarPrepagoGold(mapa.prepago_analise || {}, mapa.kpis_executivos || {});
 
     if (statusEl && ultimaData) {
       const dt = new Date(ultimaData);
@@ -56,13 +57,16 @@ async function carregarMartsGold(forcar = false) {
   }
 }
 
-function renderizarKpisGold(k) {
+function renderizarKpisGold(k, prep = {}) {
   const set = (id, val) => {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
   };
+  const pr = prep.resumo || {};
+  const prepEcv = Number(pr.total_m_ecv || 0) * 1e6;
+  const tot17Cons = Number(k.fat_17_ecv || 0) + prepEcv;
   set("g-kpi-fat17", `${fmtM(k.fat_17_ecv)} ECV`);
-  set("g-kpi-fat17-sub", `${(Number(k.fat_17_kwh || 0) / 1e6).toFixed(1)} GWh • PM: ${k.fat_17_preco_medio || 0} ECV/kWh`);
+  set("g-kpi-fat17-sub", `${(Number(k.fat_17_kwh || 0) / 1e6).toFixed(1)} GWh • c/ Pré-Pago: ${fmtM(tot17Cons)}`);
 
   set("g-kpi-cob-tot", `${fmtM(k.cob_total_ecv)} ECV`);
   set("g-kpi-cob-tot-sub", `17: ${fmtM(k.cob_17_ecv)} • 07: ${fmtM(k.cob_07_ecv)} • 70: ${fmtM(k.cob_70_ecv)}`);
@@ -78,6 +82,9 @@ function renderizarKpisGold(k) {
 
   set("g-kpi-ads", `${fmtM(k.fat_21_ads_ecv)} ECV`);
   set("g-kpi-ads-sub", `${(Number(k.fat_21_ads_m3 || 0) / 1e6).toFixed(2)}M m³ • Dívida AdS: ${fmtM(k.divida_21_ecv)}`);
+
+  set("g-kpi-prepago", `${Number(pr.total_m_ecv || 0).toFixed(1)} M ECV`);
+  set("g-kpi-prepago-sub", `${(Number(pr.total_mwh || 0) / 1000).toFixed(2)} GWh • ${Number(pr.sem_compra_60d || 0).toLocaleString("pt-PT")} >60d s/ compra`);
 }
 
 function renderizarSerieFatCobGold(fatRows, cobRows) {
@@ -471,6 +478,55 @@ function renderizarScoreV2Gold(sv2) {
         <td style="text-align:right; font-family:var(--font-mono); font-weight:800; color:#F87171;">${r.prob_fraude_pct}%</td>
         <td style="text-align:right; font-family:var(--font-mono);">${fmtM(r.divida_exigivel_ecv)}</td>
         <td style="font-size:11px; color:var(--text-secondary);">${r.motivos_v2}</td>
+      </tr>
+    `).join("");
+  }
+}
+
+function renderizarPrepagoGold(prep, kpis = {}) {
+  const box = document.getElementById("g-prepago-resumo-box");
+  const tbody = document.getElementById("g-tbody-prepago-pts");
+  const pr = prep?.resumo;
+  if (!box || !pr) return;
+
+  const emPoligono = (prep.medidores || []).filter(m => m.pt_origem === "Polígono Exato").length;
+  const recTotal17 = Number(kpis.fat_17_ecv || 0) + Number(pr.total_m_ecv || 0) * 1e6;
+
+  box.innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-family:var(--font-mono); font-size:11px;">
+      <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+        <div style="color:var(--text-muted); font-size:9.5px;">MEDIDORES ATIVOS</div>
+        <div style="font-size:15px; font-weight:800; color:#60A5FA;">${Number(pr.total_medidores || 0).toLocaleString("pt-PT")}</div>
+        <div style="color:var(--text-muted); font-size:9.5px;">${emPoligono.toLocaleString("pt-PT")} em Polígonos PT</div>
+      </div>
+      <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+        <div style="color:var(--text-muted); font-size:9.5px;">VENDAS TOKENS (PM ${Number(pr.preco_medio_kwh || 0).toFixed(2)})</div>
+        <div style="font-size:15px; font-weight:800; color:#34D399;">${Number(pr.total_m_ecv || 0).toFixed(1)}M ECV</div>
+        <div style="color:var(--text-muted); font-size:9.5px;">${Number(pr.total_mwh || 0).toLocaleString("pt-PT")} MWh • Total 17: ${fmtM(recTotal17)}</div>
+      </div>
+      <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+        <div style="color:var(--text-muted); font-size:9.5px;">SEM COMPRA (&gt;60d / &gt;90d)</div>
+        <div style="font-size:15px; font-weight:800; color:#F87171;">${Number(pr.sem_compra_60d || 0).toLocaleString("pt-PT")}</div>
+        <div style="color:var(--text-muted); font-size:9.5px;">&gt;30d: ${Number(pr.sem_compra_30d || 0).toLocaleString("pt-PT")} • &gt;90d: ${Number(pr.sem_compra_90d || 0).toLocaleString("pt-PT")}</div>
+      </div>
+      <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:4px; padding:8px 10px;">
+        <div style="color:var(--text-muted); font-size:9.5px;">DESVIO ≤ -50% / VALOR BAIXO</div>
+        <div style="font-size:15px; font-weight:800; color:#FBBF24;">${Number(pr.desvio_50_pct || 0).toLocaleString("pt-PT")} / ${Number(pr.valor_baixo_qtd || 0).toLocaleString("pt-PT")}</div>
+        <div style="color:var(--text-muted); font-size:9.5px;">Críticos totais: ${Number(pr.criticos_qtd || 0).toLocaleString("pt-PT")}</div>
+      </div>
+    </div>
+  `;
+
+  if (tbody) {
+    const topPts = (prep.ranking_pts || []).slice(0, 5);
+    tbody.innerHTML = topPts.map(p => `
+      <tr style="cursor:pointer;" onclick="selecionarModulo('mod4'); setTimeout(() => { if(typeof filtrarPTPrepago==='function') filtrarPTPrepago('${p.pt}'); }, 120);">
+        <td style="font-family:var(--font-mono); font-weight:700; color:#60A5FA;">${p.pt}</td>
+        <td style="font-size:11px; color:var(--text-secondary);">${p.localidade || "--"}</td>
+        <td style="text-align:right; font-family:var(--font-mono);">${Number(p.total_med || 0).toLocaleString("pt-PT")}</td>
+        <td style="text-align:right; font-family:var(--font-mono); font-weight:700; color:#F87171;">${Number(p.criticos || 0).toLocaleString("pt-PT")}</td>
+        <td style="text-align:right; font-family:var(--font-mono); color:#FBBF24;">${Number(p.sem_60d || 0).toLocaleString("pt-PT")}</td>
+        <td style="text-align:right; font-family:var(--font-mono);">${Number(p.m_ecv || 0).toFixed(1)}M</td>
       </tr>
     `).join("");
   }

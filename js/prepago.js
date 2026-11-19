@@ -8,6 +8,7 @@ const PREPAGO_PAGE_SIZE = 150;
 let mapMod4 = null;
 let layerPrepagoSat = null;
 let layerPrepagoRuas = null;
+let layerPrepagoPoligonos = null;
 let layerPrepagoPontos = null;
 let usandoPrepagoRuas = false;
 
@@ -116,6 +117,7 @@ function iniciarMapaPrepago() {
     layerPrepagoSat = L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", { maxZoom: 20, attribution: "Google Satellite Hybrid" });
     layerPrepagoRuas = L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", { maxZoom: 20, attribution: "Google Maps" });
     layerPrepagoSat.addTo(mapMod4);
+    layerPrepagoPoligonos = L.featureGroup().addTo(mapMod4);
     layerPrepagoPontos = L.featureGroup().addTo(mapMod4);
   }
   setTimeout(() => mapMod4.invalidateSize(), 80);
@@ -168,6 +170,7 @@ function aplicarFiltrosPrepago() {
 
   prepagoPaginaAtual = 1;
   atualizarKPIsPrepago();
+  renderizarGraficoMensalPrepago();
   renderizarDonutRiscoPrepago();
   renderizarPontosMapaPrepago();
   renderizarTabelaPrepago();
@@ -189,6 +192,27 @@ function limparFiltrosPrepago() {
 
 function renderizarPontosMapaPrepago() {
   if (!mapMod4 || !layerPrepagoPontos) return;
+  if (layerPrepagoPoligonos) {
+    layerPrepagoPoligonos.clearLayers();
+    const poligs = PREPAGO_DADOS?.poligonos_pts || {};
+    const fPT = document.getElementById("p4-filtro-pt")?.value || "";
+    const ptsVisiveis = new Set(PREPAGO_FILTRADOS.map(m => m.pt).filter(p => p && p !== "Sem PT"));
+    Object.entries(poligs).forEach(([ptNome, aneis]) => {
+      if (fPT && ptNome !== fPT) return;
+      if (!fPT && !ptsVisiveis.has(ptNome)) return;
+      const ehSel = fPT && ptNome === fPT;
+      const poly = L.polygon(aneis, {
+        color: ehSel ? "#38BDF8" : "#60A5FA",
+        weight: ehSel ? 3 : 1.3,
+        opacity: ehSel ? 0.95 : 0.65,
+        fillColor: "#38BDF8",
+        fillOpacity: ehSel ? 0.18 : 0.06,
+      });
+      poly.bindTooltip(`<b>Polígono PT: ${ptNome}</b><br>Clique para filtrar medidores deste PT`, { sticky: true });
+      poly.on("click", () => filtrarPTPrepago(ptNome));
+      poly.addTo(layerPrepagoPoligonos);
+    });
+  }
   layerPrepagoPontos.clearLayers();
   const comGeo = PREPAGO_FILTRADOS.filter(m => m.lat !== null && m.lon !== null).slice(0, 600);
   comGeo.forEach(m => {
@@ -202,7 +226,7 @@ function renderizarPontosMapaPrepago() {
     });
     const desvioTxt = m.desvio_pct !== null ? `${m.desvio_pct > 0 ? "+" : ""}${m.desvio_pct}%` : "--";
     marker.bindTooltip(
-      `<b>${m.medidor}</b> • ${m.nome}<br>PT: <b>${m.pt}</b> (${m.localidade})<br>Estado: <b>${labelRiscoPrepago(m.risco)}</b><br>Dias s/ compra: <b>${m.dias_sem_compra}d</b> | Desvio: <b>${desvioTxt}</b>`
+      `<b>${m.medidor}</b> • ${m.nome}<br>PT: <b>${m.pt}</b> (${m.pt_origem || "--"}) • ${m.localidade}<br>Estado: <b>${labelRiscoPrepago(m.risco)}</b><br>Dias s/ compra: <b>${m.dias_sem_compra}d</b> | Desvio: <b>${desvioTxt}</b>`
     );
     marker.addTo(layerPrepagoPontos);
   });
@@ -238,20 +262,27 @@ function filtrarPTPrepago(pt) {
 function renderizarGraficoMensalPrepago() {
   const box = document.getElementById("p4-chart-mensal");
   if (!box || !PREPAGO_DADOS) return;
-  const serie = PREPAGO_DADOS.serie_mensal || [];
-  if (!serie.length) { box.innerHTML = ""; return; }
+  const fUni = document.getElementById("p4-filtro-uni")?.value || "";
+  const serie = (fUni && PREPAGO_DADOS.serie_mensal_por_uni?.[fUni])
+    ? PREPAGO_DADOS.serie_mensal_por_uni[fUni]
+    : (PREPAGO_DADOS.serie_mensal || []);
+  if (!serie.length) {
+    box.innerHTML = `<div style="padding:36px; text-align:center; color:var(--text-muted); font-size:11.5px;">Sem série mensal para ${fUni || "este filtro"}.</div>`;
+    return;
+  }
   const mesesPt = { "01":"Jan","02":"Fev","03":"Mar","04":"Abr","05":"Mai","06":"Jun","07":"Jul","08":"Ago","09":"Set","10":"Out","11":"Nov","12":"Dez" };
-  const w = 520, h = 225, padL = 42, padR = 42, padT = 20, padB = 28;
-  const maxEcv = Math.max(10, ...serie.map(s => s.m_ecv)) * 1.18;
-  const maxMwh = Math.max(100, ...serie.map(s => s.mwh)) * 1.18;
+  const w = 520, h = 225, padL = 44, padR = 44, padT = 20, padB = 28;
+  const maxEcv = Math.max(0.2, ...serie.map(s => s.m_ecv)) * 1.18;
+  const maxMwh = Math.max(5, ...serie.map(s => s.mwh)) * 1.18;
   const bw = (w - padL - padR) / serie.length;
   const syE = v => h - padB - (v / maxEcv) * (h - padT - padB);
   const syM = v => h - padB - (v / maxMwh) * (h - padT - padB);
 
+  const decAxis = maxEcv < 5 ? 1 : 0;
   const grid = [0.25, 0.5, 0.75, 1.0].map(f => {
     const y = syE(maxEcv * f).toFixed(1);
     return `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="var(--border-dim)" stroke-dasharray="3 3" stroke-opacity="0.65" />
-            <text x="${padL - 5}" y="${Number(y) + 3}" text-anchor="end" fill="var(--text-muted)" font-size="8">${(maxEcv * f).toFixed(0)}M</text>`;
+            <text x="${padL - 5}" y="${Number(y) + 3}" text-anchor="end" fill="var(--text-muted)" font-size="8">${(maxEcv * f).toFixed(decAxis)}M</text>`;
   }).join("");
 
   const bars = serie.map((s, idx) => {

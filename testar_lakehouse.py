@@ -70,11 +70,13 @@ def testar():
     gold_path = os.path.join(BASE, "lake", "gold", "marts_gold.json")
     with open(gold_path, "r", encoding="utf-8") as f:
         gold = json.load(f)
-    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao", "balanco_pt_trimestral"}
+    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao", "balanco_pt_trimestral", "prepago_analise"}
     assert chaves_esp.issubset(set(gold.keys())), f"Chaves Gold em falta: {chaves_esp - set(gold.keys())}"
     auc = gold["score_v2_validacao"].get("auc_teste_out_of_time", 0)
     assert auc >= 0.75, f"AUC Out-of-Time abaixo do limite: {auc}"
-    print(f"  [4/5] Marts Gold (7 chaves) + Score v2 (AUC={auc}): OK")
+    n_prep = len(gold["prepago_analise"].get("medidores", []))
+    assert n_prep >= 20000, f"Pré-pagamento abaixo do esperado: {n_prep}"
+    print(f"  [4/5] Marts Gold (9 chaves) + Score v2 (AUC={auc}) + Pré-Pago ({n_prep:,}): OK")
 
     # 5. Snapshots imutáveis de dívida
     snap_dir = os.path.join(BASE, "lake", "silver", "snapshots_divida")

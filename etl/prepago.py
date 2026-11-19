@@ -19,6 +19,70 @@ import duckdb
 import pandas as pd
 
 
+def _ponto_no_anel(lat: float, lon: float, anel: list) -> bool:
+    """Algoritmo Ray-Casting para testar se (lat, lon) está dentro de um anel fechado."""
+    dentro = False
+    n = len(anel)
+    if n < 3:
+        return False
+    j = n - 1
+    for i in range(n):
+        yi, xi = anel[i]
+        yj, xj = anel[j]
+        if ((yi > lat) != (yj > lat)) and (lon < (xj - xi) * (lat - yi) / ((yj - yi) or 1e-12) + xi):
+            dentro = not dentro
+        j = i
+    return dentro
+
+
+def _carregar_poligonos_prepago(arq_dir: str) -> tuple[list, dict]:
+    """Carrega polígonos GeoJSON de Santiago com bounding boxes para Point-in-Polygon."""
+    gj_path = os.path.join(arq_dir, "poligonos.geojson")
+    if not os.path.exists(gj_path):
+        return [], {}
+    with open(gj_path, "r", encoding="utf-8") as f:
+        gj = json.load(f)
+
+    lista_idx = []
+    mapa_polig = {}
+    for feat in gj.get("features", []):
+        props = feat.get("properties") or {}
+        pt_nome = str(props.get("POLIG_NOVO") or "").strip()
+        geom = feat.get("geometry") or {}
+        gtype = geom.get("type")
+        coords = geom.get("coordinates") or []
+        if not pt_nome or not coords:
+            continue
+
+        aneis_ext = []
+        if gtype == "MultiPolygon":
+            for poly in coords:
+                if poly and poly[0]:
+                    aneis_ext.append([[round(float(c[1]), 6), round(float(c[0]), 6)] for c in poly[0]])
+        elif gtype == "Polygon":
+            if coords[0]:
+                aneis_ext.append([[round(float(c[1]), 6), round(float(c[0]), 6)] for c in coords[0]])
+        if not aneis_ext:
+            continue
+
+        lats = [p[0] for anel in aneis_ext for p in anel]
+        lons = [p[1] for anel in aneis_ext for p in anel]
+        bbox = (min(lats), max(lats), min(lons), max(lons))
+        lista_idx.append((pt_nome, aneis_ext, bbox))
+        mapa_polig[pt_nome] = aneis_ext
+    return lista_idx, mapa_polig
+
+
+def _associar_pt_espacial(lat: float, lon: float, poligonos_idx: list) -> str | None:
+    for pt_nome, aneis, (min_la, max_la, min_lo, max_lo) in poligonos_idx:
+        if not (min_la <= lat <= max_la and min_lo <= lon <= max_lo):
+            continue
+        for anel in aneis:
+            if _ponto_no_anel(lat, lon, anel):
+                return pt_nome
+    return None
+
+
 def executar_prepago(base_santiago: str) -> dict:
     t0 = time.time()
     print("=" * 72)
@@ -60,7 +124,8 @@ def executar_prepago(base_santiago: str) -> dict:
     med_paths_sql = ", ".join("'" + p.replace("\\", "/") + "'" for p in med_files)
     tok_paths_sql = ", ".join("'" + p.replace("\\", "/") + "'" for p in tok_files)
 
-    # 1. Carregar georreferenciação (medidor_prepago.xlsx)
+    # 1. Carregar polígonos oficiais (poligonos.geojson) + georreferenciação (medidor_prepago.xlsx)
+    poligonos_idx, mapa_polig_gj = _carregar_poligonos_prepago(arq_dir)
     if os.path.exists(geo_xlsx):
         df_geo = pd.read_excel(
             geo_xlsx,
@@ -68,8 +133,33 @@ def executar_prepago(base_santiago: str) -> dict:
         )
         df_geo["n_serie"] = df_geo["n_serie"].astype(str).str.replace(r"\.0$", "", regex=True).str.strip()
         df_geo = df_geo.drop_duplicates(subset=["n_serie"], keep="first")
+
+        pts_finais = []
+        pts_origem = []
+        qtd_espacial = 0
+        for row in df_geo.itertuples(index=False):
+            la = getattr(row, "latitude", None)
+            lo = getattr(row, "longitude", None)
+            pt_cad = getattr(row, "POLIG_NOVO", None)
+            pt_cad_str = str(pt_cad).strip() if pd.notna(pt_cad) and str(pt_cad).strip() else None
+            pt_match = None
+            if pd.notna(la) and pd.notna(lo) and poligonos_idx:
+                pt_match = _associar_pt_espacial(float(la), float(lo), poligonos_idx)
+            if pt_match:
+                pts_finais.append(pt_match)
+                pts_origem.append("Polígono Exato")
+                qtd_espacial += 1
+            elif pt_cad_str:
+                pts_finais.append(pt_cad_str)
+                pts_origem.append("Cadastro")
+            else:
+                pts_finais.append(None)
+                pts_origem.append("Sem PT")
+        df_geo["POLIG_NOVO"] = pts_finais
+        df_geo["pt_origem"] = pts_origem
+        print(f"   - Associação Espacial (Point-in-Polygon): {qtd_espacial:,} medidores alocados a {len(poligonos_idx)} polígonos")
     else:
-        df_geo = pd.DataFrame(columns=["n_serie", "POLIG_NOVO", "localidade", "latitude", "longitude"])
+        df_geo = pd.DataFrame(columns=["n_serie", "POLIG_NOVO", "pt_origem", "localidade", "latitude", "longitude"])
     con.register("df_geo_reg", df_geo)
 
     # 2. Tabela de medidores ativos
@@ -84,6 +174,7 @@ def executar_prepago(base_santiago: str) -> dict:
             TRIM(COALESCE(column25, '')) AS modelo,
             TRY_STRPTIME(SPLIT_PART(TRIM(column24), ' ', 1), '%Y-%m-%d')::DATE AS dt_instalacao,
             g.POLIG_NOVO AS pt,
+            COALESCE(g.pt_origem, 'Sem GPS') AS pt_origem,
             COALESCE(NULLIF(TRIM(g.localidade), ''), TRIM(COALESCE(column13, ''))) AS localidade,
             COALESCE(
                 pu.desc_uni,
@@ -160,6 +251,7 @@ def executar_prepago(base_santiago: str) -> dict:
             m.tarifa,
             m.modelo,
             COALESCE(NULLIF(TRIM(m.pt), ''), 'Sem PT') AS pt,
+            m.pt_origem,
             m.localidade,
             m.desc_uni,
             m.lat,
@@ -258,6 +350,27 @@ def executar_prepago(base_santiago: str) -> dict:
         for r in serie_rows
     ]
 
+    serie_uni_rows = con.execute("""
+        SELECT
+            m.desc_uni,
+            strftime(t.dt_trans, '%Y-%m') AS ano_mes,
+            COUNT(*) AS compras,
+            COUNT(DISTINCT t.medidor) AS medidores_ativos,
+            ROUND(SUM(t.kwh) / 1000.0, 1) AS mwh,
+            ROUND(SUM(t.valor_ecv) / 1e6, 2) AS m_ecv
+        FROM tmp_trans_energia t
+        JOIN tmp_medidores m ON t.medidor = m.medidor
+        WHERE t.dt_trans >= DATE '2026-01-01'
+        GROUP BY 1, 2 ORDER BY 1, 2
+    """).fetchall()
+    from collections import defaultdict
+    serie_mensal_por_uni = defaultdict(list)
+    for uni, ym, comp, med_at, mwh_v, mecv_v in serie_uni_rows:
+        serie_mensal_por_uni[uni].append({
+            "ano_mes": ym, "compras": int(comp), "medidores_ativos": int(med_at),
+            "mwh": float(mwh_v), "m_ecv": float(mecv_v)
+        })
+
     # 7. Top canais de venda e faixas de recarga
     canais_rows = con.execute("""
         SELECT
@@ -309,7 +422,7 @@ def executar_prepago(base_santiago: str) -> dict:
     # 9. Todos os medidores com classificação de risco e georreferenciação
     med_list_rows = con.execute("""
         SELECT
-            medidor, nome, tarifa, modelo, pt, localidade, desc_uni, lat, lon,
+            medidor, nome, tarifa, modelo, pt, pt_origem, localidade, desc_uni, lat, lon,
             qtd_compras, total_ecv, total_kwh, ticket_medio_ecv,
             CAST(dt_ultima_compra AS VARCHAR) AS dt_ultima,
             dias_sem_compra, kwh_mes_hist, kwh_mes_recente, desvio_pct, risco
@@ -327,23 +440,27 @@ def executar_prepago(base_santiago: str) -> dict:
             "tarifa": r[2],
             "modelo": r[3],
             "pt": r[4],
-            "localidade": r[5] or "",
-            "desc_uni": r[6] or "",
-            "lat": round(float(r[7]), 6) if r[7] is not None else None,
-            "lon": round(float(r[8]), 6) if r[8] is not None else None,
-            "qtd_compras": int(r[9]),
-            "total_ecv": float(r[10]),
-            "total_kwh": float(r[11]),
-            "ticket_medio_ecv": float(r[12]),
-            "dt_ultima": r[13] or "",
-            "dias_sem_compra": int(r[14]),
-            "kwh_mes_hist": float(r[15]),
-            "kwh_mes_recente": float(r[16]),
-            "desvio_pct": float(r[17]) if r[17] is not None else None,
-            "risco": r[18],
+            "pt_origem": r[5] or "Sem GPS",
+            "localidade": r[6] or "",
+            "desc_uni": r[7] or "",
+            "lat": round(float(r[8]), 6) if r[8] is not None else None,
+            "lon": round(float(r[9]), 6) if r[9] is not None else None,
+            "qtd_compras": int(r[10]),
+            "total_ecv": float(r[11]),
+            "total_kwh": float(r[12]),
+            "ticket_medio_ecv": float(r[13]),
+            "dt_ultima": r[14] or "",
+            "dias_sem_compra": int(r[15]),
+            "kwh_mes_hist": float(r[16]),
+            "kwh_mes_recente": float(r[17]),
+            "desvio_pct": float(r[18]) if r[18] is not None else None,
+            "risco": r[19],
         }
         for r in med_list_rows
     ]
+
+    pts_ativos_prepago = {m["pt"] for m in medidores_risco if m["pt"] and m["pt"] != "Sem PT"}
+    poligonos_pts = {pt: mapa_polig_gj[pt] for pt in pts_ativos_prepago if pt in mapa_polig_gj}
 
     con.close()
 
@@ -354,9 +471,11 @@ def executar_prepago(base_santiago: str) -> dict:
         "gerado_em": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "resumo": resumo,
         "serie_mensal": serie_mensal,
+        "serie_mensal_por_uni": dict(serie_mensal_por_uni),
         "canais": canais,
         "faixas_recarga": faixas_recarga,
         "ranking_pts": ranking_pts,
+        "poligonos_pts": poligonos_pts,
         "medidores": medidores_risco,
     }
     with open(out_json, "w", encoding="utf-8") as f:

@@ -121,14 +121,15 @@ for r in FAT_ROWS:
         mix_17[p]["fat"] += int(r["faturas"] or 0)
 
 mix_labels = [("EB", "Baixa Tensão (EB)"), ("EM", "Média Tensão (EM)"), ("EE", "Especiais / IP (EE)")]
-t_mix_hdr = ["Segmento (17)", "Faturas", "Energia (GWh)", "% GWh", "Faturado (M ECV)", "% ECV", "PM (ECV/kWh)"]
+t_mix_hdr = ["Segmento (17)", "Faturas", "Energia (GWh)", "% GWh", "Faturado (M ECV)", "% ECV", "PM (ECV/kWh)", "Ticket Méd. (ECV)"]
 t_mix_rows = []
 tot_mkwh = sum(mix_17[k]["kwh"] for k, _ in mix_labels) or 1.0
 tot_mecv = sum(mix_17[k]["ecv"] for k, _ in mix_labels) or 1.0
-tot_mfat = sum(mix_17[k]["fat"] for k, _ in mix_labels)
+tot_mfat = sum(mix_17[k]["fat"] for k, _ in mix_labels) or 1
 for cod_p, nome_p in mix_labels:
     d = mix_17[cod_p]
     pm_p = (d["ecv"] / d["kwh"]) if d["kwh"] > 0 else 0.0
+    tkt_p = (d["ecv"] / d["fat"]) if d["fat"] > 0 else 0.0
     t_mix_rows.append([
         nome_p,
         f"{d['fat']:,}".replace(",", "."),
@@ -137,6 +138,7 @@ for cod_p, nome_p in mix_labels:
         fmt_pt(d["ecv"] / 1e6, 1),
         f"{fmt_pt(d['ecv'] / tot_mecv * 100.0, 1)}%",
         fmt_pt(pm_p, 2),
+        fmt_pt(tkt_p, 0),
     ])
 t_mix_rows.append([
     "TOTAL 17 · EDEC Sul",
@@ -144,6 +146,7 @@ t_mix_rows.append([
     fmt_pt(tot_mkwh / 1e6, 2), "100,0%",
     fmt_pt(tot_mecv / 1e6, 1), "100,0%",
     fmt_pt(tot_mecv / tot_mkwh, 2),
+    fmt_pt(tot_mecv / tot_mfat, 0),
 ])
 
 # Preparar Ponte Balanço Energético (Módulo 2)
@@ -187,6 +190,104 @@ t_meta_rows = [
     ["Dívida AdS (21 · Água AG)", f"{fmt_ecv_curto(KPI['divida_21_ecv'])} ECV", "Acordo / Regularização", "Administração / Fin.", "Curto Prazo"],
     ["Carteira Prescrita >5a (07/70)", f"{fmt_ecv_curto(KPI['divida_prescrita_ecv'])} ECV", "Segregação / Saneamento", "Contabilidade / DPO", "Trimestral"],
     ["Perda Não Técnica BT (PTs)", f"{fmt_pt(BAL_TRIM.get('2026-T3', {}).get('taxa_pnt_pct', 49.3), 1)}% (T3)", "-5,0 p.p. via Score v2", "Brigadas & DPO", "12 meses"],
+]
+
+# Preparar Dados de Pré-Pagamento (Módulo 4)
+PREP = G.get("prepago_analise", {})
+PR_RES = PREP.get("resumo", {})
+PR_SERIE = PREP.get("serie_mensal", [])
+PR_PTS = PREP.get("ranking_pts", [])[:10]
+PR_MEDS = PREP.get("medidores", [])
+PR_POLIG_EXATO = sum(1 for m in PR_MEDS if m.get("pt_origem") == "Polígono Exato")
+
+if PR_RES:
+    t_meta_rows.append([
+        "Pré-Pago >60d s/ Compra",
+        f"{PR_RES.get('sem_compra_60d', 0):,} med.".replace(",", "."),
+        "Inspeção Top PTs Críticos",
+        "Brigadas & Pré-Pago",
+        "6 meses",
+    ])
+
+t_prep_hdr = ["Indicador Pré-Pagamento", "Valor Apurado", "Detalhe / Abrangência"]
+t_prep_rows = [
+    ["Medidores Ativos (Parque)", f"{PR_RES.get('total_medidores', 0):,}".replace(",", "."), f"{PR_RES.get('com_geo', 0):,} c/ GPS • {PR_POLIG_EXATO:,} em Polígonos PT".replace(",", ".")],
+    ["Energia & Receita Tokens", f"{fmt_pt(PR_RES.get('total_m_ecv', 0), 2)}M ECV", f"{fmt_pt(PR_RES.get('total_mwh', 0), 1)} MWh • PM {fmt_pt(PR_RES.get('preco_medio_kwh', 0), 2)} ECV/kWh"],
+    ["Sem Compra (>30d / >60d / >90d)", f"{PR_RES.get('sem_compra_60d', 0):,} (>60d)".replace(",", "."), f">30d: {PR_RES.get('sem_compra_30d', 0):,} • >90d: {PR_RES.get('sem_compra_90d', 0):,}".replace(",", ".")],
+    ["Desvio Compra ≤ -50% (60d vs Hist.)", f"{PR_RES.get('desvio_50_pct', 0):,}".replace(",", "."), "Queda abrupta de ritmo de recarga"],
+    ["Valor Baixo (<15 kWh/mês ou <500 ECV)", f"{PR_RES.get('valor_baixo_qtd', 0):,}".replace(",", "."), f"Críticos totais: {PR_RES.get('criticos_qtd', 0):,} • Alertas: {PR_RES.get('alertas_qtd', 0):,}".replace(",", ".")],
+] if PR_RES else []
+
+t_prep_pt_hdr = ["PT (Polígono)", "Localidade", "Medidores", "Críticos", ">60d s/ Compra", "Vendas (M ECV)"]
+t_prep_pt_rows = [
+    [
+        p["pt"], p.get("localidade") or "—",
+        f"{p['total_med']:,}".replace(",", "."),
+        f"{p['criticos']:,}".replace(",", "."),
+        f"{p['sem_60d']:,}".replace(",", "."),
+        fmt_pt(p["m_ecv"], 2),
+    ]
+    for p in PR_PTS
+]
+
+# Top Fatores Score v2 (sem CEA anual) + Faixas/Canais Pré-Pago + Anexo Analista Júnior
+t_pesos_hdr = ["Fator Explicável (Score v2)", "Peso", "O que indica na prática"]
+PESO_EXPL = {
+    "Histórico Auto de Fraude CF1": "Cliente já autuado anteriormente (alta reincidência)",
+    "Histórico de Fraude no PT": "PT com histórico elevado de irregularidades na zona",
+    "Contrato Vigor c/ Consumo T3=0": "Contrato ativo com faturação nula (suspeita de bypass)",
+    "Devedor Sem Pagamento 2026": "Dívida aberta sem qualquer amortização em 2026",
+    "Contrato em Baixa p/ Dívida": "Corte por dívida com risco de religação clandestina",
+    "Anomalia Leitura: Suspeita Fraude": "Leitura de campo sinalizou violação ou desvio",
+}
+t_pesos_rows = [
+    [p["feature"], fmt_pt(p["peso_std"], 3), PESO_EXPL.get(p["feature"], "Sinal estatístico de risco comercial")]
+    for p in SC.get("top_pesos", [])[:6]
+]
+
+PR_FAIXAS = PREP.get("faixas_recarga", [])
+PR_CANAIS = PREP.get("canais", [])[:5]
+tot_pr_comp = sum(x["compras"] for x in PR_FAIXAS) or 1
+tot_pr_ecv = sum(x["m_ecv"] for x in PR_FAIXAS) or 1.0
+t_pr_fx_hdr = ["Faixa / Canal Pré-Pago", "Compras", "% Compras", "Receita (M ECV)", "Ticket Médio (ECV)"]
+t_pr_fx_rows = [
+    [
+        f"Faixa: {fx['faixa']}",
+        f"{fx['compras']:,}".replace(",", "."),
+        f"{fmt_pt(fx['compras'] / tot_pr_comp * 100.0, 1)}%",
+        fmt_pt(fx["m_ecv"], 2),
+        fmt_pt((fx["m_ecv"] * 1e6) / max(fx["compras"], 1), 0),
+    ]
+    for fx in PR_FAIXAS
+] + [
+    [
+        f"Canal: {cn['canal']}",
+        f"{cn['compras']:,}".replace(",", "."),
+        f"{fmt_pt(cn['compras'] / tot_pr_comp * 100.0, 1)}%",
+        fmt_pt(cn["m_ecv"], 2),
+        fmt_pt((cn["m_ecv"] * 1e6) / max(cn["compras"], 1), 0),
+    ]
+    for cn in PR_CANAIS
+]
+
+t_dic_hdr = ["Indicador / Sigla", "Fórmula de Cálculo", "Guia Rápido de Interpretação"]
+t_dic_rows = [
+    ["Taxa Cobrança (%)", "Cobrado 2026 ÷ Faturado 2026 × 100", "Meta ≥90%. Mede quanto da faturação corrente vira caixa."],
+    ["DSO (Dias)", "(Dívida 17 ÷ Fat. Últ. 90d) × 90", "Prazo médio para receber; quanto menor, melhor a liquidez."],
+    ["Preço Médio (PM)", "Faturado (ECV) ÷ Consumo (kWh ou m³)", "Reflete o mix tarifário (EE > EB > EM)."],
+    ["PNT (Perda Não Téc.)", "Perda Total − Perda Técnica Ref. (5%)", "Fatia atribuível a fraude, erro de medição ou cadastro."],
+    ["AUC / Lift (Score v2)", "Área ROC / Acerto Top 10% ÷ Base", "Lift 4,36x = 4,36× mais eficaz que seleção aleatória."],
+    ["Desvio Pré-Pago (%)", "(kWh/mês 60d − kWh/mês Hist.) ÷ Hist.", "Queda ≤ -50% ou >60d sem compra indica provável bypass."],
+]
+
+t_lin_hdr = ["Camada / Pasta Fonte", "Tabela Silver (DuckDB)", "Secção no Relatório"]
+t_lin_rows = [
+    ["FATURAÇAO (z3Facturas)", "fct_fatura", "2.1, 2.2, 2.4 (AdS), 2.6 (Mix)"],
+    ["cob_26 (3Cob_TcxRecConc)", "fct_cobranca", "2.1, 2.2 (Cobrança & DSO)"],
+    ["DIVIDA (0Dividas/1Dividas)", "fct_divida_snapshot", "2.1, 2.3 (Aging 4 Empresas)"],
+    ["CONTRATO + GEOREF_PT", "dim_local_consumo", "2.5 (Score v2), 2.6 (PTs)"],
+    ["BL_ENRG (SL7000 EOB)", "fct_leitura_pt_eob", "2.6 (Ponte Perdas PNT BT)"],
+    ["medidor + trans_tok + Geo", "prepago.json (Gold)", "2.8 (Pré-Pagamento & Polígonos)"],
 ]
 
 # Resumo das 4 empresas
@@ -431,6 +532,45 @@ fig6_path = os.path.join(CHART_DIR, "fig6_mix_17.png")
 plt.savefig(fig6_path, dpi=300)
 plt.close()
 
+# FIG 7: Pré-Pagamento (Evolução Mensal + Distribuição de Risco)
+fig7_path = None
+if PR_RES and PR_SERIE:
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.5, 3.7), dpi=300)
+    xp = np.arange(len(PR_SERIE))
+    p_lbl = [nome_mes_pt(s["ano_mes"], curto=True) for s in PR_SERIE]
+    p_ecv = [s["m_ecv"] for s in PR_SERIE]
+    p_mwh = [s["mwh"] for s in PR_SERIE]
+    ax1.bar(xp, p_ecv, width=0.55, color="#3B82F6", label="Vendas (M ECV)")
+    ax1.set_xticks(xp)
+    ax1.set_xticklabels(p_lbl, fontsize=7.5, rotation=20)
+    ax1.set_ylabel("M ECV", fontsize=8.5)
+    ax1.set_title("Pré-Pagamento — Evolução Mensal 2026", fontsize=10, fontweight="bold")
+    ax1.grid(axis="y", alpha=0.7)
+    ax1b = ax1.twinx()
+    ax1b.plot(xp, p_mwh, color="#F59E0B", marker="o", linewidth=1.8, label="Energia (MWh)")
+    ax1b.set_ylabel("MWh", fontsize=8.5, color="#B45309")
+
+    tot_p = max(1, PR_RES.get("total_medidores", 1))
+    n_crit = PR_RES.get("criticos_qtd", 0)
+    n_aler = PR_RES.get("alertas_qtd", 0)
+    n_desv = PR_RES.get("desvios_qtd", 0)
+    n_norm = max(0, tot_p - n_crit - n_aler - n_desv)
+    cats_r = ["Crítico\n(Bypass)", "Alerta\n(V. Baixo)", "Desvio\n(-30..-59%)", "Normal"]
+    vals_r = [n_crit, n_aler, n_desv, n_norm]
+    cores_r = ["#EF4444", "#F59E0B", "#3B82F6", "#10B981"]
+    ax2.bar(cats_r, vals_r, color=cores_r, width=0.52)
+    ax2.set_title(f"Distribuição de Risco ({tot_p:,} Medidores)".replace(",", "."), fontsize=10, fontweight="bold")
+    ax2.set_ylabel("Nº Medidores", fontsize=8.5)
+    ax2.grid(axis="y", alpha=0.7)
+    for i, v in enumerate(vals_r):
+        ax2.text(i, v + max(vals_r) * 0.02, f"{v:,}\n({v/tot_p*100:.1f}%)".replace(",", "."), ha="center", va="bottom", fontsize=7.5, fontweight="bold")
+    ax2.set_ylim(0, max(vals_r) * 1.22)
+
+    plt.tight_layout()
+    fig7_path = os.path.join(CHART_DIR, "fig7_prepago.png")
+    plt.savefig(fig7_path, dpi=300)
+    plt.close()
+
 print("Gráficos gerados com sucesso!")
 
 
@@ -580,8 +720,10 @@ indice_itens = [
     ("   2.5. Operacional (Inspeções CEA & OS) e Priorização Score v2", "Calibração Out-of-Time por Decil e Lift"),
     ("   2.6. Mix Tarifário (EB/EM/EE) e Ponte com Perdas em BT", "Segmentação de Receita e Balanço nos PTs Medidos"),
     ("   2.7. Engenharia de Dados, Auditoria DQ e Frescura das Fontes", "Funil Bronze → Silver e Semáforo de Ingestão"),
+    ("   2.8. Pré-Pagamento — Tokens, Risco de Bypass e Polígonos PT", "Parque de Medidores, Vendas e Top PTs em Risco"),
     ("3. Constrangimentos Identificados", "Principais riscos financeiros e de dados"),
     ("4. Conclusão, Metas e Plano de Ação", "Quadro de metas executivas e recomendações"),
+    ("5. Anexo Metodológico (Guia do Analista)", "Fórmulas de KPIs e Mapa de Linhagem das Fontes"),
 ]
 for sec_t, sec_d in indice_itens:
     pi = doc.add_paragraph()
@@ -696,6 +838,11 @@ t_ag_rows.append([
     fmt_ecv_curto(KPI["divida_70_ecv"]),
 ])
 add_styled_table(doc, t_ag_hdr, t_ag_rows, [2.2, 2.0, 2.0, 2.9, 2.9, 3.0, 3.0])
+p_n1 = doc.add_paragraph()
+r_n1 = p_n1.add_run("Como interpretar: valores negativos nas empresas 07 e 70 correspondem a notas de crédito/retificações antigas ainda não compensadas; dívida >5 anos é considerada prescrita para gestão corrente.")
+r_n1.italic = True
+r_n1.font.size = Pt(8.5)
+r_n1.font.color.rgb = RGBColor(100, 116, 139)
 doc.add_picture(fig3_path, width=Cm(17.4))
 
 doc.add_heading("2.4. Cliente Especial AdS (21 · Electra SA — Água AG)", level=2)
@@ -716,6 +863,8 @@ doc.add_paragraph(
 t_sc_hdr = ["Decil", "Inspeções Teste", "Fraudes Confirmadas", "Taxa de Fraude (%)", "Lift vs. Aleatório"]
 t_sc_rows = [[d["decil"], str(d["insp"]), str(d["fraudes"]), f"{fmt_pt(d['taxa_fraude_pct'], 1)}%", f"{fmt_pt(d['lift'], 2)}x"] for d in SC["decis"]]
 add_styled_table(doc, t_sc_hdr, t_sc_rows, [2.4, 3.9, 3.9, 3.9, 3.9])
+if t_pesos_rows:
+    add_styled_table(doc, t_pesos_hdr, t_pesos_rows, [5.6, 2.4, 10.0])
 doc.add_picture(fig5_path, width=Cm(17.4))
 
 doc.add_heading("2.6. Mix Tarifário (EB/EM/EE) e Ponte com Perdas em BT", level=2)
@@ -724,7 +873,7 @@ doc.add_paragraph(
     "a Baixa Tensão (EB) representa 59,9% da energia e 59,1% da receita, enquanto Especiais/IP (EE) geram 22,1% da faturação com 13,6% dos GWh "
     "(PM 58,17 ECV/kWh). Em paralelo, a ponte com o Balanço Energético Real por PT (Módulo 2) quantifica as Perdas Não Técnicas (PNT) nos PTs medidos."
 )
-add_styled_table(doc, t_mix_hdr, t_mix_rows, [3.6, 2.0, 2.3, 1.9, 2.7, 1.9, 3.6])
+add_styled_table(doc, t_mix_hdr, t_mix_rows, [3.2, 1.8, 2.0, 1.6, 2.3, 1.6, 2.6, 2.9])
 doc.add_picture(fig6_path, width=Cm(17.4))
 if t_bal_rows:
     add_styled_table(doc, t_bal_hdr, t_bal_rows, [2.0, 2.1, 2.6, 2.6, 2.3, 3.6, 2.8])
@@ -737,14 +886,30 @@ doc.add_paragraph(
 )
 add_styled_table(doc, t_dq_hdr, t_dq_rows, [3.2, 6.2, 3.6, 2.3, 2.7])
 
+if PR_RES:
+    doc.add_heading("2.8. Pré-Pagamento — Tokens, Risco de Bypass e Polígonos PT", level=2)
+    doc.add_paragraph(
+        f"O parque pré-pagamento contabiliza {PR_RES.get('total_medidores', 0):,} medidores ativos, com {PR_POLIG_EXATO:,} alocados geometricamente "
+        f"a polígonos oficiais de PTs (Point-in-Polygon). Em 2026, as compras de tokens somaram {fmt_pt(PR_RES.get('total_m_ecv', 0), 2)}M ECV "
+        f"({fmt_pt(PR_RES.get('total_mwh', 0), 1)} MWh), elevando a receita elétrica consolidada da EDEC Sul (Pós-Pago + Pré-Pago) para "
+        f"{fmt_ecv_curto(KPI['fat_17_ecv'] + PR_RES.get('total_m_ecv', 0) * 1e6)} ECV."
+    )
+    add_styled_table(doc, t_prep_hdr, t_prep_rows, [5.8, 3.6, 8.6])
+    if fig7_path:
+        doc.add_picture(fig7_path, width=Cm(17.4))
+    if t_pr_fx_rows:
+        add_styled_table(doc, t_pr_fx_hdr, t_pr_fx_rows, [5.4, 2.7, 2.7, 3.4, 3.8])
+    if t_prep_pt_rows:
+        add_styled_table(doc, t_prep_pt_hdr, t_prep_pt_rows, [3.6, 4.4, 2.3, 2.2, 2.7, 2.8])
+
 # 3. Constrangimentos
 doc.add_heading("3. Constrangimentos Identificados", level=1)
 for c_txt in [
     "1. Passivo Histórico Prescrito (> 5 anos): 6,84B ECV (50,5% da carteira global) pertencem às carteiras legadas 07 (4,29B) e 70 (2,55B), distorcendo rácios consolidados de recuperabilidade.",
     "2. Acumulação de Dívida AdS (21 · Electra SA): faturação contínua (736,7M ECV em 2026) com cobrança em caixa nula no período, elevando o saldo devedor para 1,67B ECV (868,1M ECV já no escalão 1–2 anos).",
     "3. Pressão de Tesouraria na EDEC Sul (17): embora a taxa de cobrança anual seja de 91,3%, o DSO médio de 81 dias indica desfasamento relevante entre emissão e recebimento.",
-    "4. Retificações / Notas de Crédito Não Compensadas: valores negativos em escalões antigos das empresas 07 e 70 exigem saneamento contabilístico.",
-    "5. Frescura de Fontes Auxiliares: alertas de atraso em ficheiros operacionais específicos (ex.: Anomalia de Leitura >30 dias e ficheiro de rotas)."
+    f"4. Risco de Bypass no Pré-Pagamento: {PR_RES.get('sem_compra_60d', 0):,} medidores ativos há >60 dias sem compra e {PR_RES.get('desvio_50_pct', 0):,} com queda ≥50% no consumo recente.",
+    "5. Retificações / Notas de Crédito & Frescura de Fontes: valores negativos em escalões antigos (07/70) e alertas de atraso em ficheiros auxiliares (Anomalia >30d; Itinerário 861d)."
 ]:
     doc.add_paragraph(c_txt)
 
@@ -756,6 +921,14 @@ doc.add_paragraph(
     "O quadro abaixo sintetiza as metas operacionais e financeiras recomendadas ao Departamento de Planeamento e Organização (DPO) e direções envolvidas:"
 )
 add_styled_table(doc, t_meta_hdr, t_meta_rows, [4.2, 3.3, 3.8, 3.8, 2.9])
+
+# 5. Anexo Metodológico (Guia do Analista Júnior)
+doc.add_heading("5. Anexo Metodológico — Dicionário de KPIs & Mapa de Fontes", level=1)
+doc.add_paragraph(
+    "Para apoio à leitura e auditoria técnica, os quadros seguintes resumem as fórmulas exatas utilizadas no Lakehouse e a linhagem de cada indicador:"
+)
+add_styled_table(doc, t_dic_hdr, t_dic_rows, [4.0, 6.0, 8.0])
+add_styled_table(doc, t_lin_hdr, t_lin_rows, [5.6, 4.8, 7.6])
 
 # Bloco de Data e Assinatura no DOCX
 meses_ext = {
@@ -948,7 +1121,8 @@ story = [
             st_p
         ),
         pdf_table(t_ag_hdr, t_ag_rows, [2.2, 2.0, 2.0, 2.9, 2.9, 3.0, 3.0]),
-        Spacer(1, 6),
+        Paragraph("<i>Como interpretar: saldos negativos nas empresas 07/70 refletem notas de crédito antigas não compensadas; dívida &gt;5 anos é prescrita.</i>", ParagraphStyle("Nota", parent=st_p, fontSize=7.8, textColor=colors.HexColor("#64748B"))),
+        Spacer(1, 5),
         RLImage(fig3_path, width=17.4*cm, height=6.82*cm),
     ]),
     KeepTogether([
@@ -968,6 +1142,8 @@ story = [
             st_p
         ),
         pdf_table(t_sc_hdr, t_sc_rows, [2.4, 3.9, 3.9, 3.9, 3.9]),
+        Spacer(1, 5),
+        pdf_table(t_pesos_hdr, t_pesos_rows, [5.6, 2.4, 10.0]) if t_pesos_rows else Spacer(1, 1),
         Spacer(1, 6),
         RLImage(fig5_path, width=17.4*cm, height=6.61*cm),
     ]),
@@ -978,7 +1154,7 @@ story = [
             "<b>22,1%</b> da faturação com PM de <b>58,17 ECV/kWh</b>. O quadro trimestral abaixo estabelece a ponte com o Balanço Real por PT (Módulo 2).",
             st_p
         ),
-        pdf_table(t_mix_hdr, t_mix_rows, [3.6, 2.0, 2.3, 1.9, 2.7, 1.9, 3.6]),
+        pdf_table(t_mix_hdr, t_mix_rows, [3.2, 1.8, 2.0, 1.6, 2.3, 1.6, 2.6, 2.9]),
         Spacer(1, 5),
         RLImage(fig6_path, width=17.4*cm, height=5.97*cm),
     ]),
@@ -997,10 +1173,29 @@ story = [
         pdf_table(t_dq_hdr, t_dq_rows, [3.2, 6.2, 3.6, 2.3, 2.7]),
     ]),
     KeepTogether([
+        Paragraph("2.8. Pré-Pagamento — Tokens, Risco de Bypass e Polígonos PT", st_h2),
+        Paragraph(
+            f"Parque pré-pago: <b>{PR_RES.get('total_medidores', 0):,}</b> medidores ativos (<b>{PR_POLIG_EXATO:,}</b> alocados a polígonos PT). "
+            f"Vendas 2026: <b>{fmt_pt(PR_RES.get('total_m_ecv', 0), 2)}M ECV</b> (<b>{fmt_pt(PR_RES.get('total_mwh', 0), 1)} MWh</b>) • "
+            f"Receita elétrica consolidada EDEC Sul (Pós + Pré-Pago): <b>{fmt_ecv_curto(KPI['fat_17_ecv'] + PR_RES.get('total_m_ecv', 0) * 1e6)} ECV</b>.",
+            st_p
+        ),
+        pdf_table(t_prep_hdr, t_prep_rows, [5.8, 3.6, 8.6]) if t_prep_rows else Spacer(1, 1),
+        Spacer(1, 5),
+        RLImage(fig7_path, width=17.4*cm, height=6.13*cm) if fig7_path else Spacer(1, 1),
+    ]),
+    KeepTogether([
+        Spacer(1, 4),
+        pdf_table(t_pr_fx_hdr, t_pr_fx_rows, [5.4, 2.7, 2.7, 3.4, 3.8]) if t_pr_fx_rows else Spacer(1, 1),
+        Spacer(1, 5),
+        pdf_table(t_prep_pt_hdr, t_prep_pt_rows, [3.6, 4.4, 2.3, 2.2, 2.7, 2.8]) if t_prep_pt_rows else Spacer(1, 1),
+    ]),
+    KeepTogether([
         Paragraph("3. Constrangimentos Identificados", st_h1),
         Paragraph("• <b>Passivo Prescrito (>5 anos):</b> 6,84B ECV (50,5% da carteira) concentrados nas empresas 07 (4,29B) e 70 (2,55B).", st_p),
         Paragraph("• <b>Inadimplência AdS (21):</b> faturação de 736,7M ECV em 2026 sem cobrança em caixa registada, elevando a dívida para 1,67B ECV.", st_p),
         Paragraph("• <b>DSO na EDEC Sul (17):</b> prazo médio de recebimento em 81 dias pressiona a liquidez corrente.", st_p),
+        Paragraph(f"• <b>Risco de Bypass no Pré-Pagamento:</b> {PR_RES.get('sem_compra_60d', 0):,} medidores ativos há >60 dias sem compra e {PR_RES.get('desvio_50_pct', 0):,} com queda ≥50%.", st_p),
         Paragraph("• <b>Saldos Negativos / Retificações & Frescura de Fontes:</b> notas de crédito não compensadas (07/70) e alertas de atraso em ficheiros auxiliares (Anomalia 39d; Itinerário 861d).", st_p),
     ]),
     KeepTogether([
@@ -1010,7 +1205,14 @@ story = [
             st_p
         ),
         pdf_table(t_meta_hdr, t_meta_rows, [4.2, 3.3, 3.8, 3.8, 2.9]),
-        Spacer(1, 22),
+    ]),
+    KeepTogether([
+        Paragraph("5. Anexo Metodológico — Dicionário de KPIs & Mapa de Fontes", st_h1),
+        Paragraph("Fórmulas de cálculo e linhagem das tabelas utilizadas no Lakehouse para auditoria técnica:", st_p),
+        pdf_table(t_dic_hdr, t_dic_rows, [4.0, 6.0, 8.0]),
+        Spacer(1, 6),
+        pdf_table(t_lin_hdr, t_lin_rows, [5.6, 4.8, 7.6]),
+        Spacer(1, 20),
         Paragraph(data_extenso, ParagraphStyle("SigDt", parent=st_p, alignment=1, spaceAfter=24)),
         Paragraph("_____________________________________________", ParagraphStyle("SigLn", parent=st_p, alignment=1, spaceAfter=4)),
         Paragraph("<b>Victor Cesar Fonseca Ferreira</b>", ParagraphStyle("SigNm", parent=st_p, alignment=1, fontSize=10, textColor=colors.HexColor("#1E3A8A"), spaceAfter=2)),
