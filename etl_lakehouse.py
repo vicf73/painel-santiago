@@ -21,6 +21,7 @@ from etl.qualidade import executar_qualidade_silver
 from etl.score_v2 import executar_score_v2
 from etl.balanco_pt import executar_balanco_pt
 from etl.prepago import executar_prepago
+from etl.ordens_servico import executar_ordens_servico
 from etl.gold import construir_marts_gold, sincronizar_marts_supabase
 
 
@@ -65,6 +66,7 @@ def main():
             executar_score_v2(BASE_SANTIAGO)
             executar_balanco_pt(BASE_SANTIAGO, BASE_ATUAL_SCRIPT)
             executar_prepago(BASE_SANTIAGO)
+            executar_ordens_servico(BASE_SANTIAGO)
             marts = construir_marts_gold(BASE_SANTIAGO)
             if not args.sem_sync:
                 sincronizar_marts_supabase(BASE_SANTIAGO, marts)

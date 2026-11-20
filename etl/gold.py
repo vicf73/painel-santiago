@@ -476,6 +476,18 @@ def construir_marts_gold(base_santiago: str) -> dict:
     snap_dir = os.path.join(silver_dir, "snapshots_divida")
     qtd_snapshots = len([f for f in os.listdir(snap_dir) if f.endswith(".parquet")]) if os.path.isdir(snap_dir) else 0
 
+    os_gold_path = os.path.join(gold_dir, "ordens_servico.json")
+    ordens_servico_data = {}
+    if os.path.exists(os_gold_path):
+        with open(os_gold_path, "r", encoding="utf-8") as f:
+            ordens_servico_data = json.load(f)
+    else:
+        try:
+            from etl.ordens_servico import executar_ordens_servico
+            ordens_servico_data = executar_ordens_servico(base_santiago)
+        except Exception as exc_os:
+            print(f"  [AVISO] Falha ao gerar ordens_servico.json: {exc_os}")
+
     marts = {
         "kpis_executivos": {
             "gerado_em": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -534,6 +546,7 @@ def construir_marts_gold(base_santiago: str) -> dict:
         "score_v2_validacao": score_v2_data,
         "balanco_pt_trimestral": balanco_pt_data,
         "prepago_analise": prepago_data,
+        "ordens_servico_analise": ordens_servico_data,
     }
 
     out_gold = os.path.join(gold_dir, "marts_gold.json")

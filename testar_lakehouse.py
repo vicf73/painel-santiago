@@ -29,14 +29,15 @@ def testar():
     arqs_py = [
         "etl_santiago_supabase.py", "etl_lakehouse.py", "publicar_painel_web.py",
         "etl/manifesto.py", "etl/bronze.py", "etl/silver.py",
-        "etl/qualidade.py", "etl/score_v2.py", "etl/balanco_pt.py", "etl/gold.py",
+        "etl/qualidade.py", "etl/score_v2.py", "etl/balanco_pt.py",
+        "etl/prepago.py", "etl/ordens_servico.py", "etl/gold.py",
     ]
     for rel in arqs_py:
         py_compile.compile(os.path.join(BASE, rel), doraise=True)
     print(f"  [1/5] Sintaxe Python ({len(arqs_py)} ficheiros): OK")
 
     # 2. Sintaxe JS
-    arqs_js = ["config_santiago.js", "js/api.js", "js/gold.js", "js/mapa.js", "js/contratos.js", "js/divida.js", "js/auth.js"]
+    arqs_js = ["config_santiago.js", "js/api.js", "js/gold.js", "js/mapa.js", "js/contratos.js", "js/divida.js", "js/prepago.js", "js/ordens_servico.js", "js/auth.js"]
     for rel in arqs_js:
         r = subprocess.run(["node", "--check", os.path.join(BASE, rel)], capture_output=True, text=True)
         if r.returncode != 0:
@@ -66,11 +67,11 @@ def testar():
     assert dq.get("todos_testes_ok") is True, "Relatório DQ reportou falhas!"
     print("  [3/5] DuckDB Silver + Relatório DQ: OK")
 
-    # 4. Marts Gold + Score v2 + RX0 + Unidades Comerciais
+    # 4. Marts Gold + Score v2 + RX0 + Unidades Comerciais + Ordens de Serviço
     gold_path = os.path.join(BASE, "lake", "gold", "marts_gold.json")
     with open(gold_path, "r", encoding="utf-8") as f:
         gold = json.load(f)
-    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "religacao_rx0", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao", "balanco_pt_trimestral", "prepago_analise"}
+    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "religacao_rx0", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao", "balanco_pt_trimestral", "prepago_analise", "ordens_servico_analise"}
     assert chaves_esp.issubset(set(gold.keys())), f"Chaves Gold em falta: {chaves_esp - set(gold.keys())}"
     auc = gold["score_v2_validacao"].get("auc_teste_out_of_time", 0)
     assert auc >= 0.75, f"AUC Out-of-Time abaixo do limite: {auc}"
@@ -80,7 +81,9 @@ def testar():
     assert rx0_fat >= 4000, f"Faturas RX0 abaixo do esperado: {rx0_fat}"
     n_ucs = len(gold["kpis_executivos"].get("unidades_comerciais", []))
     assert n_ucs >= 10, f"Unidades Comerciais abaixo do esperado: {n_ucs}"
-    print(f"  [4/5] Marts Gold (10 chaves) + Score v2 (AUC={auc}) + RX0 ({rx0_fat:,} taxas) + UCs ({n_ucs}) + Pré-Pago ({n_prep:,}): OK")
+    tot_os = gold["ordens_servico_analise"].get("resumo", {}).get("total_os", 0)
+    assert tot_os >= 60000, f"Ordens de Serviço abaixo do esperado: {tot_os}"
+    print(f"  [4/5] Marts Gold (11 chaves) + Score v2 (AUC={auc}) + RX0 ({rx0_fat:,}) + OS ({tot_os:,}) + Pré-Pago ({n_prep:,}): OK")
 
     # 5. Snapshots imutáveis de dívida
     snap_dir = os.path.join(BASE, "lake", "silver", "snapshots_divida")

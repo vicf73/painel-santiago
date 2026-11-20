@@ -109,6 +109,8 @@ def publicar():
         "js/gold.js",
         "js/contratos.js",
         "js/mapa.js",
+        "js/prepago.js",
+        "js/ordens_servico.js",
         "js/auth.js",
         "js/divida.js",
         ".github/workflows/pages.yml",

@@ -110,6 +110,8 @@
       if (paneMod2) paneMod2.classList.add("hidden");
       const paneMod4 = document.getElementById("modulo-mod4");
       if (paneMod4) paneMod4.classList.add("hidden");
+      const paneMod5 = document.getElementById("modulo-mod5");
+      if (paneMod5) paneMod5.classList.add("hidden");
 
       if (modId === "mod0") {
         if (paneMod0) paneMod0.classList.remove("hidden");
@@ -125,6 +127,9 @@
       } else if (modId === "mod4") {
         if (paneMod4) paneMod4.classList.remove("hidden");
         if (typeof carregarDadosPrepago === "function") carregarDadosPrepago();
+      } else if (modId === "mod5") {
+        if (paneMod5) paneMod5.classList.remove("hidden");
+        if (typeof carregarDadosOrdensServico === "function") carregarDadosOrdensServico();
       } else if (modId === "mod3") {
         if (paneMod3) paneMod3.classList.remove("hidden");
         dividaIniciada = true;
