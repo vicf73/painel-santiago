@@ -313,31 +313,39 @@
 
     <!-- MÓDULO 0: VISÃO EXECUTIVA & MARTS GOLD (LAKEHOUSE) -->
     <div id="modulo-mod0" class="module-pane hidden">
-      <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:12px 18px; box-shadow:var(--card-shadow);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; background:var(--bg-panel); border:1px solid var(--border-dim); border-radius:6px; padding:12px 18px; box-shadow:var(--card-shadow);">
         <div>
-          <h2 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
-            📈 Centro Executivo Gold — Faturação, Cobrança Real, Aging &amp; AdS
+          <h2 style="font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+            📈 Centro Executivo Gold — Faturação, Cobrança Real, Aging, RX0 &amp; AdS
             <span class="brand-tag" style="background:rgba(16,185,129,0.14); color:#34D399; border-color:rgba(16,185,129,0.4);">LAKEHOUSE GOLD</span>
+            <span id="gold-uc-context-badge" class="brand-tag" style="background:rgba(96,165,250,0.14); color:#60A5FA; border-color:rgba(96,165,250,0.4);">REGIÃO SUL (10 UNIDADES)</span>
           </h2>
           <p style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">
-            Indicadores calculados ao grão da fatura e recibo em DuckDB (Bronze → Silver → Gold)
+            Indicadores calculados ao grão da fatura, conceito (RX0) e recibo em DuckDB — filtráveis em tempo real por Unidade Comercial
           </p>
         </div>
-        <div style="display:flex; align-items:center; gap:10px;">
+        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div style="display:flex; align-items:center; gap:6px; background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:6px; padding:4px 10px;">
+            <span style="font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); font-weight:700;">🏢 Unidade Comercial:</span>
+            <select id="gold-filtro-uc" onchange="aplicarFiltroUnidadeGold(this.value)" style="background:transparent; color:var(--text-primary); border:none; font-family:var(--font-mono); font-size:11.5px; font-weight:700; outline:none; cursor:pointer; padding:2px 4px;">
+              <option value="TODAS">Todas as Unidades (Região Sul)</option>
+            </select>
+            <button id="gold-btn-limpar-uc" class="btn" style="display:none; padding:2px 8px; font-size:10.5px;" onclick="selecionarUnidadeGold('TODAS')" title="Voltar a Todas as Unidades">✕ Limpar</button>
+          </div>
           <span id="gold-sync-status" style="font-family:var(--font-mono); font-size:11px; color:var(--text-muted);">--</span>
           <button class="btn" onclick="carregarMartsGold(true)">↻ Atualizar Gold</button>
         </div>
       </div>
 
-      <!-- KPIs Executivos Gold (7 cards) -->
-      <div class="kpi-strip" style="grid-template-columns: repeat(7, 1fr);">
+      <!-- KPIs Executivos Gold (8 cards) -->
+      <div class="kpi-strip" style="grid-template-columns: repeat(8, 1fr);">
         <div class="kpi-card">
-          <div class="kpi-label"><span>FATURAÇÃO EDEC SUL (17)</span><span>2026</span></div>
+          <div class="kpi-label"><span id="g-lbl-fat17">FATURAÇÃO EDEC (17)</span><span id="g-lbl-fat17-scope">2026</span></div>
           <div class="kpi-value" id="g-kpi-fat17">--</div>
           <div class="kpi-sub" id="g-kpi-fat17-sub">--</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label"><span>COBRANÇA REAL 2026</span><span>4 EMPRESAS</span></div>
+          <div class="kpi-label"><span>COBRANÇA REAL 2026</span><span id="g-lbl-cob-scope">4 EMPRESAS</span></div>
           <div class="kpi-value" style="color:#60A5FA;" id="g-kpi-cob-tot">--</div>
           <div class="kpi-sub" id="g-kpi-cob-tot-sub">--</div>
         </div>
@@ -352,9 +360,14 @@
           <div class="kpi-sub" id="g-kpi-dso-sub">--</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label"><span>DÍVIDA EXIGÍVEL (&le;5a)</span><span>REGIÃO SUL</span></div>
+          <div class="kpi-label"><span>DÍVIDA EXIGÍVEL (&le;5a)</span><span id="g-lbl-div-scope">REGIÃO SUL</span></div>
           <div class="kpi-value" id="g-kpi-div-exig">--</div>
           <div class="kpi-sub" id="g-kpi-div-exig-sub">--</div>
+        </div>
+        <div class="kpi-card" style="cursor:pointer;" onclick="document.getElementById('g-quadro-rx0')?.scrollIntoView({behavior:'smooth'})" title="Ver Quadro Detalhado RX0 — Taxa de Religação">
+          <div class="kpi-label"><span>TAXA RELIGAÇÃO (RX0)</span><span>FAT. / COB.</span></div>
+          <div class="kpi-value" style="color:#A78BFA;" id="g-kpi-rx0">--</div>
+          <div class="kpi-sub" id="g-kpi-rx0-sub">--</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label"><span>CLIENTE ESPECIAL AdS (21)</span><span>ÁGUA AG</span></div>
@@ -390,6 +403,7 @@
                   <th style="text-align:right; white-space:nowrap;">Faturado (ECV)</th>
                   <th style="text-align:right; white-space:nowrap;" title="Preço Médio Realizado (ECV/kWh)">PM</th>
                   <th style="text-align:right; white-space:nowrap; color:#60A5FA;">Cobrado (ECV)</th>
+                  <th style="text-align:right; white-space:nowrap;" title="Diferença Faturado − Cobrado">Gap Caixa</th>
                   <th style="text-align:right; white-space:nowrap;">Taxa Cob.</th>
                   <th style="text-align:right; white-space:nowrap;" title="Baixa Tensão (EB) / Média Tensão (EM) / Iluminação &amp; Especiais (EE)">EB / EM / EE</th>
                 </tr>
@@ -434,6 +448,93 @@
           <div style="font-size:10.5px; color:var(--text-muted); margin-top:8px; font-family:var(--font-mono);">
             Unidades: <strong>B</strong> = Mil Milhões · <strong>M</strong> = Milhões · <strong>k</strong> = Milhares de ECV. Valores negativos em itálico correspondem a notas de crédito/retificações não compensadas.
           </div>
+        </div>
+      </div>
+
+      <!-- NOVO QUADRO: FATURAÇÃO & COBRANÇA DO CONCEITO RX0 (TAXA DE RELIGAÇÃO) -->
+      <div id="g-quadro-rx0" class="table-container" style="padding:14px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div class="panel-title">
+            <span>🔌</span> Conceito <code>RX0</code> (<code>RXO</code>) — Taxa de Religação: Faturação, Cobrança em Caixa &amp; Liquidação (2026)
+          </div>
+          <div id="g-rx0-scope-badge" style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-secondary);">--</div>
+        </div>
+        <div id="g-rx0-kpis-box" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:12px;"></div>
+        <div style="display:grid; grid-template-columns: 1.15fr 1fr; gap:14px;">
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:6px; font-family:var(--font-mono);">EVOLUÇÃO MENSAL 2026 — FATURAÇÃO vs COBRANÇA / LIQUIDAÇÃO RX0</div>
+            <div class="table-scroll" style="max-height:310px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="white-space:nowrap;">Mês</th>
+                    <th style="text-align:right; white-space:nowrap;">Taxas</th>
+                    <th style="text-align:right; white-space:nowrap;">CILs</th>
+                    <th style="text-align:right; white-space:nowrap;">Faturado RX0</th>
+                    <th style="text-align:right; white-space:nowrap; color:#60A5FA;" title="Faturas RX0 com recibo em fct_cobranca">Cobrado Caixa</th>
+                    <th style="text-align:right; white-space:nowrap; color:#34D399;" title="Faturas RX0 sem dívida aberta em fct_divida_snapshot">Liquidado Efet.</th>
+                    <th style="text-align:right; white-space:nowrap; color:#F87171;">Em Dívida</th>
+                    <th style="text-align:right; white-space:nowrap;">% Cob. / Liq.</th>
+                  </tr>
+                </thead>
+                <tbody id="g-tbody-rx0-mensal"></tbody>
+                <tfoot id="g-tfoot-rx0-mensal"></tfoot>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--text-secondary); margin-bottom:6px; font-family:var(--font-mono);">RANKING POR UNIDADE COMERCIAL — TAXA DE RELIGAÇÃO RX0 (CLICAR PARA FILTRAR)</div>
+            <div class="table-scroll" style="max-height:310px;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Unidade Comercial</th>
+                    <th style="text-align:right;">Taxas</th>
+                    <th style="text-align:right;">CILs</th>
+                    <th style="text-align:right;">Faturado RX0</th>
+                    <th style="text-align:right; color:#60A5FA;">Cob. Caixa</th>
+                    <th style="text-align:right; color:#34D399;">Liquidado</th>
+                    <th style="text-align:right; color:#F87171;">Em Dívida</th>
+                    <th style="text-align:right;">% Liq.</th>
+                  </tr>
+                </thead>
+                <tbody id="g-tbody-rx0-uc"></tbody>
+                <tfoot id="g-tfoot-rx0-uc"></tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:10.5px; color:var(--text-muted); margin-top:8px; font-family:var(--font-mono);">
+          <strong>Cobrado Caixa</strong> = faturas com conceito <code>RX0/RXO</code> e recibo direto em <code>fct_cobranca</code> (<code>cil + dt_fatura</code>). <strong>Liquidado Efetivo</strong> = faturas <code>RX0/RXO</code> já regularizadas (ausentes do snapshot de dívida aberta <code>fct_divida_snapshot</code>).
+        </div>
+      </div>
+
+      <!-- NOVO QUADRO: DESEMPENHO COMPARATIVO POR UNIDADE COMERCIAL (10 UNIDADES REGIÃO SUL) -->
+      <div class="table-container" style="padding:14px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
+          <div class="panel-title">
+            <span>🏢</span> Matriz Comparativa por Unidade Comercial (10 Unidades · Clicar numa Unidade para Filtrar a Visão Executiva)
+          </div>
+          <span style="font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted);">Pós-Pago (E017 + 4 Empresas) · Taxa Religação RX0 · Pré-Pagamento · Risco Fraude</span>
+        </div>
+        <div class="table-scroll" style="max-height:320px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Unidade Comercial</th>
+                <th style="text-align:right;">Energia E017 (GWh)</th>
+                <th style="text-align:right;">Faturado E017</th>
+                <th style="text-align:right; color:#60A5FA;">Cobrado E017</th>
+                <th style="text-align:right;">Taxa Cob. E017</th>
+                <th style="text-align:right;">Dívida Exigível (&le;5a)</th>
+                <th style="text-align:right; color:#A78BFA;">Religação RX0 (Fat. / Liq.)</th>
+                <th style="text-align:right; color:#34D399;">Pré-Pago (Med. / Vendas)</th>
+                <th style="text-align:right; color:#F87171;">Alvos Top 100</th>
+              </tr>
+            </thead>
+            <tbody id="g-tbody-comparativo-uc"></tbody>
+            <tfoot id="g-tfoot-comparativo-uc"></tfoot>
+          </table>
         </div>
       </div>
 

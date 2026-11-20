@@ -66,17 +66,21 @@ def testar():
     assert dq.get("todos_testes_ok") is True, "Relatório DQ reportou falhas!"
     print("  [3/5] DuckDB Silver + Relatório DQ: OK")
 
-    # 4. Marts Gold + Score v2
+    # 4. Marts Gold + Score v2 + RX0 + Unidades Comerciais
     gold_path = os.path.join(BASE, "lake", "gold", "marts_gold.json")
     with open(gold_path, "r", encoding="utf-8") as f:
         gold = json.load(f)
-    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao", "balanco_pt_trimestral", "prepago_analise"}
+    chaves_esp = {"kpis_executivos", "faturacao_mensal", "cobranca_mensal", "aging_divida", "religacao_rx0", "ads_conta_corrente", "operacional_cea_os", "score_v2_validacao", "balanco_pt_trimestral", "prepago_analise"}
     assert chaves_esp.issubset(set(gold.keys())), f"Chaves Gold em falta: {chaves_esp - set(gold.keys())}"
     auc = gold["score_v2_validacao"].get("auc_teste_out_of_time", 0)
     assert auc >= 0.75, f"AUC Out-of-Time abaixo do limite: {auc}"
     n_prep = len(gold["prepago_analise"].get("medidores", []))
     assert n_prep >= 20000, f"Pré-pagamento abaixo do esperado: {n_prep}"
-    print(f"  [4/5] Marts Gold (9 chaves) + Score v2 (AUC={auc}) + Pré-Pago ({n_prep:,}): OK")
+    rx0_fat = gold["religacao_rx0"].get("resumo", {}).get("faturas", 0)
+    assert rx0_fat >= 4000, f"Faturas RX0 abaixo do esperado: {rx0_fat}"
+    n_ucs = len(gold["kpis_executivos"].get("unidades_comerciais", []))
+    assert n_ucs >= 10, f"Unidades Comerciais abaixo do esperado: {n_ucs}"
+    print(f"  [4/5] Marts Gold (10 chaves) + Score v2 (AUC={auc}) + RX0 ({rx0_fat:,} taxas) + UCs ({n_ucs}) + Pré-Pago ({n_prep:,}): OK")
 
     # 5. Snapshots imutáveis de dívida
     snap_dir = os.path.join(BASE, "lake", "silver", "snapshots_divida")
