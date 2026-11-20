@@ -515,6 +515,18 @@ def sincronizar_prepago_supabase(base_santiago: str, medidores: list) -> bool:
         print("   [AVISO] SUPABASE_SERVICE_KEY e ETL_SECRET_TOKEN ausentes; prepago_santiago não sincronizada.")
         return False
 
+    # Inferir localidade predominante por PT para medidores com PT conhecido mas localidade vazia
+    pt_loc_counts = defaultdict(lambda: defaultdict(int))
+    for m in medidores:
+        pt_v = (m.get("pt") or "").strip()
+        loc_v = (m.get("localidade") or "").strip()
+        if pt_v and pt_v != "Sem PT" and loc_v:
+            pt_loc_counts[pt_v][loc_v] += 1
+    pt_loc_predom = {
+        pt_k: max(locs.items(), key=lambda kv: kv[1])[0]
+        for pt_k, locs in pt_loc_counts.items() if locs
+    }
+
     agora = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     ok_tot = 0
     for i in range(0, len(medidores), 1000):
@@ -524,7 +536,7 @@ def sincronizar_prepago_supabase(base_santiago: str, medidores: list) -> bool:
                 "nome": m.get("nome"),
                 "pt": m.get("pt"),
                 "pt_origem": m.get("pt_origem"),
-                "localidade": m.get("localidade"),
+                "localidade": (m.get("localidade") or "").strip() or pt_loc_predom.get((m.get("pt") or "").strip()) or None,
                 "desc_uni": m.get("desc_uni"),
                 "modelo": m.get("modelo"),
                 "tarifa": m.get("tarifa"),
