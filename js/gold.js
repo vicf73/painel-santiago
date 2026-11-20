@@ -8,6 +8,18 @@
 let goldCarregado = false;
 window._goldMapa = null;
 window._goldUnidadeAtual = "TODAS";
+window._goldRx0MesAtual = "TODOS";
+
+function aplicarFiltroMesRx0(loteYm) {
+  const atual = window._goldRx0MesAtual || "TODOS";
+  const novo = (loteYm && loteYm === atual && loteYm !== "TODOS") ? "TODOS" : (loteYm || "TODOS");
+  window._goldRx0MesAtual = novo;
+  const sel = document.getElementById("g-rx0-filtro-mes");
+  if (sel) sel.value = novo;
+  if (window._goldMapa) {
+    renderizarRx0Gold(window._goldMapa.religacao_rx0 || {}, window._goldUnidadeAtual || "TODAS", novo);
+  }
+}
 
 const fmtM = (v) => {
   const n = Number(v || 0);
@@ -440,18 +452,43 @@ function renderizarAgingGold(rows, uc = "TODAS") {
   }
 }
 
-function renderizarRx0Gold(rx0Data, uc = "TODAS") {
+function renderizarRx0Gold(rx0Data, uc = "TODAS", mesFiltro = null) {
   const kpisBox = document.getElementById("g-rx0-kpis-box");
   const badgeEl = document.getElementById("g-rx0-scope-badge");
   const tbodyM = document.getElementById("g-tbody-rx0-mensal");
   const tfootM = document.getElementById("g-tfoot-rx0-mensal");
   const tbodyU = document.getElementById("g-tbody-rx0-uc");
   const tfootU = document.getElementById("g-tfoot-rx0-uc");
+  const selMes = document.getElementById("g-rx0-filtro-mes");
   if (!tbodyM || !tbodyU) return;
 
+  const mesAtivo = mesFiltro !== null ? mesFiltro : (window._goldRx0MesAtual || "TODOS");
+  window._goldRx0MesAtual = mesAtivo;
   const ehTodas = !uc || uc === "TODAS";
+  const ehTodosMeses = !mesAtivo || mesAtivo === "TODOS";
   const allRows = rx0Data?.rows_mensal_unidade || [];
-  const rowsFiltradas = ehTodas ? allRows : allRows.filter(r => r.desc_uni === uc);
+
+  const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+  const fmtLote = (lote) => {
+    const ano = Number(String(lote).slice(0, 4));
+    const mes = Number(String(lote).slice(4, 6));
+    const d = new Date(ano, mes - 2, 1);
+    return `${nomesMes[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`;
+  };
+
+  const todosLotes = Array.from(new Set(allRows.map(r => r.lote_ym))).sort();
+  if (selMes) {
+    selMes.innerHTML = [
+      `<option value="TODOS">Todos os Meses (2026)</option>`,
+      ...todosLotes.map(ym => `<option value="${ym}">${fmtLote(ym)} (Lote ${ym})</option>`)
+    ].join("");
+    selMes.value = todosLotes.includes(mesAtivo) ? mesAtivo : "TODOS";
+  }
+
+  // Linhas filtradas por Unidade Comercial (para a tabela de evolução mensal)
+  const rowsUc = ehTodas ? allRows : allRows.filter(r => r.desc_uni === uc);
+  // Linhas filtradas por Unidade Comercial E por Mês (para os 4 cards do quadro RX0)
+  const rowsFiltradas = ehTodosMeses ? rowsUc : rowsUc.filter(r => r.lote_ym === mesAtivo);
 
   const totFatQtd = rowsFiltradas.reduce((s, r) => s + Number(r.faturas || 0), 0);
   const totCils = rowsFiltradas.reduce((s, r) => s + Number(r.cils || 0), 0);
@@ -467,15 +504,16 @@ function renderizarRx0Gold(rx0Data, uc = "TODAS") {
   const pctLiq = totFatEcv > 0 ? ((totLiqEcv / totFatEcv) * 100).toFixed(1).replace(".", ",") : "0,0";
   const pctDiv = totFatEcv > 0 ? ((totDivEcv / totFatEcv) * 100).toFixed(1).replace(".", ",") : "0,0";
   const ticketMedio = totFatQtd > 0 ? Math.round(totFatEcv / totFatQtd).toLocaleString("pt-PT") : "0";
+  const labelMesAtivo = ehTodosMeses ? "Acumulado 2026" : fmtLote(mesAtivo);
 
   if (badgeEl) {
-    badgeEl.innerHTML = `Escopo: <strong style="color:#A78BFA;">${ehTodas ? "Região Sul (10 Unidades)" : uc}</strong> • Ticket Médio Religação: <strong>${ticketMedio} ECV</strong>`;
+    badgeEl.innerHTML = `Escopo: <strong style="color:#A78BFA;">${ehTodas ? "Região Sul (10 Unidades)" : uc}</strong> • Período: <strong style="color:#60A5FA;">${labelMesAtivo}</strong> • Ticket Médio: <strong>${ticketMedio} ECV</strong>`;
   }
 
   if (kpisBox) {
     kpisBox.innerHTML = `
       <div style="background:var(--bg-panel-elevated); border:1px solid var(--border-dim); border-radius:6px; padding:10px 12px;">
-        <div style="font-size:10px; color:var(--text-muted); font-family:var(--font-mono);">FATURADO RX0 (TAXA RELIGAÇÃO)</div>
+        <div style="font-size:10px; color:var(--text-muted); font-family:var(--font-mono);">FATURADO RX0 (${labelMesAtivo.toUpperCase()})</div>
         <div style="font-size:18px; font-weight:800; color:#A78BFA; font-family:var(--font-display); margin-top:2px;">${fmtM(totFatEcv)} ECV</div>
         <div style="font-size:11px; color:var(--text-secondary);">${fmtInt(totFatQtd)} taxas emitidas • Ticket: ${ticketMedio} ECV</div>
       </div>
@@ -497,9 +535,9 @@ function renderizarRx0Gold(rx0Data, uc = "TODAS") {
     `;
   }
 
-  // Tabela Esquerda: Evolução Mensal RX0
+  // Tabela Esquerda: Evolução Mensal RX0 (clicável para filtrar o mês no Ranking por Unidade Comercial)
   const porMes = {};
-  for (const r of rowsFiltradas) {
+  for (const r of rowsUc) {
     const ym = r.lote_ym;
     if (!porMes[ym]) {
       porMes[ym] = { faturas: 0, cils: 0, fat: 0, cob: 0, liq: 0, div: 0 };
@@ -511,14 +549,16 @@ function renderizarRx0Gold(rx0Data, uc = "TODAS") {
     porMes[ym].liq += Number(r.liquidado_ecv || 0);
     porMes[ym].div += Number(r.em_divida_ecv || 0);
   }
-  const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-  const fmtLote = (lote) => {
-    const ano = Number(String(lote).slice(0, 4));
-    const mes = Number(String(lote).slice(4, 6));
-    const d = new Date(ano, mes - 2, 1);
-    return `${nomesMes[d.getMonth()]}/${String(d.getFullYear()).slice(2)}`;
-  };
   const lotes = Object.keys(porMes).sort();
+
+  const totMesFatQtd = rowsUc.reduce((s, r) => s + Number(r.faturas || 0), 0);
+  const totMesCils = rowsUc.reduce((s, r) => s + Number(r.cils || 0), 0);
+  const totMesFatEcv = rowsUc.reduce((s, r) => s + Number(r.faturado_ecv || 0), 0);
+  const totMesCobEcv = rowsUc.reduce((s, r) => s + Number(r.cobrado_caixa_ecv || 0), 0);
+  const totMesLiqEcv = rowsUc.reduce((s, r) => s + Number(r.liquidado_ecv || 0), 0);
+  const totMesDivEcv = rowsUc.reduce((s, r) => s + Number(r.em_divida_ecv || 0), 0);
+  const pctMesCob = totMesFatEcv > 0 ? ((totMesCobEcv / totMesFatEcv) * 100).toFixed(1).replace(".", ",") : "0,0";
+  const pctMesLiq = totMesFatEcv > 0 ? ((totMesLiqEcv / totMesFatEcv) * 100).toFixed(1).replace(".", ",") : "0,0";
 
   if (!lotes.length) {
     tbodyM.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-muted);">Sem faturas RX0 para a Unidade selecionada.</td></tr>`;
@@ -526,13 +566,14 @@ function renderizarRx0Gold(rx0Data, uc = "TODAS") {
   } else {
     tbodyM.innerHTML = lotes.map(ym => {
       const m = porMes[ym];
+      const mesSelecionado = ym === mesAtivo;
       const pCob = m.fat > 0 ? ((m.cob / m.fat) * 100).toFixed(1).replace(".", ",") : "0,0";
       const pLiqNum = m.fat > 0 ? (m.liq / m.fat) * 100 : 0;
       const pLiq = pLiqNum.toFixed(1).replace(".", ",");
       const cor = pLiqNum >= 90 ? "#34D399" : pLiqNum >= 75 ? "#FBBF24" : "#F87171";
       return `
-        <tr>
-          <td style="font-family:var(--font-mono); font-weight:700; white-space:nowrap;">${fmtLote(ym)}</td>
+        <tr style="cursor:pointer; ${mesSelecionado ? "background:rgba(96,165,250,0.16); font-weight:700;" : ""}" onclick="aplicarFiltroMesRx0('${ym}')" title="Clicar para filtrar o Ranking por Unidade Comercial no mês ${fmtLote(ym)}">
+          <td style="font-family:var(--font-mono); font-weight:700; color:${mesSelecionado ? "#60A5FA" : "var(--text-primary)"}; white-space:nowrap;">${mesSelecionado ? "▶ " : ""}${fmtLote(ym)}</td>
           <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(m.faturas)}</td>
           <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary);">${fmtInt(m.cils)}</td>
           <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">${fmtM(m.fat)}</td>
@@ -553,21 +594,22 @@ function renderizarRx0Gold(rx0Data, uc = "TODAS") {
       tfootM.innerHTML = `
         <tr style="border-top:2px solid var(--border-dim); background:var(--bg-panel-elevated); font-weight:800; font-family:var(--font-mono);">
           <td>TOTAL 2026</td>
-          <td style="text-align:right;">${fmtInt(totFatQtd)}</td>
-          <td style="text-align:right; color:var(--text-secondary);">${fmtInt(totCils)}</td>
-          <td style="text-align:right;">${fmtM(totFatEcv)}</td>
-          <td style="text-align:right; color:#60A5FA;">${fmtM(totCobEcv)}</td>
-          <td style="text-align:right; color:#34D399;">${fmtM(totLiqEcv)}</td>
-          <td style="text-align:right; color:#F87171;">${fmtM(totDivEcv)}</td>
-          <td style="text-align:right; color:#34D399;">${pctCob}% / ${pctLiq}%</td>
+          <td style="text-align:right;">${fmtInt(totMesFatQtd)}</td>
+          <td style="text-align:right; color:var(--text-secondary);">${fmtInt(totMesCils)}</td>
+          <td style="text-align:right;">${fmtM(totMesFatEcv)}</td>
+          <td style="text-align:right; color:#60A5FA;">${fmtM(totMesCobEcv)}</td>
+          <td style="text-align:right; color:#34D399;">${fmtM(totMesLiqEcv)}</td>
+          <td style="text-align:right; color:#F87171;">${fmtM(totMesDivEcv)}</td>
+          <td style="text-align:right; color:#34D399;">${pctMesCob}% / ${pctMesLiq}%</td>
         </tr>
       `;
     }
   }
 
-  // Tabela Direita: Ranking por Unidade Comercial (sempre mostra todas as UCs com destaque para a UC selecionada)
+  // Tabela Direita: Ranking por Unidade Comercial (filtrado pelo mês selecionado em g-rx0-filtro-mes)
+  const rowsParaRankingUc = ehTodosMeses ? allRows : allRows.filter(r => r.lote_ym === mesAtivo);
   const porUc = {};
-  for (const r of allRows) {
+  for (const r of rowsParaRankingUc) {
     const u = r.desc_uni || "Praia";
     if (!porUc[u]) porUc[u] = { desc_uni: u, faturas: 0, cils: 0, fat: 0, cob: 0, liq: 0, div: 0 };
     porUc[u].faturas += Number(r.faturas || 0);
@@ -585,42 +627,48 @@ function renderizarRx0Gold(rx0Data, uc = "TODAS") {
   const totAllQtd = listaUc.reduce((s, x) => s + x.faturas, 0);
   const totAllCils = listaUc.reduce((s, x) => s + x.cils, 0);
 
-  tbodyU.innerHTML = listaUc.map(item => {
-    const ativa = item.desc_uni === uc;
-    const pLiqNum = item.fat > 0 ? (item.liq / item.fat) * 100 : 0;
-    const pLiq = pLiqNum.toFixed(1).replace(".", ",");
-    const quota = totAllFat > 0 ? ((item.fat / totAllFat) * 100).toFixed(1).replace(".", ",") : "0,0";
-    const cor = pLiqNum >= 90 ? "#34D399" : pLiqNum >= 75 ? "#FBBF24" : "#F87171";
-    return `
-      <tr style="cursor:pointer; ${ativa ? "background:rgba(251,191,36,0.14); font-weight:700;" : ""}" onclick="selecionarUnidadeGold('${item.desc_uni.replace(/'/g, "\\'")}')" title="Clicar para filtrar a Visão Executiva por ${item.desc_uni}">
-        <td style="font-family:var(--font-mono); font-weight:700; color:${ativa ? "#FBBF24" : "#60A5FA"}; white-space:nowrap;">
-          ${ativa ? "▶ " : ""}${item.desc_uni} <span style="color:var(--text-muted); font-size:10px; font-weight:400;">(${quota}%)</span>
-        </td>
-        <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(item.faturas)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary);">${fmtInt(item.cils)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">${fmtM(item.fat)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#60A5FA;">${fmtM(item.cob)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#34D399;">${fmtM(item.liq)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:#F87171;">${fmtM(item.div)}</td>
-        <td style="text-align:right; font-family:var(--font-mono); color:${cor}; font-weight:800;">${pLiq}%</td>
-      </tr>
-    `;
-  }).join("");
+  if (!listaUc.length) {
+    tbodyU.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:14px; color:var(--text-muted);">Sem registos RX0 para o mês selecionado.</td></tr>`;
+    if (tfootU) tfootU.innerHTML = "";
+  } else {
+    tbodyU.innerHTML = listaUc.map(item => {
+      const ativa = item.desc_uni === uc;
+      const pLiqNum = item.fat > 0 ? (item.liq / item.fat) * 100 : 0;
+      const pLiq = pLiqNum.toFixed(1).replace(".", ",");
+      const quota = totAllFat > 0 ? ((item.fat / totAllFat) * 100).toFixed(1).replace(".", ",") : "0,0";
+      const cor = pLiqNum >= 90 ? "#34D399" : pLiqNum >= 75 ? "#FBBF24" : "#F87171";
+      return `
+        <tr style="cursor:pointer; ${ativa ? "background:rgba(251,191,36,0.14); font-weight:700;" : ""}" onclick="selecionarUnidadeGold('${item.desc_uni.replace(/'/g, "\\'")}')" title="Clicar para filtrar a Visão Executiva por ${item.desc_uni}">
+          <td style="font-family:var(--font-mono); font-weight:700; color:${ativa ? "#FBBF24" : "#60A5FA"}; white-space:nowrap;">
+            ${ativa ? "▶ " : ""}${item.desc_uni} <span style="color:var(--text-muted); font-size:10px; font-weight:400;">(${quota}%)</span>
+          </td>
+          <td style="text-align:right; font-family:var(--font-mono);">${fmtInt(item.faturas)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:var(--text-secondary);">${fmtInt(item.cils)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); font-weight:700;">${fmtM(item.fat)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:#60A5FA;">${fmtM(item.cob)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:#34D399;">${fmtM(item.liq)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:#F87171;">${fmtM(item.div)}</td>
+          <td style="text-align:right; font-family:var(--font-mono); color:${cor}; font-weight:800;">${pLiq}%</td>
+        </tr>
+      `;
+    }).join("");
 
-  if (tfootU) {
-    const pAllLiq = totAllFat > 0 ? ((totAllLiq / totAllFat) * 100).toFixed(1).replace(".", ",") : "0,0";
-    tfootU.innerHTML = `
-      <tr style="border-top:2px solid var(--border-dim); background:var(--bg-panel-elevated); font-weight:800; font-family:var(--font-mono);">
-        <td>TOTAL REGIÃO SUL</td>
-        <td style="text-align:right;">${fmtInt(totAllQtd)}</td>
-        <td style="text-align:right; color:var(--text-secondary);">${fmtInt(totAllCils)}</td>
-        <td style="text-align:right;">${fmtM(totAllFat)}</td>
-        <td style="text-align:right; color:#60A5FA;">${fmtM(totAllCob)}</td>
-        <td style="text-align:right; color:#34D399;">${fmtM(totAllLiq)}</td>
-        <td style="text-align:right; color:#F87171;">${fmtM(totAllDiv)}</td>
-        <td style="text-align:right; color:#34D399;">${pAllLiq}%</td>
-      </tr>
-    `;
+    if (tfootU) {
+      const pAllLiq = totAllFat > 0 ? ((totAllLiq / totAllFat) * 100).toFixed(1).replace(".", ",") : "0,0";
+      const lblFoot = ehTodosMeses ? "TOTAL REGIÃO SUL (2026)" : `TOTAL SUL (${fmtLote(mesAtivo).toUpperCase()})`;
+      tfootU.innerHTML = `
+        <tr style="border-top:2px solid var(--border-dim); background:var(--bg-panel-elevated); font-weight:800; font-family:var(--font-mono);">
+          <td>${lblFoot}</td>
+          <td style="text-align:right;">${fmtInt(totAllQtd)}</td>
+          <td style="text-align:right; color:var(--text-secondary);">${fmtInt(totAllCils)}</td>
+          <td style="text-align:right;">${fmtM(totAllFat)}</td>
+          <td style="text-align:right; color:#60A5FA;">${fmtM(totAllCob)}</td>
+          <td style="text-align:right; color:#34D399;">${fmtM(totAllLiq)}</td>
+          <td style="text-align:right; color:#F87171;">${fmtM(totAllDiv)}</td>
+          <td style="text-align:right; color:#34D399;">${pAllLiq}%</td>
+        </tr>
+      `;
+    }
   }
 }
 
