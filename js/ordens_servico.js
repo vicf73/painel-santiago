@@ -836,74 +836,108 @@ function obterDadosDesdobramentoFamiliasFiltrado() {
   };
 }
 
-function exportarDesdobramentoFamiliasCSV() {
+async function exportarDesdobramentoFamiliasCSV(btnEl) {
   const ctx = obterDadosDesdobramentoFamiliasFiltrado();
   if (!ctx || !ctx.linhas.length) {
     alert("Nenhuma Ordem de Serviço encontrada para os filtros selecionados.");
     return;
   }
 
-  const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const fmtDec = (n) => Number(n || 0).toFixed(1).replace(".", ",");
+  const txtOriginal = btnEl ? btnEl.innerHTML : "";
+  if (btnEl) {
+    btnEl.disabled = true;
+    btnEl.innerHTML = "⏳ A extrair BD...";
+  }
 
-  const cab = [
-    "Unidade_Filtro",
-    "Familia_Filtro",
-    "Segmento_Filtro",
-    "Modo_Agrupamento",
-    "Macro_Familia",
-    "Tipo_Servico_desc_os",
-    "Quota_Pct",
-    "Emitidas",
-    "OR_Realizadas",
-    "OP_Pendentes",
-    "OA_Anuladas",
-    "OE_OG_Em_Curso",
-    "OC_Canceladas",
-    "Taxa_Execucao_Pct",
-    "SLA_Medio_Dias"
-  ];
+  try {
+    const { uc, fam, seg } = ctx.filtros;
+    const params = [];
+    if (uc && uc !== "TODAS") params.push(`desc_uni=eq.${encodeURIComponent(uc)}`);
+    if (fam && fam !== "TODAS") params.push(`familia=eq.${encodeURIComponent(fam)}`);
+    if (seg && seg !== "TODOS") params.push(`segmento=eq.${encodeURIComponent(seg)}`);
+    params.push("order=id.asc");
 
-  const linhasCSV = ctx.linhas.map(r => [
-    esc(ctx.filtros.ucLabel),
-    esc(ctx.filtros.famLabel),
-    esc(ctx.filtros.segLabel),
-    esc(ctx.filtros.modoLabel),
-    esc(r.familia),
-    esc(r.desc_os),
-    fmtDec(r.quota_pct),
-    r.emitidas,
-    r.or_realizadas,
-    r.op_pendentes,
-    r.oa_anuladas,
-    r.oe_og_curso,
-    r.oc_canceladas,
-    fmtDec(r.tx_exec_pct),
-    fmtDec(r.sla_dias)
-  ].join(";"));
+    const selectCols = "num_os,emp,uc,desc_uni,cil,nome,pt,localidade,segmento,tarifa,tipo_os,desc_os,familia,est_os,dt_solic,dt_emissao,dt_exec,sla_dias";
+    const pageSize = 1000;
+    let offset = 0;
+    const todosRegistos = [];
 
-  const t = ctx.totais;
-  linhasCSV.push([
-    esc(ctx.filtros.ucLabel),
-    esc(ctx.filtros.famLabel),
-    esc(ctx.filtros.segLabel),
-    esc(ctx.filtros.modoLabel),
-    esc("TOTAL ORDENS DE SERVIÇO FILTRADAS"),
-    esc(`${ctx.linhas.length} linhas agrupadas`),
-    "100,0",
-    t.emitidas,
-    t.or_realizadas,
-    t.op_pendentes,
-    t.oa_anuladas,
-    t.oe_og_curso,
-    t.oc_canceladas,
-    fmtDec(t.tx_exec_pct),
-    fmtDec(t.sla_dias)
-  ].join(";"));
+    while (true) {
+      if (btnEl && todosRegistos.length > 0) {
+        btnEl.innerHTML = `⏳ ${fmtIntOS(todosRegistos.length)} OS...`;
+      }
+      const url = `${SUPABASE_URL}/rest/v1/santiago_ordens_servico?select=${selectCols}&${params.join("&")}&limit=${pageSize}&offset=${offset}`;
+      const resp = await fetch(url, { headers: HEADERS });
+      if (!resp.ok) {
+        throw new Error(`HTTP ${resp.status} ao consultar santiago_ordens_servico`);
+      }
+      const lote = await resp.json();
+      if (!Array.isArray(lote) || !lote.length) break;
+      todosRegistos.push(...lote);
+      if (lote.length < pageSize) break;
+      offset += pageSize;
+    }
 
-  const dataStr = new Date().toISOString().slice(0, 10);
-  const nomeArq = `EDEC_OS_Desdobramento_Familias_${ctx.filtros.slug}_${dataStr}.csv`;
-  salvarOuBaixarCSV(nomeArq, "\uFEFF" + [cab.join(";"), ...linhasCSV].join("\r\n"));
+    if (!todosRegistos.length) {
+      alert("Nenhum registo individual encontrado na base de dados para os filtros selecionados.");
+      return;
+    }
+
+    const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const cab = [
+      "Num_OS",
+      "Empresa",
+      "Cod_UC",
+      "Unidade_Comercial",
+      "CIL",
+      "Nome_Cliente",
+      "PT",
+      "Localidade",
+      "Segmento",
+      "Tarifa",
+      "Macro_Familia",
+      "Cod_Tipo_OS",
+      "Tipo_Servico_desc_os",
+      "Estado_OS",
+      "Data_Solicitacao",
+      "Data_Emissao",
+      "Data_Execucao",
+      "SLA_Dias"
+    ];
+
+    const linhasCSV = todosRegistos.map(r => [
+      r.num_os ?? "",
+      esc(r.emp),
+      esc(r.uc),
+      esc(r.desc_uni),
+      r.cil ?? "",
+      esc(r.nome),
+      esc(r.pt),
+      esc(r.localidade),
+      esc(r.segmento),
+      esc(r.tarifa),
+      esc(r.familia),
+      esc(r.tipo_os),
+      esc(r.desc_os),
+      esc(r.est_os),
+      esc(r.dt_solic),
+      esc(r.dt_emissao),
+      esc(r.dt_exec),
+      r.sla_dias ?? ""
+    ].join(";"));
+
+    const dataStr = new Date().toISOString().slice(0, 10);
+    const nomeArq = `EDEC_BD_Ordens_Servico_${ctx.filtros.slug}_${todosRegistos.length}OS_${dataStr}.csv`;
+    salvarOuBaixarCSV(nomeArq, "\uFEFF" + [cab.join(";"), ...linhasCSV].join("\r\n"));
+  } catch (err) {
+    console.error("Erro ao exportar lista da BD de Ordens de Serviço para CSV:", err);
+    alert("Erro ao exportar lista da base de dados: " + (err?.message || err));
+  } finally {
+    if (btnEl) {
+      btnEl.disabled = false;
+      btnEl.innerHTML = txtOriginal;
+    }
+  }
 }
 
 function gerarImagemCanvasDesdobramentoOS(ctx) {

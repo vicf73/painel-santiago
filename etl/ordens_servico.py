@@ -12,6 +12,7 @@ import json
 import time
 from datetime import datetime, timezone
 import duckdb
+import requests
 
 
 SQL_FAMILIA_CASE = """
@@ -589,7 +590,34 @@ def executar_ordens_servico(base_santiago: str) -> dict:
         for r in rows_top_auto
     ]
 
+    # 8. Sincronizar lista completa das 66.352 Ordens de Serviço enriquecidas na tabela public.santiago_ordens_servico
+    rows_all_os = con.execute("""
+        SELECT
+            num_os,
+            emp,
+            uc,
+            desc_uni,
+            cil,
+            nome,
+            pt,
+            localidade,
+            segmento,
+            tarifa,
+            tipo_os,
+            desc_os,
+            familia,
+            est_os,
+            CAST(dt_solic AS VARCHAR) AS dt_solic,
+            CAST(dt_emissao AS VARCHAR) AS dt_emissao,
+            CAST(dt_exec AS VARCHAR) AS dt_exec,
+            CAST(sla_val AS INTEGER) AS sla_dias
+        FROM vw_os_enriq
+        ORDER BY dt_ref DESC NULLS LAST, num_os DESC
+    """).fetchall()
+
     con.close()
+
+    sincronizar_tabela_ordens_servico_supabase(base_santiago, rows_all_os)
 
     # Totais Globais Consolidados
     tot_emit = sum(r["emitidas"] for r in familias_rows)
@@ -676,6 +704,90 @@ def executar_ordens_servico(base_santiago: str) -> dict:
     print(f"   - Retorno Caixa 30d: {r['caixa_total_induzido_30d_ecv']/1e6:.1f}M ECV | Conversão OR: {r['taxa_conversao_or_30d_pct']}% em {r['time_to_cash_or_dias']}d")
     print(f"   - Auditoria Fuga RX0: {r['atos_relig_sem_rx0_2026']:,} religações s/ taxa ({r['perda_estimada_rx0_ecv']/1e6:.2f}M ECV) | Autoconexão: {r['cils_autoconexao_pos_corte']:,} CILs ({r['divida_autoconexao_ecv']/1e6:.2f}M ECV)")
     return resultado
+
+
+def sincronizar_tabela_ordens_servico_supabase(base_santiago: str, rows_all_os: list) -> bool:
+    env_path = os.path.join(base_santiago, ".env")
+    if os.path.exists(env_path):
+        with open(env_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip())
+
+    url = os.environ.get("SUPABASE_URL", "https://esbbohmkgbcrpegqvagk.supabase.co").rstrip("/")
+    etl_token = os.environ.get("ETL_SECRET_TOKEN", "").strip()
+    anon_key = os.environ.get("SUPABASE_KEY", "").strip()
+    service_key = os.environ.get("SUPABASE_SERVICE_KEY", "").strip()
+
+    if not etl_token and not service_key:
+        print("  [AVISO] Credenciais Supabase ausentes no .env; public.santiago_ordens_servico não sincronizada.")
+        return False
+
+    registos = [
+        {
+            "num_os": int(r[0]) if r[0] is not None else None,
+            "emp": r[1],
+            "uc": r[2],
+            "desc_uni": r[3],
+            "cil": int(r[4]) if r[4] is not None else None,
+            "nome": r[5],
+            "pt": r[6],
+            "localidade": r[7],
+            "segmento": r[8],
+            "tarifa": r[9],
+            "tipo_os": r[10],
+            "desc_os": r[11],
+            "familia": r[12],
+            "est_os": r[13],
+            "dt_solic": r[14],
+            "dt_emissao": r[15],
+            "dt_exec": r[16],
+            "sla_dias": int(r[17]) if r[17] is not None else None,
+        }
+        for r in rows_all_os
+    ]
+
+    batch_size = 5000
+    total = len(registos)
+    inseridos = 0
+    headers_key = service_key if service_key else anon_key
+
+    for i in range(0, total, batch_size):
+        lote = registos[i : i + batch_size]
+        limpar = i == 0
+        ok_lote = False
+        for tentativa in range(3):
+            try:
+                resp = requests.post(
+                    f"{url}/rest/v1/rpc/etl_upsert_ordens_servico_lote",
+                    headers={
+                        "apikey": headers_key,
+                        "Authorization": f"Bearer {headers_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={"p_etl_token": etl_token, "p_lote": lote, "p_limpar": limpar},
+                    timeout=90,
+                )
+                if resp.status_code in (200, 201, 204):
+                    inseridos += len(lote)
+                    ok_lote = True
+                    break
+                if tentativa < 2:
+                    time.sleep(1.5)
+                    continue
+                print(f"  [ERRO] Lote {i}..{i+len(lote)} falhou: HTTP {resp.status_code} {resp.text[:200]}")
+            except Exception as exc:
+                if tentativa < 2:
+                    time.sleep(1.5)
+                    continue
+                print(f"  [ERRO] Exceção no lote {i}: {exc}")
+        if not ok_lote:
+            return False
+
+    print(f"  [OK] {inseridos:,}/{total:,} Ordens de Serviço sincronizadas em public.santiago_ordens_servico!")
+    return True
 
 
 if __name__ == "__main__":
