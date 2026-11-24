@@ -716,3 +716,762 @@ function exportarFilaAtivaOS5CSV() {
   const nomeArq = `${prefixo}${sufixoUc}_${new Date().toISOString().slice(0, 10)}.csv`;
   salvarOuBaixarCSV(nomeArq, "\uFEFF" + [cab.join(";"), ...linhas].join("\r\n"));
 }
+
+// =========================================================================
+// EXPORTAÇÃO CSV & XLSX (COM FORMATAÇÃO + IMAGEM) DO QUADRO:
+// "Desdobramento das 66.352 Ordens de Serviço por Família, Tipo e Estado Real"
+// Respeita integralmente os filtros ativos de momento (UC, Família, Segmento, Modo)
+// =========================================================================
+
+function obterDadosDesdobramentoFamiliasFiltrado() {
+  const dados = window._os5Dados;
+  if (!dados) return null;
+
+  const uc = document.getElementById("os5-filtro-uc")?.value || "TODAS";
+  const fam = document.getElementById("os5-filtro-familia")?.value || "TODAS";
+  const seg = document.getElementById("os5-filtro-segmento")?.value || "TODOS";
+  const modo = document.getElementById("os5-modo-detalhe")?.value || "DETALHADO";
+
+  const ehTodasUc = uc === "TODAS";
+  const ehTodasFam = fam === "TODAS";
+  const ehTodosSeg = seg === "TODOS";
+
+  const famRows = (dados.familias_rows || []).filter(r =>
+    (ehTodasUc || r.desc_uni === uc) &&
+    (ehTodasFam || r.familia === fam) &&
+    (ehTodosSeg || r.segmento === seg)
+  );
+
+  const grupos = {};
+  for (const r of famRows) {
+    const chave = modo === "FAMILIA" ? r.familia : `${r.familia}|||${r.desc_os}`;
+    if (!grupos[chave]) {
+      grupos[chave] = {
+        familia: r.familia,
+        desc_os: modo === "FAMILIA" ? "Todos os serviços da família" : r.desc_os,
+        emitidas: 0,
+        or_realizadas: 0,
+        op_pendentes: 0,
+        oa_anuladas: 0,
+        oe_og_curso: 0,
+        oc_canceladas: 0,
+        soma_sla: 0,
+        qtd_sla: 0
+      };
+    }
+    const g = grupos[chave];
+    g.emitidas += Number(r.emitidas || 0);
+    g.or_realizadas += Number(r.or_realizadas || 0);
+    g.op_pendentes += Number(r.op_pendentes || 0);
+    g.oa_anuladas += Number(r.oa_anuladas || 0);
+    g.oe_og_curso += Number(r.oe_og_curso || 0);
+    g.oc_canceladas += Number(r.oc_canceladas || 0);
+    g.soma_sla += Number(r.soma_sla || 0);
+    g.qtd_sla += Number(r.qtd_sla || 0);
+  }
+
+  const listaBase = Object.values(grupos).sort((a, b) => b.emitidas - a.emitidas);
+  const totEmit = listaBase.reduce((s, x) => s + x.emitidas, 0);
+  const totOr = listaBase.reduce((s, x) => s + x.or_realizadas, 0);
+  const totOp = listaBase.reduce((s, x) => s + x.op_pendentes, 0);
+  const totOa = listaBase.reduce((s, x) => s + x.oa_anuladas, 0);
+  const totOe = listaBase.reduce((s, x) => s + x.oe_og_curso, 0);
+  const totOc = listaBase.reduce((s, x) => s + x.oc_canceladas, 0);
+  const totSlaS = listaBase.reduce((s, x) => s + x.soma_sla, 0);
+  const totSlaN = listaBase.reduce((s, x) => s + x.qtd_sla, 0);
+
+  const linhas = listaBase.map(g => {
+    const quotaPct = totEmit > 0 ? (g.emitidas / totEmit) * 100 : 0;
+    const txExecPct = g.emitidas > 0 ? (g.or_realizadas / g.emitidas) * 100 : 0;
+    const slaDias = g.qtd_sla > 0 ? (g.soma_sla / g.qtd_sla) : 0;
+    return {
+      ...g,
+      quota_pct: Number(quotaPct.toFixed(2)),
+      tx_exec_pct: Number(txExecPct.toFixed(2)),
+      sla_dias: Number(slaDias.toFixed(1))
+    };
+  });
+
+  const txTotPct = totEmit > 0 ? Number(((totOr / totEmit) * 100).toFixed(2)) : 0;
+  const slaTotDias = totSlaN > 0 ? Number((totSlaS / totSlaN).toFixed(1)) : 0;
+
+  const sanitizarSlug = (s) =>
+    String(s || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 28);
+
+  const sufixos = [];
+  if (!ehTodasUc) sufixos.push(sanitizarSlug(uc));
+  if (!ehTodasFam) sufixos.push(sanitizarSlug(fam));
+  if (!ehTodosSeg) sufixos.push(sanitizarSlug(seg));
+  sufixos.push(modo === "FAMILIA" ? "7Familias" : "Detalhado");
+
+  return {
+    filtros: {
+      uc,
+      fam,
+      seg,
+      modo,
+      ucLabel: ehTodasUc ? "Todas as Unidades (Região Sul · 10 UCs)" : uc,
+      famLabel: ehTodasFam ? "Todas as 7 Macro-Famílias" : fam,
+      segLabel: ehTodosSeg ? "Todos os Segmentos de Consumidor" : seg,
+      modoLabel: modo === "FAMILIA" ? "Agrupado pelas 7 Macro-Famílias" : "Detalhado por Tipo de Serviço (desc_os)",
+      slug: sufixos.filter(Boolean).join("_")
+    },
+    linhas,
+    totais: {
+      emitidas: totEmit,
+      or_realizadas: totOr,
+      op_pendentes: totOp,
+      oa_anuladas: totOa,
+      oe_og_curso: totOe,
+      oc_canceladas: totOc,
+      quota_pct: totEmit > 0 ? 100 : 0,
+      tx_exec_pct: txTotPct,
+      sla_dias: slaTotDias
+    }
+  };
+}
+
+function exportarDesdobramentoFamiliasCSV() {
+  const ctx = obterDadosDesdobramentoFamiliasFiltrado();
+  if (!ctx || !ctx.linhas.length) {
+    alert("Nenhuma Ordem de Serviço encontrada para os filtros selecionados.");
+    return;
+  }
+
+  const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const fmtDec = (n) => Number(n || 0).toFixed(1).replace(".", ",");
+
+  const cab = [
+    "Unidade_Filtro",
+    "Familia_Filtro",
+    "Segmento_Filtro",
+    "Modo_Agrupamento",
+    "Macro_Familia",
+    "Tipo_Servico_desc_os",
+    "Quota_Pct",
+    "Emitidas",
+    "OR_Realizadas",
+    "OP_Pendentes",
+    "OA_Anuladas",
+    "OE_OG_Em_Curso",
+    "OC_Canceladas",
+    "Taxa_Execucao_Pct",
+    "SLA_Medio_Dias"
+  ];
+
+  const linhasCSV = ctx.linhas.map(r => [
+    esc(ctx.filtros.ucLabel),
+    esc(ctx.filtros.famLabel),
+    esc(ctx.filtros.segLabel),
+    esc(ctx.filtros.modoLabel),
+    esc(r.familia),
+    esc(r.desc_os),
+    fmtDec(r.quota_pct),
+    r.emitidas,
+    r.or_realizadas,
+    r.op_pendentes,
+    r.oa_anuladas,
+    r.oe_og_curso,
+    r.oc_canceladas,
+    fmtDec(r.tx_exec_pct),
+    fmtDec(r.sla_dias)
+  ].join(";"));
+
+  const t = ctx.totais;
+  linhasCSV.push([
+    esc(ctx.filtros.ucLabel),
+    esc(ctx.filtros.famLabel),
+    esc(ctx.filtros.segLabel),
+    esc(ctx.filtros.modoLabel),
+    esc("TOTAL ORDENS DE SERVIÇO FILTRADAS"),
+    esc(`${ctx.linhas.length} linhas agrupadas`),
+    "100,0",
+    t.emitidas,
+    t.or_realizadas,
+    t.op_pendentes,
+    t.oa_anuladas,
+    t.oe_og_curso,
+    t.oc_canceladas,
+    fmtDec(t.tx_exec_pct),
+    fmtDec(t.sla_dias)
+  ].join(";"));
+
+  const dataStr = new Date().toISOString().slice(0, 10);
+  const nomeArq = `EDEC_OS_Desdobramento_Familias_${ctx.filtros.slug}_${dataStr}.csv`;
+  salvarOuBaixarCSV(nomeArq, "\uFEFF" + [cab.join(";"), ...linhasCSV].join("\r\n"));
+}
+
+function gerarImagemCanvasDesdobramentoOS(ctx) {
+  const linhas = ctx.linhas.slice(0, 22); // Top 22 linhas no snapshot visual para nitidez máxima
+  const ocultas = Math.max(0, ctx.linhas.length - linhas.length);
+  const t = ctx.totais;
+
+  const dpr = 2;
+  const W = 1320;
+  const rowH = 32;
+  const headerH = 148;
+  const tableHeaderH = 36;
+  const footerH = 44;
+  const chartH = 230;
+  const H = headerH + tableHeaderH + (linhas.length * rowH) + footerH + chartH + 46;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  const g = canvas.getContext("2d");
+  g.scale(dpr, dpr);
+
+  // Fundo escuro executivo (tema Tableau / EDEC Dark)
+  g.fillStyle = "#0B1120";
+  g.fillRect(0, 0, W, H);
+
+  // Moldura do cartão principal
+  g.strokeStyle = "#1E293B";
+  g.lineWidth = 2;
+  g.strokeRect(12, 12, W - 24, H - 24);
+
+  // Faixa superior de destaque
+  const grad = g.createLinearGradient(12, 12, W - 12, 12);
+  grad.addColorStop(0, "#3B82F6");
+  grad.addColorStop(0.5, "#8B5CF6");
+  grad.addColorStop(1, "#10B981");
+  g.fillStyle = grad;
+  g.fillRect(12, 12, W - 24, 5);
+
+  // Título e subtítulo
+  g.fillStyle = "#F8FAFC";
+  g.font = "bold 19px Inter, Segoe UI, sans-serif";
+  g.fillText("📋 EDEC SANTIAGO — DESDOBRAMENTO DAS ORDENS DE SERVIÇO POR FAMÍLIA, TIPO E ESTADO REAL", 28, 46);
+
+  g.fillStyle = "#94A3B8";
+  g.font = "12.5px JetBrains Mono, Consolas, monospace";
+  const dtAgora = new Date().toLocaleString("pt-PT");
+  g.fillText(
+    `FILTRO ATIVO ➔ UC: ${ctx.filtros.ucLabel}  •  Família: ${ctx.filtros.famLabel}  •  Segmento: ${ctx.filtros.segLabel}  •  Visão: ${ctx.filtros.modoLabel}`,
+    28,
+    70
+  );
+
+  // 5 Mini-KPIs no topo da imagem
+  const kpis = [
+    { lbl: "TOTAL EMITIDAS", val: fmtIntOS(t.emitidas) + " OS", cor: "#F8FAFC", bg: "#1E293B" },
+    { lbl: "OR REALIZADAS", val: `${fmtIntOS(t.or_realizadas)} (${t.tx_exec_pct.toFixed(1).replace(".", ",")}%)`, cor: "#34D399", bg: "rgba(16,185,129,0.14)" },
+    { lbl: "OP PENDENTES", val: fmtIntOS(t.op_pendentes), cor: "#F87171", bg: "rgba(239,68,68,0.14)" },
+    { lbl: "OA ANULADAS (PRÉ-AVISO)", val: fmtIntOS(t.oa_anuladas), cor: "#FBBF24", bg: "rgba(245,158,11,0.14)" },
+    { lbl: "SLA MÉDIO EXECUÇÃO", val: `${t.sla_dias.toFixed(1).replace(".", ",")} dias`, cor: "#60A5FA", bg: "rgba(59,130,246,0.14)" }
+  ];
+  const cardW = (W - 56 - 48) / 5;
+  kpis.forEach((k, idx) => {
+    const x = 28 + idx * (cardW + 12);
+    const y = 84;
+    g.fillStyle = k.bg;
+    g.fillRect(x, y, cardW, 50);
+    g.strokeStyle = "#334155";
+    g.lineWidth = 1;
+    g.strokeRect(x, y, cardW, 50);
+
+    g.fillStyle = "#94A3B8";
+    g.font = "bold 10px JetBrains Mono, Consolas, monospace";
+    g.fillText(k.lbl, x + 10, y + 17);
+
+    g.fillStyle = k.cor;
+    g.font = "bold 16px JetBrains Mono, Consolas, monospace";
+    g.fillText(k.val, x + 10, y + 39);
+  });
+
+  // Coordenadas das colunas da tabela
+  const cols = [
+    { titulo: "MACRO-FAMÍLIA", x: 28, w: 235, align: "left" },
+    { titulo: "TIPO DE SERVIÇO (desc_os)", x: 268, w: 285, align: "left" },
+    { titulo: "EMITIDAS", x: 558, w: 95, align: "right" },
+    { titulo: "OR REALIZ.", x: 658, w: 95, align: "right" },
+    { titulo: "OP PEND.", x: 758, w: 90, align: "right" },
+    { titulo: "OA ANUL.", x: 853, w: 90, align: "right" },
+    { titulo: "OE/OG", x: 948, w: 80, align: "right" },
+    { titulo: "OC CANC.", x: 1033, w: 85, align: "right" },
+    { titulo: "% EXEC. (SLA)", x: 1123, w: 165, align: "right" }
+  ];
+
+  const drawTextCell = (txt, col, y, color, font) => {
+    g.fillStyle = color;
+    g.font = font;
+    const str = String(txt ?? "");
+    if (col.align === "right") {
+      const m = g.measureText(str).width;
+      g.fillText(str, col.x + col.w - m - 6, y);
+    } else {
+      let s = str;
+      while (s.length > 4 && g.measureText(s).width > col.w - 10) {
+        s = s.slice(0, -2);
+      }
+      if (s !== str) s += "…";
+      g.fillText(s, col.x + 6, y);
+    }
+  };
+
+  // Cabeçalho da Tabela
+  let y = headerH;
+  g.fillStyle = "#1E293B";
+  g.fillRect(28, y, W - 56, tableHeaderH);
+  g.strokeStyle = "#334155";
+  g.strokeRect(28, y, W - 56, tableHeaderH);
+
+  cols.forEach(c => {
+    let corCab = "#CBD5E1";
+    if (c.titulo.startsWith("OR")) corCab = "#34D399";
+    else if (c.titulo.startsWith("OP")) corCab = "#F87171";
+    else if (c.titulo.startsWith("OA")) corCab = "#FBBF24";
+    else if (c.titulo.startsWith("OE")) corCab = "#60A5FA";
+    drawTextCell(c.titulo, c, y + 23, corCab, "bold 11px JetBrains Mono, Consolas, monospace");
+  });
+
+  y += tableHeaderH;
+
+  // Linhas da Tabela
+  linhas.forEach((r, i) => {
+    g.fillStyle = i % 2 === 0 ? "#0F172A" : "#131C31";
+    g.fillRect(28, y, W - 56, rowH);
+    g.strokeStyle = "#1E293B";
+    g.beginPath();
+    g.moveTo(28, y + rowH);
+    g.lineTo(W - 28, y + rowH);
+    g.stroke();
+
+    const corTx = r.tx_exec_pct >= 75 ? "#34D399" : r.tx_exec_pct >= 45 ? "#FBBF24" : "#F87171";
+    const descComQuota = `${r.desc_os} (${r.quota_pct.toFixed(1).replace(".", ",")}%)`;
+    const txComSla = `${r.tx_exec_pct.toFixed(1).replace(".", ",")}% (${r.sla_dias.toFixed(1).replace(".", ",")}d)`;
+
+    drawTextCell(r.familia, cols[0], y + 20, "#60A5FA", "bold 11px JetBrains Mono, Consolas, monospace");
+    drawTextCell(descComQuota, cols[1], y + 20, "#F1F5F9", "600 11.5px Inter, Segoe UI, sans-serif");
+    drawTextCell(fmtIntOS(r.emitidas), cols[2], y + 20, "#F8FAFC", "bold 11.5px JetBrains Mono, Consolas, monospace");
+    drawTextCell(fmtIntOS(r.or_realizadas), cols[3], y + 20, "#34D399", "bold 11.5px JetBrains Mono, Consolas, monospace");
+    drawTextCell(fmtIntOS(r.op_pendentes), cols[4], y + 20, r.op_pendentes > 0 ? "#F87171" : "#64748B", r.op_pendentes > 100 ? "bold 11.5px JetBrains Mono, Consolas, monospace" : "11.5px JetBrains Mono, Consolas, monospace");
+    drawTextCell(fmtIntOS(r.oa_anuladas), cols[5], y + 20, "#FBBF24", "11.5px JetBrains Mono, Consolas, monospace");
+    drawTextCell(fmtIntOS(r.oe_og_curso), cols[6], y + 20, "#60A5FA", "11.5px JetBrains Mono, Consolas, monospace");
+    drawTextCell(fmtIntOS(r.oc_canceladas), cols[7], y + 20, "#94A3B8", "11.5px JetBrains Mono, Consolas, monospace");
+    drawTextCell(txComSla, cols[8], y + 17, corTx, "bold 11px JetBrains Mono, Consolas, monospace");
+
+    // Mini barra de progresso % Exec
+    const barW = 130;
+    const barX = cols[8].x + cols[8].w - barW - 6;
+    const barY = y + 23;
+    g.fillStyle = "rgba(148,163,184,0.2)";
+    g.fillRect(barX, barY, barW, 4);
+    g.fillStyle = corTx;
+    g.fillRect(barX, barY, Math.max(2, Math.min(barW, (r.tx_exec_pct / 100) * barW)), 4);
+
+    y += rowH;
+  });
+
+  // Linha de Rodapé TOTAL
+  g.fillStyle = "#1E293B";
+  g.fillRect(28, y, W - 56, footerH - 6);
+  g.strokeStyle = "#475569";
+  g.strokeRect(28, y, W - 56, footerH - 6);
+
+  const labelTotal = ocultas > 0
+    ? `TOTAL ORDENS DE SERVIÇO FILTRADAS (${ctx.linhas.length} linhas; top ${linhas.length} exibidas na imagem)`
+    : `TOTAL ORDENS DE SERVIÇO FILTRADAS (${ctx.linhas.length} linhas)`;
+  g.fillStyle = "#F8FAFC";
+  g.font = "bold 12px JetBrains Mono, Consolas, monospace";
+  g.fillText(labelTotal, 34, y + 24);
+
+  drawTextCell(fmtIntOS(t.emitidas), cols[2], y + 24, "#F8FAFC", "bold 12px JetBrains Mono, Consolas, monospace");
+  drawTextCell(fmtIntOS(t.or_realizadas), cols[3], y + 24, "#34D399", "bold 12px JetBrains Mono, Consolas, monospace");
+  drawTextCell(fmtIntOS(t.op_pendentes), cols[4], y + 24, "#F87171", "bold 12px JetBrains Mono, Consolas, monospace");
+  drawTextCell(fmtIntOS(t.oa_anuladas), cols[5], y + 24, "#FBBF24", "bold 12px JetBrains Mono, Consolas, monospace");
+  drawTextCell(fmtIntOS(t.oe_og_curso), cols[6], y + 24, "#60A5FA", "bold 12px JetBrains Mono, Consolas, monospace");
+  drawTextCell(fmtIntOS(t.oc_canceladas), cols[7], y + 24, "#CBD5E1", "bold 12px JetBrains Mono, Consolas, monospace");
+  drawTextCell(`${t.tx_exec_pct.toFixed(1).replace(".", ",")}% (${t.sla_dias.toFixed(1).replace(".", ",")}d)`, cols[8], y + 24, "#34D399", "bold 12px JetBrains Mono, Consolas, monospace");
+
+  y += footerH + 8;
+
+  // Secção inferior: Gráfico de Barras Empilhadas por Macro-Família
+  g.fillStyle = "#0F172A";
+  g.fillRect(28, y, W - 56, chartH - 12);
+  g.strokeStyle = "#1E293B";
+  g.strokeRect(28, y, W - 56, chartH - 12);
+
+  g.fillStyle = "#E2E8F0";
+  g.font = "bold 13px Inter, Segoe UI, sans-serif";
+  g.fillText("📊 COMPOSIÇÃO POR ESTADO REAL NAS MACRO-FAMÍLIAS FILTRADAS (OR Realizadas vs. OP Pendentes vs. OA Anuladas vs. Outras)", 42, y + 24);
+
+  // Agrupar pelas Macro-Famílias presentes no filtro para o gráfico
+  const porFam = {};
+  for (const r of ctx.linhas) {
+    if (!porFam[r.familia]) {
+      porFam[r.familia] = { familia: r.familia, emitidas: 0, or: 0, op: 0, oa: 0, outros: 0 };
+    }
+    porFam[r.familia].emitidas += r.emitidas;
+    porFam[r.familia].or += r.or_realizadas;
+    porFam[r.familia].op += r.op_pendentes;
+    porFam[r.familia].oa += r.oa_anuladas;
+    porFam[r.familia].outros += (r.oe_og_curso + r.oc_canceladas);
+  }
+  const famsChart = Object.values(porFam).sort((a, b) => b.emitidas - a.emitidas).slice(0, 7);
+  const maxFamEmit = Math.max(1, ...famsChart.map(f => f.emitidas));
+
+  let cy = y + 42;
+  const barAreaX = 290;
+  const barAreaW = W - barAreaX - 180;
+
+  famsChart.forEach(f => {
+    g.fillStyle = "#93C5FD";
+    g.font = "bold 11px JetBrains Mono, Consolas, monospace";
+    g.fillText(f.familia.slice(0, 32), 42, cy + 13);
+
+    const totalW = Math.max(6, (f.emitidas / maxFamEmit) * barAreaW);
+    const wOr = f.emitidas > 0 ? (f.or / f.emitidas) * totalW : 0;
+    const wOp = f.emitidas > 0 ? (f.op / f.emitidas) * totalW : 0;
+    const wOa = f.emitidas > 0 ? (f.oa / f.emitidas) * totalW : 0;
+    const wOut = Math.max(0, totalW - wOr - wOp - wOa);
+
+    let bx = barAreaX;
+    g.fillStyle = "#34D399";
+    g.fillRect(bx, cy + 2, wOr, 14);
+    bx += wOr;
+
+    g.fillStyle = "#F87171";
+    g.fillRect(bx, cy + 2, wOp, 14);
+    bx += wOp;
+
+    g.fillStyle = "#FBBF24";
+    g.fillRect(bx, cy + 2, wOa, 14);
+    bx += wOa;
+
+    g.fillStyle = "#60A5FA";
+    g.fillRect(bx, cy + 2, wOut, 14);
+
+    const pctOr = f.emitidas > 0 ? ((f.or / f.emitidas) * 100).toFixed(1).replace(".", ",") : "0,0";
+    g.fillStyle = "#CBD5E1";
+    g.font = "bold 10.5px JetBrains Mono, Consolas, monospace";
+    g.fillText(`${fmtIntOS(f.emitidas)} OS (${pctOr}% OR)`, barAreaX + totalW + 10, cy + 13);
+
+    cy += 22;
+  });
+
+  // Legenda e carimbo no rodapé da imagem
+  g.fillStyle = "#64748B";
+  g.font = "11px JetBrains Mono, Consolas, monospace";
+  g.fillText(`Gerado em ${dtAgora} • EDEC Painel Analítico Comercial Santiago`, 28, H - 18);
+
+  const legX = W - 560;
+  const legY = y + 24;
+  const itensLeg = [
+    { cor: "#34D399", txt: "OR Realizadas" },
+    { cor: "#F87171", txt: "OP Pendentes" },
+    { cor: "#FBBF24", txt: "OA Anuladas" },
+    { cor: "#60A5FA", txt: "OE/OG + OC" }
+  ];
+  let lx = legX;
+  itensLeg.forEach(it => {
+    g.fillStyle = it.cor;
+    g.fillRect(lx, legY - 9, 10, 10);
+    g.fillStyle = "#CBD5E1";
+    g.font = "11px JetBrains Mono, Consolas, monospace";
+    g.fillText(it.txt, lx + 14, legY);
+    lx += g.measureText(it.txt).width + 32;
+  });
+
+  return {
+    dataUrl: canvas.toDataURL("image/png"),
+    width: W,
+    height: H
+  };
+}
+
+async function exportarDesdobramentoFamiliasXLSX(btnEl) {
+  const ctx = obterDadosDesdobramentoFamiliasFiltrado();
+  if (!ctx || !ctx.linhas.length) {
+    alert("Nenhuma Ordem de Serviço encontrada para os filtros selecionados.");
+    return;
+  }
+
+  if (typeof ExcelJS === "undefined") {
+    alert("A biblioteca ExcelJS ainda não foi carregada. Recarregue a página e tente novamente.");
+    return;
+  }
+
+  const txtOriginal = btnEl ? btnEl.innerHTML : "";
+  if (btnEl) {
+    btnEl.disabled = true;
+    btnEl.innerHTML = "⏳ A gerar XLSX...";
+  }
+
+  try {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = "EDEC Painel Analítico Comercial Santiago";
+    wb.created = new Date();
+
+    // =====================================================================
+    // ABA 1: QUADRO FORMATADO + IMAGEM INTEGRADA
+    // =====================================================================
+    const ws = wb.addWorksheet("Desdobramento_OS", {
+      views: [{ state: "frozen", ySplit: 6, showGridLines: true }]
+    });
+
+    ws.columns = [
+      { key: "familia", width: 32 },
+      { key: "desc_os", width: 38 },
+      { key: "quota", width: 13 },
+      { key: "emitidas", width: 14 },
+      { key: "or", width: 14 },
+      { key: "op", width: 14 },
+      { key: "oa", width: 14 },
+      { key: "oe", width: 13 },
+      { key: "oc", width: 13 },
+      { key: "tx_exec", width: 15 },
+      { key: "sla", width: 14 }
+    ];
+
+    // Linha 1: Título Institucional
+    ws.mergeCells("A1:K1");
+    const cTitulo = ws.getCell("A1");
+    cTitulo.value = "EDEC SANTIAGO — DESDOBRAMENTO DAS ORDENS DE SERVIÇO POR FAMÍLIA, TIPO E ESTADO REAL";
+    cTitulo.font = { name: "Segoe UI", size: 13, bold: true, color: { argb: "FFFFFFFF" } };
+    cTitulo.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0F172A" } };
+    cTitulo.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+    ws.getRow(1).height = 28;
+
+    // Linha 2: Filtros ativos no momento da exportação
+    ws.mergeCells("A2:K2");
+    const cFiltro = ws.getCell("A2");
+    cFiltro.value = `Filtro Aplicado ➔ Unidade: ${ctx.filtros.ucLabel}   |   Macro-Família: ${ctx.filtros.famLabel}   |   Segmento: ${ctx.filtros.segLabel}   |   Modo: ${ctx.filtros.modoLabel}`;
+    cFiltro.font = { name: "Consolas", size: 10, bold: true, color: { argb: "FF93C5FD" } };
+    cFiltro.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1E293B" } };
+    cFiltro.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+    ws.getRow(2).height = 21;
+
+    // Linha 3: Resumo Executivo de KPIs filtrados
+    const t = ctx.totais;
+    ws.mergeCells("A3:K3");
+    const cResumo = ws.getCell("A3");
+    cResumo.value = `Resumo do Filtro: ${fmtIntOS(t.emitidas)} OS Emitidas  •  OR Realizadas: ${fmtIntOS(t.or_realizadas)} (${t.tx_exec_pct.toFixed(1).replace(".", ",")}%)  •  OP Pendentes: ${fmtIntOS(t.op_pendentes)}  •  OA Anuladas (Pré-Aviso): ${fmtIntOS(t.oa_anuladas)}  •  SLA Médio: ${t.sla_dias.toFixed(1).replace(".", ",")} dias  •  Exportado em: ${new Date().toLocaleString("pt-PT")}`;
+    cResumo.font = { name: "Segoe UI", size: 9.5, italic: true, color: { argb: "FFCBD5E1" } };
+    cResumo.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0F172A" } };
+    cResumo.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+    ws.getRow(3).height = 20;
+
+    ws.getRow(4).height = 8;
+
+    // Linha 5: Faixa de Grupo das Colunas
+    ws.mergeCells("A5:C5");
+    ws.getCell("A5").value = "IDENTIFICAÇÃO DA FAMÍLIA & SERVIÇO";
+    ws.mergeCells("D5:I5");
+    ws.getCell("D5").value = "VOLUME DE ORDENS DE SERVIÇO POR ESTADO REAL NO SISTEMA";
+    ws.mergeCells("J5:K5");
+    ws.getCell("J5").value = "PERFORMANCE & SLA";
+
+    ["A5", "D5", "J5"].forEach((addr, idx) => {
+      const cell = ws.getCell(addr);
+      const bg = idx === 0 ? "FF1E3A8A" : idx === 1 ? "FF065F46" : "FF3B0764";
+      cell.font = { name: "Segoe UI", size: 9.5, bold: true, color: { argb: "FFFFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: bg } };
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+    });
+    ws.getRow(5).height = 20;
+
+    // Linha 6: Cabeçalho da Tabela
+    const headers = [
+      "Macro-Família",
+      "Tipo de Serviço (desc_os)",
+      "Quota (%)",
+      "Emitidas",
+      "OR Realiz.",
+      "OP Pend.",
+      "OA Anul.",
+      "OE/OG Curso",
+      "OC Canc.",
+      "% Execução",
+      "SLA Médio (d)"
+    ];
+    const rowHeader = ws.getRow(6);
+    rowHeader.values = headers;
+    rowHeader.height = 24;
+
+    const headerColors = [
+      "FF93C5FD", "FFF8FAFC", "FFCBD5E1", "FFF8FAFC",
+      "FF34D399", "FFF87171", "FFFBBF24", "FF60A5FA",
+      "FFCBD5E1", "FF34D399", "FF93C5FD"
+    ];
+
+    rowHeader.eachCell((cell, colNumber) => {
+      cell.font = { name: "Consolas", size: 10, bold: true, color: { argb: headerColors[colNumber - 1] || "FFFFFFFF" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1E293B" } };
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: colNumber <= 2 ? "left" : "right",
+        wrapText: true
+      };
+      cell.border = {
+        top: { style: "thin", color: { argb: "FF475569" } },
+        bottom: { style: "medium", color: { argb: "FF3B82F6" } },
+        left: { style: "thin", color: { argb: "FF334155" } },
+        right: { style: "thin", color: { argb: "FF334155" } }
+      };
+    });
+
+    // Linhas de Dados
+    let currentRowIdx = 7;
+    ctx.linhas.forEach((r, idx) => {
+      const row = ws.getRow(currentRowIdx);
+      row.values = [
+        r.familia,
+        r.desc_os,
+        r.quota_pct / 100,
+        r.emitidas,
+        r.or_realizadas,
+        r.op_pendentes,
+        r.oa_anuladas,
+        r.oe_og_curso,
+        r.oc_canceladas,
+        r.tx_exec_pct / 100,
+        r.sla_dias
+      ];
+      row.height = 20;
+
+      const bgRow = idx % 2 === 0 ? "FF0F172A" : "FF131C31";
+      const corExec = r.tx_exec_pct >= 75 ? "FF34D399" : r.tx_exec_pct >= 45 ? "FFFBBF24" : "FFF87171";
+
+      row.eachCell((cell, colNumber) => {
+        let fg = "FFF1F5F9";
+        let bold = false;
+        if (colNumber === 1) { fg = "FF60A5FA"; bold = true; }
+        else if (colNumber === 2) { fg = "FFF8FAFC"; bold = true; }
+        else if (colNumber === 3) { fg = "FF94A3B8"; cell.numFmt = "0.0%"; }
+        else if (colNumber === 4) { fg = "FFF8FAFC"; bold = true; cell.numFmt = "#,##0"; }
+        else if (colNumber === 5) { fg = "FF34D399"; bold = true; cell.numFmt = "#,##0"; }
+        else if (colNumber === 6) { fg = r.op_pendentes > 0 ? "FFF87171" : "FF64748B"; bold = r.op_pendentes > 100; cell.numFmt = "#,##0"; }
+        else if (colNumber === 7) { fg = "FFFBBF24"; cell.numFmt = "#,##0"; }
+        else if (colNumber === 8) { fg = "FF60A5FA"; cell.numFmt = "#,##0"; }
+        else if (colNumber === 9) { fg = "FF94A3B8"; cell.numFmt = "#,##0"; }
+        else if (colNumber === 10) { fg = corExec; bold = true; cell.numFmt = "0.0%"; }
+        else if (colNumber === 11) { fg = "FFCBD5E1"; cell.numFmt = '0.0" d"'; }
+
+        cell.font = {
+          name: colNumber === 2 ? "Segoe UI" : "Consolas",
+          size: 10,
+          bold,
+          color: { argb: fg }
+        };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: bgRow }
+        };
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: colNumber <= 2 ? "left" : "right"
+        };
+        cell.border = {
+          top: { style: "thin", color: { argb: "FF1E293B" } },
+          bottom: { style: "thin", color: { argb: "FF1E293B" } },
+          left: { style: "thin", color: { argb: "FF1E293B" } },
+          right: { style: "thin", color: { argb: "FF1E293B" } }
+        };
+      });
+
+      currentRowIdx++;
+    });
+
+    // Linha de Rodapé TOTAL
+    const rowTot = ws.getRow(currentRowIdx);
+    rowTot.values = [
+      "TOTAL ORDENS DE SERVIÇO FILTRADAS",
+      `${ctx.linhas.length} linhas agrupadas`,
+      1,
+      t.emitidas,
+      t.or_realizadas,
+      t.op_pendentes,
+      t.oa_anuladas,
+      t.oe_og_curso,
+      t.oc_canceladas,
+      t.tx_exec_pct / 100,
+      t.sla_dias
+    ];
+    rowTot.height = 24;
+
+    rowTot.eachCell((cell, colNumber) => {
+      let fg = "FFF8FAFC";
+      if (colNumber === 3) cell.numFmt = "0.0%";
+      else if (colNumber >= 4 && colNumber <= 9) cell.numFmt = "#,##0";
+      else if (colNumber === 10) cell.numFmt = "0.0%";
+      else if (colNumber === 11) cell.numFmt = '0.0" d"';
+
+      if (colNumber === 5 || colNumber === 10) fg = "FF34D399";
+      else if (colNumber === 6) fg = "FFF87171";
+      else if (colNumber === 7) fg = "FFFBBF24";
+      else if (colNumber === 8) fg = "FF60A5FA";
+
+      cell.font = { name: "Consolas", size: 10.5, bold: true, color: { argb: fg } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1E293B" } };
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: colNumber <= 2 ? "left" : "right"
+      };
+      cell.border = {
+        top: { style: "medium", color: { argb: "FF60A5FA" } },
+        bottom: { style: "double", color: { argb: "FF60A5FA" } },
+        left: { style: "thin", color: { argb: "FF334155" } },
+        right: { style: "thin", color: { argb: "FF334155" } }
+      };
+    });
+
+    // =====================================================================
+    // IMAGEM DO QUADRO + GRÁFICO INCORPORADA NO EXCEL
+    // =====================================================================
+    const imgInfo = gerarImagemCanvasDesdobramentoOS(ctx);
+    const imageId = wb.addImage({
+      base64: imgInfo.dataUrl,
+      extension: "png"
+    });
+
+    // Inserir a imagem na Aba 1 logo abaixo da tabela formatada
+    const imgStartRow = currentRowIdx + 2;
+    ws.addImage(imageId, {
+      tl: { col: 0, row: imgStartRow },
+      ext: { width: 1120, height: Math.round((1120 / imgInfo.width) * imgInfo.height) }
+    });
+
+    // Criar também a Aba 2 dedicada exclusivamente à Imagem Executiva do Quadro
+    const wsImg = wb.addWorksheet("Imagem_Quadro_OS", {
+      views: [{ showGridLines: false }]
+    });
+    wsImg.addImage(imageId, {
+      tl: { col: 0, row: 0 },
+      ext: { width: imgInfo.width, height: imgInfo.height }
+    });
+
+    // Gerar e baixar o ficheiro .xlsx
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    });
+    const dataStr = new Date().toISOString().slice(0, 10);
+    const nomeArq = `EDEC_OS_Desdobramento_Familias_${ctx.filtros.slug}_${dataStr}.xlsx`;
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nomeArq;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 300);
+  } catch (err) {
+    console.error("Erro ao exportar XLSX do Desdobramento de OS:", err);
+    alert("Erro ao gerar o ficheiro Excel (.xlsx): " + (err?.message || err));
+  } finally {
+    if (btnEl) {
+      btnEl.disabled = false;
+      btnEl.innerHTML = txtOriginal;
+    }
+  }
+}

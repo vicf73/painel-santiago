@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="config_santiago.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
   <link rel="stylesheet" href="css/painel.css" />
 </head>
 <body class="auth-locked">
@@ -2551,10 +2552,18 @@
             <div class="panel-title">
               <span>📋</span> Desdobramento das 66.352 Ordens de Serviço por Família, Tipo e Estado Real
             </div>
-            <select id="os5-modo-detalhe" class="select-ctrl" onchange="aplicarFiltrosOrdensServico()" style="font-size:11px; padding:3px 8px;">
-              <option value="DETALHADO">Detalhado por Tipo de Serviço (41 tipos)</option>
-              <option value="FAMILIA">Agrupado pelas 7 Macro-Famílias</option>
-            </select>
+            <div style="display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+              <select id="os5-modo-detalhe" class="select-ctrl" onchange="aplicarFiltrosOrdensServico()" style="font-size:11px; padding:3px 8px;">
+                <option value="DETALHADO">Detalhado por Tipo de Serviço (41 tipos)</option>
+                <option value="FAMILIA">Agrupado pelas 7 Macro-Famílias</option>
+              </select>
+              <button class="btn" onclick="exportarDesdobramentoFamiliasCSV()" title="Exportar lista do quadro Desdobramento das Ordens de Serviço por Família (mediante o filtro atual) para CSV" style="font-size:11px; padding:3px 9px; background:rgba(52,211,153,0.14); color:#34D399; border-color:rgba(52,211,153,0.4); font-weight:700;">
+                ⬇ CSV
+              </button>
+              <button class="btn" onclick="exportarDesdobramentoFamiliasXLSX(this)" title="Exportar quadro Desdobramento das Ordens de Serviço por Família para Excel (.xlsx) com formatação executiva e imagem do quadro" style="font-size:11px; padding:3px 9px; background:rgba(96,165,250,0.16); color:#60A5FA; border-color:rgba(96,165,250,0.45); font-weight:700;">
+                📊 XLSX (Formatado + Imagem)
+              </button>
+            </div>
           </div>
           <div class="table-scroll" style="max-height:360px;">
             <table>
