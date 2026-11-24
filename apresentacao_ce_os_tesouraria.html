@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EDEC • Plano Estratégico à Comissão Executiva — Ordens de Serviço &amp; Tesouraria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-page: #070B14;
+      --bg-surface: #0F172A;
+      --bg-card: rgba(15, 23, 42, 0.72);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --border-subtle: rgba(148, 163, 184, 0.14);
+      --border-glow: rgba(96, 165, 250, 0.35);
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --accent-blue: #3B82F6;
+      --accent-cyan: #22D3EE;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-rose: #F43F5E;
+      --accent-purple: #A78BFA;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.55;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -15%, rgba(37, 99, 235, 0.22), transparent),
+        radial-gradient(ellipse 60% 40% at 90% 30%, rgba(124, 58, 237, 0.12), transparent),
+        radial-gradient(ellipse 60% 40% at 10% 75%, rgba(16, 185, 129, 0.10), transparent);
+    }
+
+    /* ============================================================
+       SCROLL PROGRESS BAR (SCROLLTID STYLE)
+       ============================================================ */
+    .scroll-progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(148, 163, 184, 0.1);
+      z-index: 1000;
+    }
+    .scroll-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue), var(--accent-purple), var(--accent-emerald));
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.8);
+      transition: width 0.08s linear;
+    }
+
+    /* ============================================================
+       FLOATING GLASS PILL NAVBAR (NAVBAR GALLERY STYLE)
+       ============================================================ */
+    .navbar-wrap {
+      position: fixed;
+      top: 16px;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      display: flex;
+      justify-content: center;
+      padding: 0 16px;
+      pointer-events: none;
+    }
+    .glass-navbar {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      width: 100%;
+      max-width: 1120px;
+      padding: 8px 10px 8px 18px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(18px) saturate(160%);
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 13.5px;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+    }
+    .nav-brand-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #3B82F6, #10B981);
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      box-shadow: 0 0 14px rgba(59, 130, 246, 0.5);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(2, 6, 23, 0.45);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .nav-link {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 13px;
+      border-radius: 999px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
+    .nav-link.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(16, 185, 129, 0.28));
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
+    }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #2563EB, #3B82F6);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(37, 99, 235, 0.55); }
+
+    /* ============================================================
+       FLOATING SCROLL-SPY SIDE DOTS (SCROLLTID RAIL)
+       ============================================================ */
+    .scroll-rail {
+      position: fixed;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 800;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 10px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+    }
+    .rail-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.35);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .rail-dot:hover { background: #fff; transform: scale(1.25); }
+    .rail-dot.active {
+      height: 24px;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--accent-blue));
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+    }
+
+    /* ============================================================
+       MAIN STORYTELLING SECTIONS
+       ============================================================ */
+    .story-container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 106px 22px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 44px;
+    }
+
+    .section-block {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 36px 38px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Scroll reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 48px 44px 40px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.92), rgba(23, 37, 84, 0.75));
+      border: 1px solid rgba(96, 165, 250, 0.28);
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      top: -180px;
+      right: -120px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.28), transparent 70%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.9px;
+      color: var(--accent-cyan);
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      padding: 5px 13px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(26px, 3.6vw, 40px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.8px;
+      max-width: 860px;
+      margin-bottom: 14px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 15px;
+      color: #CBD5E1;
+      max-width: 800px;
+      margin-bottom: 30px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(148, 163, 184, 0.16);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* Section Header */
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .sec-step {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .sec-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: #fff;
+      margin-top: 3px;
+    }
+    .sec-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      color: #93C5FD;
+    }
+
+    /* Bento KPI Grids */
+    .bento-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .bento-card {
+      background: rgba(2, 6, 23, 0.55);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 16px 18px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .bento-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-glow);
+    }
+    .bento-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .bento-val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 25px;
+      font-weight: 800;
+      margin: 5px 0 3px;
+      letter-spacing: -0.5px;
+    }
+    .bento-sub { font-size: 11.5px; color: var(--text-secondary); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+
+    /* Callouts */
+    .insight-box {
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      margin-bottom: 18px;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      background: rgba(37, 99, 235, 0.1);
+      color: #E2E8F0;
+    }
+    .insight-box.emerald { background: rgba(16, 185, 129, 0.1); border-color: rgba(52, 211, 153, 0.3); }
+    .insight-box.rose { background: rgba(244, 63, 94, 0.1); border-color: rgba(251, 113, 133, 0.3); }
+    .insight-box.amber { background: rgba(245, 158, 11, 0.1); border-color: rgba(251, 191, 36, 0.3); }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(2, 6, 23, 0.42);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th {
+      background: rgba(30, 41, 59, 0.9);
+      color: #CBD5E1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      white-space: nowrap;
+    }
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+      color: #E2E8F0;
+    }
+    tbody tr:hover td { background: rgba(59, 130, 246, 0.07); }
+    tfoot td {
+      background: rgba(30, 41, 59, 0.85) !important;
+      font-weight: 800;
+      color: #fff;
+      border-top: 1px solid rgba(96, 165, 250, 0.35);
+    }
+    .num { text-align: right; font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+    .c-green { color: #34D399; font-weight: 700; }
+    .c-red { color: #FB7185; font-weight: 700; }
+    .c-blue { color: #60A5FA; font-weight: 700; }
+    .c-amber { color: #FBBF24; font-weight: 700; }
+    .c-purple { color: #C084FC; font-weight: 700; }
+
+    /* 5 Pillars Cards */
+    .pillar {
+      background: rgba(2, 6, 23, 0.55);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .pillar:hover { transform: translateY(-4px); border-color: var(--border-glow); }
+    .pillar-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(59, 130, 246, 0.18);
+      color: #93C5FD;
+      align-self: flex-start;
+    }
+    .pillar h4 { font-size: 13.5px; font-weight: 800; color: #fff; }
+    .pillar p { font-size: 11.5px; color: var(--text-secondary); line-height: 1.45; }
+    .pillar-foot {
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(148, 163, 184, 0.18);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 800;
+      color: #34D399;
+    }
+
+    /* Timeline 30 / 60 / 90 */
+    .timeline-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .phase-card {
+      background: rgba(2, 6, 23, 0.55);
+      border: 1px solid var(--border-subtle);
+      border-top: 3px solid var(--accent-blue);
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .phase-card.p2 { border-top-color: var(--accent-emerald); }
+    .phase-card.p3 { border-top-color: var(--accent-purple); }
+    .phase-card h4 { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+    .phase-card ul { padding-left: 16px; font-size: 12px; color: #CBD5E1; }
+    .phase-card li { margin-bottom: 7px; }
+
+    @media (max-width: 980px) {
+      .bento-4, .grid-2, .grid-5, .timeline-3 { grid-template-columns: 1fr; }
+      .nav-links, .scroll-rail { display: none; }
+      .section-block, .hero { padding: 24px 20px; }
+    }
+
+    /* Impressão / Exportação PDF limpa */
+    @media print {
+      body { background: #fff !important; color: #0F172A !important; background-image: none !important; }
+      .navbar-wrap, .scroll-progress-track, .scroll-rail { display: none !important; }
+      .story-container { max-width: 100%; padding: 0; gap: 16px; }
+      .section-block, .hero {
+        background: #fff !important;
+        color: #0F172A !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: none !important;
+        page-break-after: always;
+      }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .hero h1 { -webkit-text-fill-color: #0F172A !important; color: #0F172A !important; }
+      .sec-title, .pillar h4, .phase-card h4 { color: #0F172A !important; }
+      .hero-sub, .bento-sub, .pillar p, .phase-card ul, td, .insight-box { color: #1E293B !important; }
+      .bento-card, .pillar, .phase-card, .table-wrap { background: #F8FAFC !important; border-color: #CBD5E1 !important; }
+      th { background: #0F172A !important; color: #fff !important; }
+      tfoot td { background: #E2E8F0 !important; color: #0F172A !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Progresso de Scroll (Scrolltid) -->
+  <div class="scroll-progress-track">
+    <div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+  </div>
+
+  <!-- Floating Glass Pill Navbar (Navbar Gallery) -->
+  <div class="navbar-wrap">
+    <nav class="glass-navbar" aria-label="Navegação Executiva">
+      <a href="#s-hero" class="nav-brand">
+        <span class="nav-brand-dot">⚡</span>
+        <span>EDEC • Comissão Executiva</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a class="nav-link active" href="#s-hero">Sumário</a>
+        <a class="nav-link" href="#s-diagnostico">66,3k OS</a>
+        <a class="nav-link" href="#s-tesouraria">Pré-Aviso vs Corte</a>
+        <a class="nav-link" href="#s-pilares">5 Pilares &amp; Timing</a>
+        <a class="nav-link" href="#s-viabilidade">Viabilidade RX0</a>
+        <a class="nav-link" href="#s-metas">Metas 90d</a>
+      </div>
+      <button class="nav-cta" onclick="window.print()">🖨️ Exportar PDF</button>
+    </nav>
+  </div>
+
+  <!-- Scroll-Spy Side Rail -->
+  <aside class="scroll-rail" aria-label="Progresso das Secções">
+    <div class="rail-dot active" data-target="s-hero" title="Sumário Executivo"></div>
+    <div class="rail-dot" data-target="s-diagnostico" title="1. Diagnóstico 66.352 OS"></div>
+    <div class="rail-dot" data-target="s-tesouraria" title="2. Pré-Aviso vs Corte vs Backlog"></div>
+    <div class="rail-dot" data-target="s-pilares" title="3. 5 Pilares & Calendário Científico"></div>
+    <div class="rail-dot" data-target="s-viabilidade" title="4. Viabilidade Equipas & RX0"></div>
+    <div class="rail-dot" data-target="s-metas" title="5. Metas 90d & Cronograma"></div>
+  </aside>
+
+  <main class="story-container">
+
+    <!-- SECÇÃO 0: HERO & SUMÁRIO EXECUTIVO -->
+    <section class="section-block hero reveal visible" id="s-hero">
+      <div class="eyebrow">● PROPOSTA ESTRATÉGICA • REGIÃO SUL (EDEC · EMPRESA 17)</div>
+      <h1>Otimização do Serviço de Pré-Aviso, Corte &amp; Religação para Maximização da Tesouraria</h1>
+      <p class="hero-sub">
+        Diagnóstico auditado das <strong>66.352 Ordens de Serviço</strong> cruzadas com Cobrança Real (<code>fct_cobranca</code>), Dívida Exigível (<code>fct_divida_snapshot</code>) e Taxa de Religação (<code>RX0/RXO</code>) — apresentando 5 pilares para desbloquear <strong>+114 M a +160 M ECV</strong> em 90 dias com equipas 100% autofinanciadas pela Taxa <code>RX0</code>.
+      </p>
+
+      <div class="bento-4">
+        <div class="bento-card" style="border-top:2px solid #10B981;">
+          <div class="bento-label">CAIXA INDUZIDO ATUAL (30D)</div>
+          <div class="bento-val c-green" data-count="302.34" data-suffix=" M ECV">302,34 M ECV</div>
+          <div class="bento-sub">164,42 M Pré-Aviso (OA) + 137,92 M Corte (OR)</div>
+        </div>
+        <div class="bento-card" style="border-top:2px solid #F43F5E;">
+          <div class="bento-label">DÍVIDA RETIDA EM CORTE OP</div>
+          <div class="bento-val c-red" data-count="225.92" data-suffix=" M ECV">225,92 M ECV</div>
+          <div class="bento-sub">13.686 OS pendentes em 12.459 CILs (88,8% Praia)</div>
+        </div>
+        <div class="bento-card" style="border-top:2px solid #A78BFA;">
+          <div class="bento-label">FUGA DE TAXA RX0 (2026)</div>
+          <div class="bento-val c-purple" data-count="13.44" data-suffix=" M ECV">13,44 M ECV</div>
+          <div class="bento-sub">8.762 religações OR sem taxa RX0 faturada (68%)</div>
+        </div>
+        <div class="bento-card" style="border-top:2px solid #F59E0B;">
+          <div class="bento-label">GANHO PROJETADO (90 DIAS)</div>
+          <div class="bento-val c-amber">+114M a 160M</div>
+          <div class="bento-sub">Equipas 500k ECV/mês pagas a 100% só pela RX0</div>
+        </div>
+      </div>
+
+      <div class="hero-meta">
+        <span><strong>Base Auditada:</strong> Lakehouse Santiago (DuckDB Silver/Gold)</span>
+        <span><strong>Cobertura:</strong> 10 Unidades Comerciais (Santiago, Fogo, Maio e Brava)</span>
+        <span><strong>Referência:</strong> Novembro 2026 (Lotes Jan–Out 2026)</span>
+      </div>
+    </section>
+
+    <!-- SECÇÃO 1: DIAGNÓSTICO DAS 66.352 OS -->
+    <section class="section-block reveal" id="s-diagnostico">
+      <div class="sec-head">
+        <div>
+          <div class="sec-step">01 • Auditoria Operacional (Baseline)</div>
+          <h2 class="sec-title">Desdobramento Real das 66.352 Ordens de Serviço por Família e Estado</h2>
+        </div>
+        <span class="sec-chip">Apenas 52,1% realizadas fisicamente (OR)</span>
+      </div>
+
+      <div class="insight-box amber">
+        <strong>Descoberta Crítica:</strong> Das <strong>39.652 OS de Corte</strong> emitidas, apenas <strong>33,5% (`13.289`) foram executadas (`OR`)</strong>. O <em>Corte Automático</em> atinge apenas <strong>23,2%</strong> e gera <strong>13.347 ordens paradas em `OP`</strong>, enquanto o <em>Corte Direcionado (não automático)</em> atinge <strong>74,5% de execução física (3,2x superior)</strong>.
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Macro-Família de Serviço</th>
+              <th class="num">Emitidas</th>
+              <th class="num">% Total</th>
+              <th class="num">OR Realiz.</th>
+              <th class="num">OP Pend.</th>
+              <th class="num">OA Anul. (Pagou)</th>
+              <th class="num">OE/OG Curso</th>
+              <th class="num">OC Canc.</th>
+              <th class="num">Taxa Exec. OR</th>
+              <th class="num">SLA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Corte por Falta de Pagamento</strong></td>
+              <td class="num"><strong>39.652</strong></td>
+              <td class="num">59,8%</td>
+              <td class="num c-green">13.289</td>
+              <td class="num c-red">13.686</td>
+              <td class="num c-amber">9.860</td>
+              <td class="num">703</td>
+              <td class="num">2.114</td>
+              <td class="num c-red">33,5%</td>
+              <td class="num">0,6 d</td>
+            </tr>
+            <tr>
+              <td><strong>2. Religação de Fornecimento</strong></td>
+              <td class="num"><strong>14.849</strong></td>
+              <td class="num">22,4%</td>
+              <td class="num c-green">13.883</td>
+              <td class="num">150</td>
+              <td class="num">171</td>
+              <td class="num">562</td>
+              <td class="num">83</td>
+              <td class="num c-green">93,5%</td>
+              <td class="num">1,1 d</td>
+            </tr>
+            <tr>
+              <td><strong>3. Novas Ligações &amp; Contratação</strong></td>
+              <td class="num">3.451</td>
+              <td class="num">5,2%</td>
+              <td class="num c-green">2.020</td>
+              <td class="num">46</td>
+              <td class="num">81</td>
+              <td class="num c-blue">1.278</td>
+              <td class="num">26</td>
+              <td class="num">58,5%</td>
+              <td class="num">2,8 d</td>
+            </tr>
+            <tr>
+              <td><strong>4. Gestão Contratual, Rescisão &amp; Potência</strong></td>
+              <td class="num">3.116</td>
+              <td class="num">4,7%</td>
+              <td class="num">2.036</td>
+              <td class="num">393</td>
+              <td class="num">73</td>
+              <td class="num">495</td>
+              <td class="num">119</td>
+              <td class="num">65,3%</td>
+              <td class="num">2,9 d</td>
+            </tr>
+            <tr>
+              <td><strong>5. Manutenção, Substituição &amp; Rede</strong></td>
+              <td class="num">2.621</td>
+              <td class="num">4,0%</td>
+              <td class="num">1.569</td>
+              <td class="num">136</td>
+              <td class="num">62</td>
+              <td class="num">613</td>
+              <td class="num">241</td>
+              <td class="num">59,9%</td>
+              <td class="num">2,1 d</td>
+            </tr>
+            <tr>
+              <td><strong>6. Leituras Especiais</strong></td>
+              <td class="num">1.495</td>
+              <td class="num">2,3%</td>
+              <td class="num">840</td>
+              <td class="num">238</td>
+              <td class="num">13</td>
+              <td class="num">264</td>
+              <td class="num">140</td>
+              <td class="num">56,2%</td>
+              <td class="num">2,9 d</td>
+            </tr>
+            <tr>
+              <td><strong>7. Inspeção, Fraude &amp; Vistorias Técnicas</strong></td>
+              <td class="num">1.168</td>
+              <td class="num">1,8%</td>
+              <td class="num c-green">954</td>
+              <td class="num">51</td>
+              <td class="num">13</td>
+              <td class="num">133</td>
+              <td class="num">17</td>
+              <td class="num c-green">81,7%</td>
+              <td class="num">1,2 d</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>TOTAL GERAL (41 TIPOS DE SERVIÇO)</td>
+              <td class="num">66.352</td>
+              <td class="num">100,0%</td>
+              <td class="num c-green">34.591</td>
+              <td class="num c-red">14.700</td>
+              <td class="num c-amber">10.273</td>
+              <td class="num">4.048</td>
+              <td class="num">2.740</td>
+              <td class="num">52,1%</td>
+              <td class="num">1,2 d</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECÇÃO 2: PRÉ-AVISO vs CORTE vs PENDENTE -->
+    <section class="section-block reveal" id="s-tesouraria">
+      <div class="sec-head">
+        <div>
+          <div class="sec-step">02 • Evidência Empírica de Caixa (OS × fct_cobranca)</div>
+          <h2 class="sec-title">Retorno de Tesouraria: Pré-Aviso (`OA`) vs. Corte Físico (`OR`) vs. Backlog (`OP`)</h2>
+        </div>
+        <span class="sec-chip">Conversão cai −52 pp quando fica pendente</span>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:18px;">
+        <div class="insight-box emerald" style="margin-bottom:0;">
+          <strong>Poder do Pré-Aviso (`OA` — Custo de Campo ZERO):</strong><br />
+          Quando notificados antes do corte, <strong>89,7% das Empresas Privadas pagam em 1,2 dias (`76.068 ECV`/empresa)</strong> e <strong>91,0% dos Domésticos pagam em 0,7 dias (`8.487 ECV`)</strong> → <strong>164,42 M ECV</strong> sem deslocar viatura.
+        </div>
+        <div class="insight-box rose" style="margin-bottom:0;">
+          <strong>Custo da Inação (`OP` — 13.686 Cortes Parados):</strong><br />
+          Sem execução física, a conversão doméstica cai de <strong>72,8% (3,1d)</strong> para apenas <strong>20,9% (15,8d)</strong>. Existem <strong>1.301 Empresas Privadas</strong> e <strong>11.501 Domésticos</strong> parados em `OP` (`225,92 M ECV` exigíveis).
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Estado da Ordem de Corte</th>
+              <th>Segmento de Consumidor</th>
+              <th class="num">Qtd. OS</th>
+              <th class="num">% Pagam (30d)</th>
+              <th class="num">Velocidade</th>
+              <th class="num">Ticket Médio</th>
+              <th class="num">Caixa 7 Dias</th>
+              <th class="num">Caixa 30 Dias</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="c-green">OR · Corte Realizado</td>
+              <td><strong>Empresa Privada</strong></td>
+              <td class="num">612</td>
+              <td class="num c-green">82,8%</td>
+              <td class="num c-green">2,3 dias</td>
+              <td class="num"><strong>46.330 ECV</strong></td>
+              <td class="num c-blue">17,97 M ECV</td>
+              <td class="num c-green">23,49 M ECV</td>
+            </tr>
+            <tr>
+              <td class="c-green">OR · Corte Realizado</td>
+              <td><strong>Doméstico (D1 / S1)</strong></td>
+              <td class="num">12.656</td>
+              <td class="num c-green">72,8%</td>
+              <td class="num c-green">3,1 dias</td>
+              <td class="num"><strong>12.344 ECV</strong></td>
+              <td class="num c-blue">87,83 M ECV</td>
+              <td class="num c-green">113,72 M ECV</td>
+            </tr>
+            <tr>
+              <td class="c-blue">OA · Pagou no Pré-Aviso</td>
+              <td><strong>Empresa Privada</strong></td>
+              <td class="num">1.457</td>
+              <td class="num c-blue">89,7%</td>
+              <td class="num c-green">1,2 dias</td>
+              <td class="num"><strong>76.068 ECV</strong></td>
+              <td class="num c-blue">65,99 M ECV</td>
+              <td class="num c-green">99,42 M ECV</td>
+            </tr>
+            <tr>
+              <td class="c-blue">OA · Pagou no Pré-Aviso</td>
+              <td><strong>Doméstico (D1 / S1)</strong></td>
+              <td class="num">8.399</td>
+              <td class="num c-blue">91,0%</td>
+              <td class="num c-green">0,7 dias</td>
+              <td class="num"><strong>8.487 ECV</strong></td>
+              <td class="num c-blue">50,23 M ECV</td>
+              <td class="num c-green">64,89 M ECV</td>
+            </tr>
+            <tr style="background:rgba(244,63,94,0.08);">
+              <td class="c-red">OP · Corte Pendente</td>
+              <td><strong>Empresa Privada (Backlog)</strong></td>
+              <td class="num c-red">1.301</td>
+              <td class="num c-amber">53,4%</td>
+              <td class="num c-red">16,5 dias</td>
+              <td class="num">92.392 ECV</td>
+              <td class="num">1,88 M ECV</td>
+              <td class="num">64,21 M ECV</td>
+            </tr>
+            <tr style="background:rgba(244,63,94,0.08);">
+              <td class="c-red">OP · Corte Pendente</td>
+              <td><strong>Doméstico (Backlog)</strong></td>
+              <td class="num c-red">12.362</td>
+              <td class="num c-red">20,9%</td>
+              <td class="num c-red">15,8 dias</td>
+              <td class="num">6.585 ECV</td>
+              <td class="num">3,39 M ECV</td>
+              <td class="num">17,03 M ECV</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECÇÃO 3: OS 5 PILARES & CALENDÁRIO CIENTÍFICO -->
+    <section class="section-block reveal" id="s-pilares">
+      <div class="sec-head">
+        <div>
+          <div class="sec-step">03 • Arquitetura de Ação &amp; Timing Ótimo</div>
+          <h2 class="sec-title">5 Pilares de Otimização &amp; Calendário Científico ("Quem e Quando Cortar")</h2>
+        </div>
+        <span class="sec-chip">Máximo Retorno de Caixa por Hora de Equipa</span>
+      </div>
+
+      <div class="grid-5" style="margin-bottom:22px;">
+        <div class="pillar">
+          <span class="pillar-tag">PILAR 01</span>
+          <h4>Pré-Aviso 48–72h</h4>
+          <p>SMS/WhatsApp + aviso formal a Empresas antes da rota, alertando para a Taxa RX0 (2.069 ECV). Pré-filtrar quem já pagou.</p>
+          <div class="pillar-foot">+20M a 30M ECV</div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-tag">PILAR 02</span>
+          <h4>Corte Direcionado EV</h4>
+          <p>Substituir automático (23%) por folhas EV_30d (75%) via Portal Electra. Foco nas 1.301 Empresas OP + Praia (200,6M).</p>
+          <div class="pillar-foot">+85M a 115M ECV</div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-tag">PILAR 03</span>
+          <h4>Calendário Científico</h4>
+          <p>75% dos cortes Seg–Qua (pico 4ª: 67,3%). Dias 21–05: Domésticos (71,5%). Dias 06–20: Empresas. 6ª: Religações.</p>
+          <div class="pillar-foot">DSO 81d → ≤70d</div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-tag" style="background:rgba(167,139,250,0.2); color:#C084FC;">PILAR 04</span>
+          <h4>Bloqueio Fuga RX0</h4>
+          <p>Trava sistémica: toda a Religação OR gera taxa RX0 obrigatória (reduzir fuga de 68% para &lt;10% com auditoria Aba 5).</p>
+          <div class="pillar-foot">+11,5M ECV / ano</div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-tag" style="background:rgba(245,158,11,0.2); color:#FBBF24;">PILAR 05</span>
+          <h4>1ª Revisão de Corte</h4>
+          <p>Inspeção aos 15–30d nos 1.292 CILs cortados sem pagar (31,2M ECV): levantamento de contador + auto CF1.</p>
+          <div class="pillar-foot">+6M a 12M ECV</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>📅 Dia da Semana (Cortes OR)</th>
+                <th class="num">Cortes</th>
+                <th class="num">% Pagam (7d)</th>
+                <th class="num">Veloc.</th>
+                <th>Regra Tática</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Segunda-Feira</td><td class="num">2.603</td><td class="num c-blue">63,2%</td><td class="num c-green">0,8 d</td><td>Corte Massivo</td></tr>
+              <tr><td>Terça-Feira</td><td class="num">2.887</td><td class="num c-blue">63,1%</td><td class="num c-green">0,8 d</td><td>Corte Massivo</td></tr>
+              <tr style="background:rgba(16,185,129,0.12);"><td class="c-green">Quarta-Feira ★</td><td class="num"><strong>3.073</strong></td><td class="num c-green"><strong>67,3%</strong></td><td class="num c-green">0,9 d</td><td><strong>Pico Semanal!</strong></td></tr>
+              <tr><td>Quinta-Feira</td><td class="num">3.165</td><td class="num c-blue">64,8%</td><td class="num c-green">0,9 d</td><td>Cortar até 13h</td></tr>
+              <tr style="background:rgba(244,63,94,0.1);"><td class="c-red">Sexta-Feira ⚠</td><td class="num">1.561</td><td class="num c-red"><strong>57,5%</strong></td><td class="num c-red">1,2 d</td><td>Religações &amp; Revisões</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>🗓️ Janela do Mês (Cortes OR)</th>
+                <th class="num">Cortes</th>
+                <th class="num">% Pagam (15d)</th>
+                <th class="num">Ticket</th>
+                <th>Segmento Prioritário</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Dias 01–10 (Início)</td><td class="num">3.916</td><td class="num c-blue">67,0%</td><td class="num"><strong>13.650 ECV</strong></td><td>Empresas + Alta Dívida</td></tr>
+              <tr><td>Dias 11–20 (Meio)</td><td class="num">4.337</td><td class="num c-amber">64,5%</td><td class="num">13.092 ECV</td><td>Comércio + 1ª Revisão</td></tr>
+              <tr style="background:rgba(16,185,129,0.12);"><td class="c-green">Dias 21–31 (Pós-Salário) ★</td><td class="num"><strong>5.036</strong></td><td class="num c-green"><strong>71,5%</strong></td><td class="num">12.354 ECV</td><td><strong>Domésticos D1 &amp; S1</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECÇÃO 4: VIABILIDADE FINANCEIRA DAS EQUIPAS & RX0 -->
+    <section class="section-block reveal" id="s-viabilidade">
+      <div class="sec-head">
+        <div>
+          <div class="sec-step">04 • Sustentabilidade Financeira &amp; Autofinanciamento</div>
+          <h2 class="sec-title">Viabilidade das Equipas (`500.000 ECV/mês`) pela Taxa `RX0` &amp; Campanha Dezembro</h2>
+        </div>
+        <span class="sec-chip">Self-Funding 100% Garantido pela Taxa RX0</span>
+      </div>
+
+      <div class="bento-4">
+        <div class="bento-card" style="border-top:2px solid #A78BFA;">
+          <div class="bento-label">BREAK-EVEN SÓ COM RX0</div>
+          <div class="bento-val c-purple">15–16 / dia</div>
+          <div class="bento-sub">326–355 religações/mês pagam 100% da equipa</div>
+        </div>
+        <div class="bento-card" style="border-top:2px solid #3B82F6;">
+          <div class="bento-label">ESCALÃO PADRÃO (2.069 ECV)</div>
+          <div class="bento-val c-blue">11–12 / dia</div>
+          <div class="bento-sub">242–263 religações/mês (tarifa D1/S1 padrão)</div>
+        </div>
+        <div class="bento-card" style="border-top:2px solid #10B981;">
+          <div class="bento-label">MULTIPLICADOR DE DÍVIDA</div>
+          <div class="bento-val c-green">19.082 ECV</div>
+          <div class="bento-sub">Dívida vencida recuperada por cada taxa RX0</div>
+        </div>
+        <div class="bento-card" style="border-top:2px solid #F59E0B;">
+          <div class="bento-label">CENÁRIO RECOMENDADO (8 EQ.)</div>
+          <div class="bento-val c-amber">ROI 16,2x</div>
+          <div class="bento-sub">4,0M custo → 4,47M RX0 + 60,45M dívida</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cenário Operacional (Dezembro · 22 Dias Úteis)</th>
+              <th class="num">Custo (500k/eq.)</th>
+              <th class="num">Cortes / Mês</th>
+              <th class="num">RX0 Liquidada (92%)</th>
+              <th class="num">Cobertura SÓ RX0</th>
+              <th class="num">Dívida Recuperada</th>
+              <th class="num">Líquido EDEC</th>
+              <th class="num">ROI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cenário 1 — Conservador (5 Equipas · 16/dia)</strong></td>
+              <td class="num">2.500.000 ECV</td>
+              <td class="num">1.760</td>
+              <td class="num c-purple">2.482.357 ECV</td>
+              <td class="num c-blue">99,3% Liq.</td>
+              <td class="num">33.584.320 ECV</td>
+              <td class="num c-green">+33,57 M ECV</td>
+              <td class="num c-green">14,4x</td>
+            </tr>
+            <tr style="background:rgba(16,185,129,0.12);">
+              <td><strong class="c-green">Cenário 2 — Recomendado (8 Equipas · 18/dia) ★</strong></td>
+              <td class="num"><strong>4.000.000 ECV</strong></td>
+              <td class="num"><strong>3.168</strong></td>
+              <td class="num c-purple"><strong>4.468.242 ECV</strong></td>
+              <td class="num c-green"><strong>111,7% Liq.</strong></td>
+              <td class="num"><strong>60.451.776 ECV</strong></td>
+              <td class="num c-green"><strong>+60,92 M ECV</strong></td>
+              <td class="num c-green"><strong>16,2x</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Cenário 3 — Intensivo (10 Equipas · 20/dia)</strong></td>
+              <td class="num">5.000.000 ECV</td>
+              <td class="num">4.400</td>
+              <td class="num c-purple">6.205.892 ECV</td>
+              <td class="num c-green">124,1% Liq.</td>
+              <td class="num">83.960.800 ECV</td>
+              <td class="num c-green">+85,17 M ECV</td>
+              <td class="num c-green">18,0x</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECÇÃO 5: METAS 90 DIAS & CRONOGRAMA -->
+    <section class="section-block reveal" id="s-metas">
+      <div class="sec-head">
+        <div>
+          <div class="sec-step">05 • Metas 90 Dias &amp; Governação</div>
+          <h2 class="sec-title">Painel de Metas (AS-IS vs. TO-BE) &amp; Cronograma de Execução 30 / 60 / 90 Dias</h2>
+        </div>
+        <span class="sec-chip">Controlo Semanal na Aba 5 do Painel Santiago</span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Indicador de Performance (KPI)</th>
+              <th class="num">Atual (AS-IS)</th>
+              <th class="num">Meta 90d (TO-BE)</th>
+              <th>Unidades Prioritárias</th>
+              <th class="num">Ganho Estimado (90d)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Redução do Backlog de Corte Pendente (`OP`)</strong></td>
+              <td class="num c-red">13.686 OS (225,9 M)</td>
+              <td class="num c-green">&lt; 4.000 OS</td>
+              <td>Praia (200,6M), S. Cruz (9,7M), S. Catarina (6,1M)</td>
+              <td class="num c-green">+85 M a +115 M ECV</td>
+            </tr>
+            <tr>
+              <td><strong>Regularização via Pré-Aviso (`OA` s/ deslocação)</strong></td>
+              <td class="num">9.860 OS (164,4 M)</td>
+              <td class="num c-green">+25% a +35%</td>
+              <td>1.301 Empresas OP + Rotas Praia/Interior</td>
+              <td class="num c-green">+20 M a +30 M ECV</td>
+            </tr>
+            <tr>
+              <td><strong>Bloqueio da Fuga de Taxa `RX0` nas Religações</strong></td>
+              <td class="num c-red">68,0% s/ RX0 (13,4 M)</td>
+              <td class="num c-green">&lt; 10,0% s/ RX0</td>
+              <td>Praia (10,5M), S. Catarina (1,0M), S. Cruz (0,55M)</td>
+              <td class="num c-green">+3,0 M / trim. (11,5M/ano)</td>
+            </tr>
+            <tr>
+              <td><strong>Execução `1ª Revisão de Corte` (Autoconexão)</strong></td>
+              <td class="num c-red">0,5% (1.292 CILs / 31,2 M)</td>
+              <td class="num c-green">≥ 80,0%</td>
+              <td>Praia (15,3M), S. Filipe (4,8M), Calheta (3,0M), Tarrafal (2,3M)</td>
+              <td class="num c-green">+6 M a +12 M ECV</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">IMPACTO INCREMENTAL TOTAL PROJETADO EM TESOURARIA (90 DIAS)</td>
+              <td class="num c-green">+114 M a +160 M ECV</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="timeline-3">
+        <div class="phase-card">
+          <h4>Fase 1 • Dias 1–30 (Quick Wins)</h4>
+          <ul>
+            <li>Ativar <strong>trava sistémica da Taxa RX0</strong> em todas as OS de Religação.</li>
+            <li>Disparar <strong>Pré-Aviso (48h)</strong> e atacar as <strong>1.301 Empresas Privadas em OP</strong>.</li>
+            <li>Adotar calendário semanal (cortes Seg–Qua; 6ª-feira religações e revisões).</li>
+          </ul>
+        </div>
+        <div class="phase-card p2">
+          <h4>Fase 2 • Dias 31–60 (Escala)</h4>
+          <ul>
+            <li>Operar com <strong>8 equipas autofinanciadas</strong> (4 Praia + 4 Interior/Fogo).</li>
+            <li>Emitir folhas diretas da <strong>Fila EV_30d (Aba 5 → Portal Electra)</strong> por rota NIB/seq.</li>
+            <li>Foco Doméstico D1/S1 nos dias <strong>21–05 (Pós-Salário: 71,5%)</strong>.</li>
+          </ul>
+        </div>
+        <div class="phase-card p3">
+          <h4>Fase 3 • Dias 61–90 (Consolidação)</h4>
+          <ul>
+            <li>Executar <strong>1ª Revisão de Corte</strong> nos <strong>1.292 suspeitos de autoconexão</strong> (CF1).</li>
+            <li>Limpar <strong>1.293 Novas Ligações em fila</strong> (receita nova recorrente).</li>
+            <li>Acompanhamento semanal perante a CE via <strong>Aba 5 do Painel Santiago</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // 1. Scroll Progress Bar (Scrolltid)
+    const progressBar = document.getElementById("scroll-progress-bar");
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      if (progressBar) progressBar.style.width = `${Math.min(100, Math.max(0, pct))}%`;
+    };
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    updateProgress();
+
+    // 2. Scroll Reveal Animation (IntersectionObserver)
+    const revealEls = document.querySelectorAll(".reveal");
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    // 3. Scroll-Spy for Floating Glass Navbar & Side Rail Dots
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll(".nav-link");
+    const railDots = document.querySelectorAll(".rail-dot");
+
+    railDots.forEach(dot => {
+      dot.addEventListener("click", () => {
+        const target = document.getElementById(dot.dataset.target);
+        if (target) target.scrollIntoView({ behavior: "smooth" });
+      });
+    });
+
+    const spyObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${id}`));
+          railDots.forEach(d => d.classList.toggle("active", d.dataset.target === id));
+        }
+      });
+    }, { rootMargin: "-35% 0px -50% 0px" });
+    sections.forEach(sec => spyObs.observe(sec));
+  </script>
+</body>
+</html>

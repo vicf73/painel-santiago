@@ -1165,22 +1165,22 @@ def calcular_score_risco(df: pd.DataFrame) -> pd.DataFrame:
 def atribuir_criterio_perdas(df: pd.DataFrame) -> pd.DataFrame:
     """
     Atribui de forma dinâmica e automática o valor 'y' (elegível para fiscalização de perdas)
-    aos consumidores que apresentam pelo menos um dos parâmetros de risco:
-    1. Contador Obsoleto (> 20 anos)
-    2. Anomalias Graves/Críticas de Leitura e Campo
-    3. Contrato Desativado com Suspeita (Baixa por Dívida, Rescisão, etc.)
-    4. Reincidência de Autos de Fraude (cf1_qtd_autos > 0)
-    5. Score de Risco Elevado (Score >= 40 ou Nível CRÍTICO / ALTO)
-    
-    Apenas consumidores sem nenhum parâmetro de risco permanecem sem marcação (None).
+    aos consumidores que apresentam pelo menos uma das 5 condições operacionais:
+    1. Anomalias Críticas de Leitura e Campo (16 anomalias críticas)
+    2. Sem Leitura > 5 meses (Mat_Leitura == '> 5 meses')
+    3. Contador Obsoleto > 20 anos (Mat_Contador == '> 20 ano')
+    4. Desvio de Faturação (FATURAÇAO.Alerta_Desvio == 'Desv_Fat')
+    5. Autos de Fraude CF1 (cf1_qtd_autos > 0)
+
+    Apenas consumidores sem nenhuma das 5 condições permanecem sem marcação (None).
     """
     col_anom = next((col for col in df.columns if "Anomalia" in col), "Anomalia.1")
     anom = df[col_anom].fillna("").astype(str).str.strip() if col_anom in df.columns else pd.Series("", index=df.index)
-    est = df["EST_CTR"].fillna("").astype(str).str.strip() if "EST_CTR" in df.columns else pd.Series("", index=df.index)
     mat_cont = df["Mat_Contador"].fillna("").astype(str).str.strip() if "Mat_Contador" in df.columns else pd.Series("", index=df.index)
-    score = pd.to_numeric(df.get("Score_Risco", 0), errors="coerce").fillna(0)
+    mat_leit = df["Mat_Leitura"].fillna("").astype(str).str.strip() if "Mat_Leitura" in df.columns else pd.Series("", index=df.index)
+    col_desv = "FATURAÇAO.Alerta_Desvio" if "FATURAÇAO.Alerta_Desvio" in df.columns else "faturacao_alerta_desvio"
+    desv_fat = df[col_desv].fillna("").astype(str).str.strip() if col_desv in df.columns else pd.Series("", index=df.index)
     cf1_qtd = pd.to_numeric(df.get("cf1_qtd_autos", 0), errors="coerce").fillna(0)
-    nivel = df.get("Nivel_Risco", pd.Series("", index=df.index)).fillna("").astype(str).str.upper()
 
     anomalias_criticas = [
         "Suspeita de Fraude", "Ligado Directo", "Display Apagado", "Contador Cortado",
@@ -1189,17 +1189,15 @@ def atribuir_criterio_perdas(df: pd.DataFrame) -> pd.DataFrame:
         "Falta Selo no Aparelho", "Não Comunica - sem Leitura", "Não Comunica - com Leitura",
         "Funções Congeladas", "Número do Aparelho Errado", "Contador Parado"
     ]
-    
+
     mascara_risco = (
-        (mat_cont == "> 20 ano") |
         (anom.isin(anomalias_criticas)) |
-        (est.isin(["Baixa por Dívida", "Rescisão Voluntária", "Baixa Forçada", "Baixa por Inspec. não Aprovada"])) |
-        (cf1_qtd > 0) |
-        (score >= 40) |
-        (nivel.str.contains("CRÍTICO", na=False)) |
-        (nivel == "ALTO")
+        (mat_leit == "> 5 meses") |
+        (mat_cont == "> 20 ano") |
+        (desv_fat == "Desv_Fat") |
+        (cf1_qtd > 0)
     )
-    
+
     df["Criterio"] = np.where(mascara_risco, "y", None)
     return df
 
