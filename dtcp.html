@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DTCP • Central de Documentos, Autos e Métricas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #0B1120;
+      --bg-card: #111827;
+      --bg-card-hover: #1E293B;
+      --border-dim: #1F2937;
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --accent-cyan: #06B6D4;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-blue: #3B82F6;
+      --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg-main: #F1F5F9;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F8FAFC;
+      --border-dim: #E2E8F0;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-dim);
+      padding: 18px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(59, 130, 246, 0.2));
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(6, 182, 212, 0.14);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    .brand-sub {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-dim);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      text-decoration: none;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-primary {
+      background: var(--accent-cyan);
+      color: #FFFFFF;
+      border-color: var(--accent-cyan);
+    }
+
+    .btn-primary:hover {
+      background: #0891B2;
+      border-color: #0891B2;
+    }
+
+    main {
+      max-width: 1140px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 36px 24px;
+      flex: 1;
+    }
+
+    .intro-banner {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .intro-banner h1 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .intro-banner p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .folders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 22px;
+    }
+
+    .folder-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dim);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      transition: transform 0.18s ease, border-color 0.18s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .folder-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .folder-card.card-folhas {
+      border-top: 4px solid var(--accent-amber);
+    }
+    .folder-card.card-autos {
+      border-top: 4px solid var(--accent-blue);
+    }
+    .folder-card.card-metricas {
+      border-top: 4px solid var(--accent-emerald);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .folder-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .icon-amber {
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .icon-blue {
+      background: rgba(59, 130, 246, 0.14);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+    .icon-emerald {
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .perm-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .perm-restricted {
+      background: rgba(245, 158, 11, 0.15);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    [data-theme="light"] .perm-restricted {
+      color: #D97706;
+    }
+
+    .perm-link-blue {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+    [data-theme="light"] .perm-link-blue {
+      color: #2563EB;
+    }
+
+    .perm-link-emerald {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    [data-theme="light"] .perm-link-emerald {
+      color: #059669;
+    }
+
+    .folder-title {
+      font-size: 19px;
+      font-weight: 800;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .folder-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .perm-details {
+      background: rgba(148, 163, 184, 0.06);
+      border: 1px solid var(--border-dim);
+      border-radius: 8px;
+      padding: 11px 13px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .perm-details strong {
+      color: var(--text-primary);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-open {
+      flex: 1;
+      justify-content: center;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 9px;
+    }
+
+    .btn-amber {
+      background: #F59E0B;
+      color: #FFFFFF;
+      border-color: #F59E0B;
+    }
+    .btn-amber:hover {
+      background: #D97706;
+      border-color: #D97706;
+    }
+
+    .btn-blue {
+      background: #3B82F6;
+      color: #FFFFFF;
+      border-color: #3B82F6;
+    }
+    .btn-blue:hover {
+      background: #2563EB;
+      border-color: #2563EB;
+    }
+
+    .btn-emerald {
+      background: #10B981;
+      color: #FFFFFF;
+      border-color: #10B981;
+    }
+    .btn-emerald:hover {
+      background: #059669;
+      border-color: #059669;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10B981;
+      color: #FFFFFF;
+      padding: 12px 18px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: all 0.22s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-icon">📁</div>
+      <div>
+        <div class="brand-title">
+          DTCP • Repositório Partilhado de Indicadores &amp; Documentos
+          <span class="brand-badge">GOOGLE DRIVE</span>
+        </div>
+        <div class="brand-sub">
+          Portal de Acesso Rápido para Colaboradores — Folhas, Autos e Métricas
+        </div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn" onclick="copiarComunicadoEquipa()" title="Copiar texto com os links para enviar por WhatsApp ou E-mail">
+        📋 Copiar Mensagem para Equipa
+      </button>
+      <button class="btn" onclick="alternarTema()" id="btn-theme">
+        🌓 Tema
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="intro-banner">
+      <div>
+        <h1>Bem-vindo à Pasta Partilhada DTCP</h1>
+        <p>
+          Selecione abaixo a subpasta pretendida. O acesso a <strong>Autos</strong> e <strong>Métricas</strong> é direto por link; a subpasta <strong>Folhas</strong> é exclusiva para colaboradores autorizados por e-mail.
+        </p>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--accent-cyan); font-weight:700;">
+        3 SUBPASTAS • 3 PERMISSÕES INDEPENDENTES
+      </div>
+    </div>
+
+    <div class="folders-grid">
+      <!-- 1. SUBPASTA FOLHAS (PERMISSÃO 1: RESTRITO POR EMAIL) -->
+      <div class="folder-card card-folhas">
+        <div>
+          <div class="card-top">
+            <div class="folder-icon icon-amber">📗</div>
+            <span class="perm-pill perm-restricted">🔒 Permissão 1 • Por E-mail</span>
+          </div>
+          <div class="folder-title">1. Pasta Folhas</div>
+          <p class="folder-desc">
+            Folhas de cálculo operacionais, registos de trabalho e bases de atualização reservadas aos colaboradores autorizados.
+          </p>
+        </div>
+
+        <div class="perm-details">
+          <div><strong>Método de Acesso:</strong> Convite por E-mail Individual</div>
+          <div><strong>Requisito:</strong> Iniciar sessão no Google com o seu e-mail autorizado</div>
+          <div><strong>Onde encontrar:</strong> Secção <em>"Partilhados comigo"</em> no Google Drive</div>
+        </div>
+
+        <div class="card-actions">
+          <a href="https://drive.google.com/drive/shared-with-me" target="_blank" rel="noopener noreferrer" class="btn btn-open btn-amber">
+            🔑 Abrir "Partilhados Comigo" ➔
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. SUBPASTA AUTOS (PERMISSÃO 2: LINK DIRETO) -->
+      <div class="folder-card card-autos">
+        <div>
+          <div class="card-top">
+            <div class="folder-icon icon-blue">📋</div>
+            <span class="perm-pill perm-link-blue">🔗 Permissão 2 • Link Direto</span>
+          </div>
+          <div class="folder-title">2. Pasta Autos</div>
+          <p class="folder-desc">
+            Repositório de Autos, termos de inspeção, evidências documentais e processos operacionais partilhados com a equipa.
+          </p>
+        </div>
+
+        <div class="perm-details">
+          <div><strong>Método de Acesso:</strong> Link Partilhado Direto</div>
+          <div><strong>Pasta Drive:</strong> <code>DTCP / Autos</code></div>
+          <div><strong>Disponibilidade:</strong> Acesso imediato para colaboradores com o link</div>
+        </div>
+
+        <div class="card-actions">
+          <a href="https://drive.google.com/drive/folders/1Zg5Qi3-qOzggef-VXNJK5gIYQI6BMklE?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn btn-open btn-blue">
+            📂 Abrir Pasta Autos ➔
+          </a>
+          <button class="btn" onclick="copiarLink('https://drive.google.com/drive/folders/1Zg5Qi3-qOzggef-VXNJK5gIYQI6BMklE?usp=sharing', 'Link da pasta Autos copiado!')" title="Copiar link da pasta Autos">
+            📋 Copiar Link
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. SUBPASTA MÉTRICAS / OUTROS (PERMISSÃO 3: LINK DIRETO) -->
+      <div class="folder-card card-metricas">
+        <div>
+          <div class="card-top">
+            <div class="folder-icon icon-emerald">📊</div>
+            <span class="perm-pill perm-link-emerald">🔗 Permissão 3 • Link Direto</span>
+          </div>
+          <div class="folder-title">3. Pasta Métricas &amp; Outros</div>
+          <p class="folder-desc">
+            Indicadores de desempenho, relatórios consolidados, resumos executivos e documentos de consulta geral para toda a equipa.
+          </p>
+        </div>
+
+        <div class="perm-details">
+          <div><strong>Método de Acesso:</strong> Link Partilhado Direto</div>
+          <div><strong>Pasta Drive:</strong> <code>DTCP / Métricas</code></div>
+          <div><strong>Disponibilidade:</strong> Consulta e download direto de indicadores</div>
+        </div>
+
+        <div class="card-actions">
+          <a href="https://drive.google.com/drive/folders/1HZUgQN0wJ-q7fsWrlIEzoM5E-_Z6W9cL?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn btn-open btn-emerald">
+            📊 Abrir Pasta Métricas ➔
+          </a>
+          <button class="btn" onclick="copiarLink('https://drive.google.com/drive/folders/1HZUgQN0wJ-q7fsWrlIEzoM5E-_Z6W9cL?usp=sharing', 'Link da pasta Métricas copiado!')" title="Copiar link da pasta Métricas">
+            📋 Copiar Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    DTCP • Portal Independente de Partilha de Documentos e Indicadores (Sem acesso ao Painel Analítico Santiago)
+  </footer>
+
+  <div id="toast" class="toast">Link copiado!</div>
+
+  <script>
+    (function aplicarTemaInicial() {
+      var tema = localStorage.getItem('dtcp_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', tema);
+    })();
+
+    function alternarTema() {
+      var atual = document.documentElement.getAttribute('data-theme') || 'dark';
+      var novo = atual === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', novo);
+      localStorage.setItem('dtcp_theme', novo);
+    }
+
+    function mostrarToast(msg) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(function() {
+        t.classList.remove('show');
+      }, 2800);
+    }
+
+    function copiarLink(url, msg) {
+      navigator.clipboard.writeText(url).then(function() {
+        mostrarToast(msg || 'Link copiado para a área de transferência!');
+      });
+    }
+
+    function copiarComunicadoEquipa() {
+      var texto = [
+        "📁 *PORTAL DTCP — ACESSO A PASTAS E INDICADORES*",
+        "",
+        "Caros colaboradores, o portal de acesso rápido às pastas partilhadas da DTCP está disponível em:",
+        "🌐 https://vicf73.github.io/painel-santiago/dtcp.html",
+        "",
+        "Ou aceda diretamente às subpastas no Google Drive:",
+        "",
+        "1️⃣ *Pasta Autos (Link Direto):*",
+        "https://drive.google.com/drive/folders/1Zg5Qi3-qOzggef-VXNJK5gIYQI6BMklE?usp=sharing",
+        "",
+        "2️⃣ *Pasta Métricas e Indicadores (Link Direto):*",
+        "https://drive.google.com/drive/folders/1HZUgQN0wJ-q7fsWrlIEzoM5E-_Z6W9cL?usp=sharing",
+        "",
+        "3️⃣ *Pasta Folhas (Acesso Restrito por E-mail):*",
+        "Aceda com o seu e-mail autorizado na secção 'Partilhados comigo' do Google Drive: https://drive.google.com/drive/shared-with-me"
+      ].join("\n");
+
+      navigator.clipboard.writeText(texto).then(function() {
+        mostrarToast("Mensagem completa copiada! Pronta a colar no WhatsApp ou E-mail.");
+      });
+    }
+  </script>
+</body>
+</html>
